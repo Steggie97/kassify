@@ -290,7 +290,6 @@ fun LogInScreen(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.Center
     ) {
         //TODO: Logo über LogIn-Form einfuegen
-        // Image()
 
         FormField(
             label = R.string.e_mail,
