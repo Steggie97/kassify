@@ -1,10 +1,14 @@
 package com.ls.kassify.ui
 
+import android.app.DatePickerDialog
+import android.icu.util.Calendar
+import android.widget.DatePicker
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,9 +30,14 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -41,9 +50,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ls.kassify.R
-import com.ls.kassify.ui.screens.TransactionDetailsScreen
 import com.ls.kassify.ui.screens.TransactionFormScreen
-import com.ls.kassify.ui.screens.TransactionListScreen
 
 //App-UI
 @Composable
@@ -56,7 +63,7 @@ fun ScaffoldWithTopBar(modifier: Modifier = Modifier) {
         }
     ) { innerPadding ->
 
-        TransactionListScreen(contentPadding = innerPadding)
+        TransactionFormScreen(modifier = modifier.padding( innerPadding))
 
     }
 }
@@ -240,6 +247,55 @@ fun PasswordField(
         },
         modifier = modifier
     )
+}
+
+@Composable
+fun DateField(
+    modifier: Modifier = Modifier,
+    @StringRes label: Int,
+    @DrawableRes icon: Int,
+) {
+    // Variablen für Datepicker-Dialog:
+    val context = LocalContext.current
+    val calendar = Calendar.getInstance()
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed: Boolean by interactionSource.collectIsPressedAsState()
+
+    var selectedDate by remember { mutableStateOf("${calendar.get(Calendar.DAY_OF_MONTH)}.${calendar.get(Calendar.MONTH) +  1}.${calendar.get(Calendar.YEAR)}") }
+    val year: Int = calendar.get(Calendar.YEAR)
+    val month: Int = calendar.get(Calendar.MONTH)
+    val day: Int = calendar.get(Calendar.DAY_OF_MONTH)
+
+    val datePickerDialog = remember {
+        DatePickerDialog(
+            context,
+            { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDay: Int ->
+                selectedDate = "$selectedDay.${selectedMonth + 1}.$selectedYear"
+            },
+            year,
+            month,
+            day
+        )
+    }
+    // UI-Composables
+    TextField(
+        modifier = modifier,
+        value = selectedDate,
+        onValueChange = {},
+        label = { Text(stringResource(label)) },
+        trailingIcon = {
+            Icon(
+                painter = painterResource(icon),
+                contentDescription = null
+            )
+        },
+        interactionSource = interactionSource,
+        readOnly = true
+    )
+
+    if(isPressed) {
+        datePickerDialog.show()
+    }
 }
 
 @Composable

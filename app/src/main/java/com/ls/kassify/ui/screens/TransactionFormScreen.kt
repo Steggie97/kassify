@@ -10,14 +10,13 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -27,12 +26,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ls.kassify.R
+import com.ls.kassify.ui.DateField
 import com.ls.kassify.ui.FormField
 import com.ls.kassify.ui.FormSwitch
 
 @Composable
 fun TransactionFormScreen(modifier: Modifier = Modifier) {
-    var isDeposit by remember { mutableStateOf(true) }
+    var isDeposit by rememberSaveable { mutableStateOf(true) }
+
     //TODO: Aktueller Kassenbestand muss in der View sichtbar sein
     Column(
         modifier = modifier
@@ -43,18 +44,13 @@ fun TransactionFormScreen(modifier: Modifier = Modifier) {
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        // TODO: Datepicker einfuegen
-        FormField(
-            label = R.string.date,
-            value = "01.01.2024",
-            onValueChange = { /*TODO*/ },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Next
-            ),
+        //Date-Field with Datepicker
+        DateField(
             modifier = Modifier
-                .padding(top = 24.dp, bottom = 8.dp)
                 .fillMaxWidth()
+                .padding(top = 24.dp, bottom = 8.dp),
+            label = R.string.date,
+            icon = R.drawable.calendar_icon
         )
 
         FormSwitch(
