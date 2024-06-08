@@ -30,7 +30,11 @@ import com.ls.kassify.ui.CredentialFields
 import com.ls.kassify.ui.PasswordField
 
 @Composable
-fun RegisterScreen(modifier: Modifier = Modifier) {
+fun SignUpScreen(
+    modifier: Modifier = Modifier,
+    onSignUpButtonClicked: () -> Unit,
+    onCancelButtonClicked: () -> Unit
+) {
     var showPassword by rememberSaveable { mutableStateOf(false) }
     var showPasswordConfirm by rememberSaveable { mutableStateOf(false) }
     var password by remember { mutableStateOf("") }
@@ -41,7 +45,7 @@ fun RegisterScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .statusBarsPadding()
-            .padding(horizontal = 32.dp)
+            .padding(horizontal = 24.dp)
             .safeDrawingPadding()
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -78,18 +82,18 @@ fun RegisterScreen(modifier: Modifier = Modifier) {
                 .fillMaxWidth()
                 .padding(top = 32.dp, bottom = 64.dp)
         )
-
+        //SignUp-Button
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { onSignUpButtonClicked() },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
         ) {
-            Text(text = stringResource(R.string.register))
+            Text(text = stringResource(R.string.signup))
         }
 
         OutlinedButton(
-            onClick = { /*TODO*/ },
+            onClick = { onCancelButtonClicked() },
             modifier = Modifier
                 .fillMaxWidth()
         ) {
@@ -103,6 +107,9 @@ fun RegisterScreen(modifier: Modifier = Modifier) {
     showSystemUi = true
 )
 @Composable
-fun RegisterScreenPreview() {
-    RegisterScreen()
+fun SignUpScreenPreview() {
+    SignUpScreen(
+        onSignUpButtonClicked = {},
+        onCancelButtonClicked = {}
+    )
 }

@@ -31,14 +31,18 @@ import com.ls.kassify.ui.FormField
 import com.ls.kassify.ui.FormSwitch
 
 @Composable
-fun TransactionFormScreen(modifier: Modifier = Modifier) {
+fun TransactionEditorScreen(
+    modifier: Modifier = Modifier,
+    onSaveButtonClicked: () -> Unit,
+    onCancelButtonClicked: () -> Unit
+) {
     var isDeposit by rememberSaveable { mutableStateOf(true) }
 
     //TODO: Aktueller Kassenbestand muss in der View sichtbar sein
     Column(
         modifier = modifier
             .statusBarsPadding()
-            .padding(horizontal = 32.dp)
+            .padding(horizontal = 24.dp)
             .safeDrawingPadding()
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -135,8 +139,9 @@ fun TransactionFormScreen(modifier: Modifier = Modifier) {
                 .fillMaxWidth()
         )
 
+        //Save-Button
         Button(
-            onClick = {/* ToDo */ },
+            onClick = { onSaveButtonClicked() },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
@@ -144,8 +149,9 @@ fun TransactionFormScreen(modifier: Modifier = Modifier) {
             Text(text = stringResource(R.string.save))
         }
 
+        //Cancel-Button
         OutlinedButton(
-            onClick = { /*TODO*/ },
+            onClick = { onCancelButtonClicked() },
             modifier = Modifier.fillMaxWidth()
         ) {
             Text(stringResource(R.string.cancel))
@@ -158,7 +164,10 @@ fun TransactionFormScreen(modifier: Modifier = Modifier) {
     showSystemUi = true
 )
 @Composable
-fun TransactionFormScreenPreview() {
-    TransactionFormScreen()
+fun TransactionEditorScreenPreview() {
+    TransactionEditorScreen(
+        onSaveButtonClicked = {},
+        onCancelButtonClicked = {}
+    )
 }
 

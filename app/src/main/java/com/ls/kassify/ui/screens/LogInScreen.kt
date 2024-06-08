@@ -28,7 +28,12 @@ import com.ls.kassify.R
 import com.ls.kassify.ui.CredentialFields
 
 @Composable
-fun LogInScreen(modifier: Modifier = Modifier) {
+fun LogInScreen(
+    modifier: Modifier = Modifier,
+    onSignUpButtonClicked: () -> Unit,
+    onLoginButtonClicked: () -> Unit,
+    onForgotPasswordButtonClicked: () -> Unit
+) {
     //Todo: Viewmodel
     var showPassword by rememberSaveable { mutableStateOf(false) }
     var password by remember { mutableStateOf("") }
@@ -36,7 +41,7 @@ fun LogInScreen(modifier: Modifier = Modifier) {
     Column(
         modifier = modifier
             .statusBarsPadding()
-            .padding(horizontal = 32.dp)
+            .padding(horizontal = 24.dp)
             .safeDrawingPadding()
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -53,8 +58,9 @@ fun LogInScreen(modifier: Modifier = Modifier) {
             onShowPasswordClick = {showPassword = !showPassword},
         )
 
+        //Forgot-Password-Link
         TextButton(
-            onClick = { /*TODO*/ },
+            onClick = { onForgotPasswordButtonClicked() },
             modifier = Modifier
                 .padding(bottom = 64.dp)
                 .fillMaxWidth()
@@ -66,9 +72,9 @@ fun LogInScreen(modifier: Modifier = Modifier) {
             )
         }
 
-
+        // Login-Button
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { onLoginButtonClicked() },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
@@ -76,12 +82,13 @@ fun LogInScreen(modifier: Modifier = Modifier) {
             Text(text = stringResource(R.string.login))
         }
 
+        //SignUp-Button
         OutlinedButton(
-            onClick = { /*TODO*/ },
+            onClick = { onSignUpButtonClicked() },
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Text(text = stringResource(R.string.register))
+            Text(text = stringResource(R.string.signup))
         }
     }
 }
@@ -92,5 +99,9 @@ fun LogInScreen(modifier: Modifier = Modifier) {
 )
 @Composable
 fun LogInScreenPreview() {
-    LogInScreen()
+    LogInScreen(
+        onLoginButtonClicked = {},
+        onForgotPasswordButtonClicked = {},
+        onSignUpButtonClicked = {}
+    )
 }

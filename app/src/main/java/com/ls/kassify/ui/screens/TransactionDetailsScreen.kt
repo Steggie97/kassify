@@ -8,12 +8,18 @@ import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -25,11 +31,17 @@ import com.ls.kassify.R
 import com.ls.kassify.ui.DetailItem
 
 @Composable
-fun TransactionDetailsScreen(modifier: Modifier = Modifier) {
+fun TransactionDetailsScreen(
+    modifier: Modifier = Modifier,
+    onEditButtonClicked: () -> Unit,
+    onDeleteButtonClicked: () -> Unit,
+    onCancelButtonClicked: () -> Unit
+) {
+    var showDeleteDialog by remember { mutableStateOf(false) }
     Column(
         modifier = modifier
             .statusBarsPadding()
-            .padding(horizontal = 32.dp)
+            .padding(horizontal = 24.dp)
             .safeDrawingPadding()
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -71,8 +83,10 @@ fun TransactionDetailsScreen(modifier: Modifier = Modifier) {
                 lastItem = true
             )
         }
+
+        //Edit-Button
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { onEditButtonClicked() },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
@@ -80,8 +94,9 @@ fun TransactionDetailsScreen(modifier: Modifier = Modifier) {
             Text(stringResource(R.string.edit))
         }
 
+        //Delete-Button
         Button(
-            onClick = { /*TODO*/ },
+            onClick = { showDeleteDialog = true },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
@@ -89,15 +104,46 @@ fun TransactionDetailsScreen(modifier: Modifier = Modifier) {
             Text(stringResource(R.string.delete))
         }
 
+        //Cancel-Button
         OutlinedButton(
-            onClick = { /*TODO*/ },
+            onClick = { onCancelButtonClicked() },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
         ) {
             Text(stringResource(R.string.back))
         }
+
+        if (showDeleteDialog) {
+            DeleteDialog(
+                onConfirmButtonClicked = { onDeleteButtonClicked() },
+                onCancelButtonClicked = { showDeleteDialog = false }
+            )
+        }
     }
+}
+
+// Delete Dialog to get a confirmation for deleting a transaction:
+@Composable
+fun DeleteDialog(
+    onConfirmButtonClicked: () -> Unit,
+    onCancelButtonClicked: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = { /*TODO*/ },
+        title = { Text(text = stringResource(R.string.delete_transaction)) },
+        text = { Text(text = stringResource(R.string.ask_delete_confirm)) },
+        dismissButton = {
+            TextButton(onClick = { onCancelButtonClicked() }) {
+                Text(text = stringResource(R.string.cancel))
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirmButtonClicked() }) {
+                Text(text = stringResource(R.string.delete))
+            }
+        }
+    )
 }
 
 @Preview(
@@ -106,5 +152,9 @@ fun TransactionDetailsScreen(modifier: Modifier = Modifier) {
 )
 @Composable
 fun TransactionDetailsScreenPreview() {
-    TransactionDetailsScreen()
+    TransactionDetailsScreen(
+        onEditButtonClicked = {},
+        onDeleteButtonClicked = {},
+        onCancelButtonClicked = {}
+    )
 }

@@ -9,6 +9,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,7 +22,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -50,34 +50,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ls.kassify.R
-import com.ls.kassify.ui.screens.TransactionFormScreen
 
 //App-UI
-@Composable
-fun ScaffoldWithTopBar(modifier: Modifier = Modifier) {
-    Scaffold(
-        topBar = {
-            KassifyAppBar(
-                title = stringResource(R.string.app_name)
-            )
-        }
-    ) { innerPadding ->
-
-        TransactionFormScreen(modifier = modifier.padding( innerPadding))
-
-    }
-}
 
 //Common Ui-Components
 @Composable
 fun KassifyAppBar(
-    title: String,
+    @StringRes title: Int,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
         title = {
             Text(
-                text = title,
+                text = stringResource(title),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth()
             )
@@ -92,45 +77,47 @@ fun KassifyAppBar(
 
 @Composable
 fun TransactionCard(
-    transactionId: Int,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit,
     date: String,
     amount: String,
     text: String
 ) {
     TextButton(
-        onClick = { /*TODO*/ },
-        modifier = Modifier.fillMaxWidth(),
+        onClick = { onClick() },
+        modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(0.dp)
     ) {
         Card(
             modifier = Modifier
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .height(64.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         ) {
             Row(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .padding(6.dp),
                 verticalAlignment = Alignment.CenterVertically
 
             ) {
                 Text(
                     text = date,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
-                        .weight(2 / 10f)
+                        .weight(3 / 12f)
                         .padding(end = 4.dp)
                 )
                 Text(
                     text = text,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
-                        .weight(3 / 8f)
+                        .weight(3 / 10f)
                         .padding(horizontal = 4.dp)
                 )
                 Text(
                     text = amount,
-                    style = MaterialTheme.typography.bodySmall,
+                    style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.End,
                     modifier = Modifier
                         .weight(3 / 12f)
@@ -403,7 +390,7 @@ fun CredentialFields(
 @Composable
 fun TransactionCardPreview() {
     TransactionCard(
-        transactionId = 1,
+        onClick = {},
         date = "28.05.2024",
         amount = "- 30,00 €",
         text = "Aral"
