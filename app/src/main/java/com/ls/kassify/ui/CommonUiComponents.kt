@@ -7,6 +7,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,6 +23,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -397,4 +399,25 @@ fun TransactionCardPreview() {
     )
 }
 
+@Composable
+fun CategoryFormField(
+    @StringRes label: Int,
+    selectedCategory: String,
+    onCategoryChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val options = listOf("Erlöse", "Kosten")
+    Column(modifier = modifier) {
+        Text(text = stringResource(id = label))
+        options.forEach { category ->
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RadioButton(
+                    selected = category == selectedCategory,
+                    onClick = { onCategoryChange(category) }
+                )
+                Text(text = category)
+            }
+        }
+    }
+}
 

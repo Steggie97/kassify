@@ -26,6 +26,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ls.kassify.R
+import com.ls.kassify.ui.CategoryFormField
 import com.ls.kassify.ui.DateField
 import com.ls.kassify.ui.FormField
 import com.ls.kassify.ui.FormSwitch
@@ -37,7 +38,7 @@ fun TransactionEditorScreen(
     onCancelButtonClicked: () -> Unit
 ) {
     var isDeposit by rememberSaveable { mutableStateOf(true) }
-
+    var category by rememberSaveable { mutableStateOf("Erlose") }
     //TODO: Aktueller Kassenbestand muss in der View sichtbar sein
     Column(
         modifier = modifier
@@ -73,6 +74,14 @@ fun TransactionEditorScreen(
             checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
             uncheckedThumbColor = MaterialTheme.colorScheme.secondary,
             uncheckedTrackColor = MaterialTheme.colorScheme.secondaryContainer
+        )
+        CategoryFormField(
+            label = R.string.category,
+            selectedCategory = category,
+            onCategoryChange = { newCategory -> category = newCategory },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 32.dp)
         )
 
         FormField(
