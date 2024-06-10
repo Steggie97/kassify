@@ -10,4 +10,5 @@ data class KassifyUiState(
     //General-Variables
     val cashBalance: Double = 0.00,
     val transactionList: MutableList<Transaction> = mutableListOf(),
-    )
+    val currentTransaction: Transaction = Transaction()
+)

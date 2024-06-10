@@ -2,7 +2,6 @@ package com.ls.kassify.ui
 
 import android.app.DatePickerDialog
 import android.icu.util.Calendar
-import android.widget.ArrayAdapter
 import android.widget.DatePicker
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
@@ -28,7 +27,6 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -248,6 +246,7 @@ fun DateField(
     modifier: Modifier = Modifier,
     @StringRes label: Int,
     @DrawableRes icon: Int,
+    selectedDate: String,
     onDateChange: (String) -> Unit
 ) {
     // Variablen für Datepicker-Dialog:
@@ -256,7 +255,15 @@ fun DateField(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed: Boolean by interactionSource.collectIsPressedAsState()
 
-    var selectedDate by remember { mutableStateOf("${calendar.get(Calendar.DAY_OF_MONTH)}.${calendar.get(Calendar.MONTH) +  1}.${calendar.get(Calendar.YEAR)}") }
+    var selectedDate by remember {
+        mutableStateOf(
+            "${calendar.get(Calendar.DAY_OF_MONTH)}.${
+                calendar.get(
+                    Calendar.MONTH
+                ) + 1
+            }.${calendar.get(Calendar.YEAR)}"
+        )
+    }
     val year: Int = calendar.get(Calendar.YEAR)
     val month: Int = calendar.get(Calendar.MONTH)
     val day: Int = calendar.get(Calendar.DAY_OF_MONTH)
@@ -288,7 +295,7 @@ fun DateField(
         readOnly = true
     )
 
-    if(isPressed) {
+    if (isPressed) {
         datePickerDialog.show()
     }
 }
@@ -408,16 +415,18 @@ fun TransactionCardPreview() {
 @Composable
 fun CategoryFormField(
     @StringRes label: Int,
-    defaultLabel:String,
+    defaultLabel: String,
     onCategoryChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val options = listOf("Erlöse", "Kosten", "Erträge", "Steuern")
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf(defaultLabel) }
-    Row(modifier = modifier
-        .fillMaxWidth()
-        .padding(horizontal = 16.dp, vertical = 8.dp)) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
         Text(
             text = stringResource(id = label),
             modifier = Modifier

@@ -44,7 +44,7 @@ fun KassifyApp(
         backStackEntry?.destination?.route ?: KassifyScreen.Login.name
     )
     Scaffold(topBar = {
-        if(currentScreen != KassifyScreen.Login || currentScreen != KassifyScreen.SignUp)
+        if (currentScreen != KassifyScreen.Login || currentScreen != KassifyScreen.SignUp)
             KassifyAppBar(
                 title = currentScreen.title
             )
@@ -143,12 +143,37 @@ fun KassifyApp(
                 }, onCancelButtonClicked = {
                     navController.popBackStack()
                 },
-                    transaction = Transaction(),
-                    onDateChange = {},
-                    onAmountChange = {},
-                    onCategoryChange = {},
-                    onReceiptNoChange = {},
-                    onTextChange = {}
+                    transaction = appUiState.currentTransaction,
+                    onDateChange = { fieldName, value ->
+                        viewModel.updateCurrentTransaction(
+                            fieldName,
+                            value
+                        )
+                    },
+                    onAmountChange = { fieldName, value ->
+                        viewModel.updateCurrentTransaction(
+                            fieldName,
+                            value
+                        )
+                    },
+                    onCategoryChange = { fieldName, value ->
+                        viewModel.updateCurrentTransaction(
+                            fieldName,
+                            value
+                        )
+                    },
+                    onReceiptNoChange = { fieldName, value ->
+                        viewModel.updateCurrentTransaction(
+                            fieldName,
+                            value
+                        )
+                    },
+                    onTextChange = { fieldName, value ->
+                        viewModel.updateCurrentTransaction(
+                            fieldName,
+                            value
+                        )
+                    }
                 )
             }
             //NewTransaction-Screen
@@ -165,12 +190,37 @@ fun KassifyApp(
                 }, onCancelButtonClicked = {
                     navController.popBackStack()
                 },
-                    transaction = Transaction(),
-                    onDateChange = {},
-                    onAmountChange = {},
-                    onCategoryChange = {},
-                    onReceiptNoChange = {},
-                    onTextChange = {}
+                    transaction = appUiState.currentTransaction,
+                    onDateChange = { fieldName, value ->
+                        viewModel.updateCurrentTransaction(
+                            fieldName,
+                            value
+                        )
+                    },
+                    onAmountChange = { fieldName, value ->
+                        viewModel.updateCurrentTransaction(
+                            fieldName,
+                            value
+                        )
+                    },
+                    onCategoryChange = { fieldName, value ->
+                        viewModel.updateCurrentTransaction(
+                            fieldName,
+                            value
+                        )
+                    },
+                    onReceiptNoChange = { fieldName, value ->
+                        viewModel.updateCurrentTransaction(
+                            fieldName,
+                            value
+                        )
+                    },
+                    onTextChange = { fieldName, value ->
+                        viewModel.updateCurrentTransaction(
+                            fieldName,
+                            value
+                        )
+                    }
                 )
             }
         }

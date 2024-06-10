@@ -31,6 +31,7 @@ import com.ls.kassify.ui.CategoryFormField
 import com.ls.kassify.ui.DateField
 import com.ls.kassify.ui.FormField
 import com.ls.kassify.ui.FormSwitch
+import java.text.NumberFormat
 
 @Composable
 fun TransactionEditorScreen(
@@ -38,15 +39,15 @@ fun TransactionEditorScreen(
     onSaveButtonClicked: (Transaction) -> Unit,
     onCancelButtonClicked: () -> Unit,
     transaction: Transaction,
-    onDateChange: (String) -> Unit,
-    onAmountChange: (Double) -> Unit,
-    onCategoryChange: (String) -> Unit,
-    onReceiptNoChange: (String) -> Unit,
-    onTextChange: (String) -> Unit
+    onDateChange: (String, String) -> Unit,
+    onAmountChange: (String, String) -> Unit,
+    onCategoryChange: (String, String) -> Unit,
+    onReceiptNoChange: (String, String) -> Unit,
+    onTextChange: (String, String) -> Unit
 
 ) {
     var isDeposit by rememberSaveable { mutableStateOf(true) }
-    var category by rememberSaveable { mutableStateOf("Erlose") }
+    var category by rememberSaveable { mutableStateOf("Erlöse") }
     //TODO: Aktueller Kassenbestand muss in der View sichtbar sein
     Column(
         modifier = modifier
@@ -64,7 +65,8 @@ fun TransactionEditorScreen(
                 .padding(top = 24.dp, bottom = 8.dp),
             label = R.string.date,
             icon = R.drawable.calendar_icon,
-            onDateChange = { onDateChange(it) }
+            onDateChange = { onDateChange("date", it) },
+            selectedDate = transaction.date
         )
 
         FormSwitch(
@@ -96,8 +98,8 @@ fun TransactionEditorScreen(
 
         FormField(
             label = R.string.amount,
-            value = transaction.amount.toString(),
-            onValueChange = { onAmountChange(it.toDouble()) },
+            value = NumberFormat.getCurrencyInstance().format(transaction.amount),
+            onValueChange = { onAmountChange("amount", it) },
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Next
@@ -111,7 +113,7 @@ fun TransactionEditorScreen(
         FormField(
             label = R.string.category,
             value = transaction.category,
-            onValueChange = { onCategoryChange(it) },
+            onValueChange = { onCategoryChange("category", it) },
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next
@@ -135,7 +137,7 @@ fun TransactionEditorScreen(
         FormField(
             label = R.string.receipt_number,
             value = transaction.receiptNo,
-            onValueChange = { onReceiptNoChange(it) },
+            onValueChange = { onReceiptNoChange("receiptNo", it) },
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next
@@ -148,7 +150,7 @@ fun TransactionEditorScreen(
         FormField(
             label = R.string.text,
             value = transaction.text,
-            onValueChange = { onTextChange(it) },
+            onValueChange = { onTextChange("text", it) },
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Done
@@ -188,11 +190,12 @@ fun TransactionEditorScreenPreview() {
         onSaveButtonClicked = {},
         onCancelButtonClicked = {},
         transaction = Transaction(),
-        onCategoryChange = {},
-        onAmountChange = {},
-        onDateChange = {},
-        onTextChange = {},
-        onReceiptNoChange = {}
+        onCategoryChange = { fieldName, value -> },
+        onAmountChange = { fieldName, value -> },
+        onDateChange = { fieldName, value -> },
+        onTextChange = { fieldName, value -> },
+        onReceiptNoChange = { fieldName, value -> }
     )
 }
+
 
