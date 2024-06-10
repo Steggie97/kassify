@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="category_array">
+    <item>Erlöse</item>
+    <item>Kosten</item>
+    <item>Erträge</item>
+    <item>Steuern</item>
+    </string-array>
+</resources>
+

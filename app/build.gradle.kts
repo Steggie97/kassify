@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.storage.CacheResetOnProcessCanceled.enabled
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -6,6 +8,10 @@ plugins {
 android {
     namespace = "com.ls.kassify"
     compileSdk = 34
+    buildFeatures {
+        viewBinding=true
+    }
+
 
     defaultConfig {
         applicationId = "com.ls.kassify"
@@ -72,4 +78,8 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+    implementation("androidx.compose.material:material:1.4.1")
+    implementation("androidx.compose.material3:material3:1.0.1")
+  //  implementation("androidx.compose.ui.tooling.preview")
+
 }

@@ -77,11 +77,11 @@ fun TransactionEditorScreen(
         )
         CategoryFormField(
             label = R.string.category,
-            selectedCategory = category,
+            defaultLabel = "Wahl",
             onCategoryChange = { newCategory -> category = newCategory },
             modifier = Modifier
-                .fillMaxWidth()
                 .padding(bottom = 32.dp)
+                .fillMaxWidth()
         )
 
         FormField(

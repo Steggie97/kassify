@@ -2,12 +2,13 @@ package com.ls.kassify.ui
 
 import android.app.DatePickerDialog
 import android.icu.util.Calendar
+import android.widget.ArrayAdapter
 import android.widget.DatePicker
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,9 +17,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -402,22 +407,48 @@ fun TransactionCardPreview() {
 @Composable
 fun CategoryFormField(
     @StringRes label: Int,
-    selectedCategory: String,
+    defaultLabel:String,
     onCategoryChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val options = listOf("Erlöse", "Kosten")
-    Column(modifier = modifier) {
-        Text(text = stringResource(id = label))
-        options.forEach { category ->
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                RadioButton(
-                    selected = category == selectedCategory,
-                    onClick = { onCategoryChange(category) }
+    val options = listOf("Erlöse", "Kosten", "Erträge", "Steuern")
+    var expanded by remember { mutableStateOf(false) }
+    var selectedOption by remember { mutableStateOf(defaultLabel) }
+    Row(modifier = modifier
+        .fillMaxWidth()
+        .padding(horizontal = 16.dp, vertical = 8.dp)) {
+        Text(
+            text = stringResource(id = label),
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .weight(1f)
+        )
+        Box() {
+            TextButton(onClick = { expanded = true }) {
+                Text(
+                    text = selectedOption,
+                    //fontSize = 20.sp
                 )
-                Text(text = category)
+                Icon(imageVector = Icons.Filled.ArrowDropDown, contentDescription = null)
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                options.forEach { option ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = option,
+                            )
+                        },
+                        onClick = {
+                            selectedOption = option
+                            onCategoryChange(option)
+                            expanded = false
+                        })
+                }
             }
         }
     }
 }
-
