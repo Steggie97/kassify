@@ -248,6 +248,7 @@ fun DateField(
     modifier: Modifier = Modifier,
     @StringRes label: Int,
     @DrawableRes icon: Int,
+    onDateChange: (String) -> Unit
 ) {
     // Variablen für Datepicker-Dialog:
     val context = LocalContext.current

@@ -23,7 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ls.kassify.R
-import com.ls.kassify.data.transactions
+import com.ls.kassify.data.Transaction
 import com.ls.kassify.ui.TransactionCard
 import java.text.NumberFormat
 
@@ -31,7 +31,8 @@ import java.text.NumberFormat
 fun TransactionListScreen(
     modifier: Modifier = Modifier,
     onAddButtonClicked: () -> Unit,
-    onTransactionCardClicked: () -> Unit
+    onTransactionCardClicked: () -> Unit,
+    transactions: List<Transaction>
 ) {
     //TODO: Kassenbestand anzeigen
     Box(
@@ -100,6 +101,7 @@ fun TransactionListScreen(
 fun TransactionListScreenPreview() {
     TransactionListScreen(
         onAddButtonClicked = {},
-        onTransactionCardClicked = {}
+        onTransactionCardClicked = {},
+        transactions = listOf()
     )
 }

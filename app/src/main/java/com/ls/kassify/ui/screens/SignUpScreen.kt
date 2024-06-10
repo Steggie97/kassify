@@ -1,5 +1,6 @@
 package com.ls.kassify.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +21,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -33,8 +35,19 @@ import com.ls.kassify.ui.PasswordField
 fun SignUpScreen(
     modifier: Modifier = Modifier,
     onSignUpButtonClicked: () -> Unit,
-    onCancelButtonClicked: () -> Unit
+    onCancelButtonClicked: () -> Unit,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onPasswordConfirmChange: (String) -> Unit,
+    onShowPasswordClick: () -> Unit,
+    onShowPasswordConfirmClick: () -> Unit,
+    showPassword: Boolean,
+    showPasswordConfirm: Boolean,
+    email:String,
+    password: String,
+    passwordConfirm:String
 ) {
+    /*
     var showPassword by rememberSaveable { mutableStateOf(false) }
     var showPasswordConfirm by rememberSaveable { mutableStateOf(false) }
     var password by remember { mutableStateOf("") }
@@ -42,6 +55,9 @@ fun SignUpScreen(
     var passwordCheck by remember {
         mutableStateOf("")
     }
+
+    */
+
     Column(
         modifier = modifier
             .statusBarsPadding()
@@ -51,16 +67,22 @@ fun SignUpScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        //TODO: Logo über LogIn-Form einfuegen
-        // Image()
+        //Logo
+        Image(
+            painter = painterResource(R.drawable.file),
+            contentDescription = null,
+            modifier = Modifier
+                .fillMaxWidth(0.6f)
+                .padding(bottom = 16.dp)
+        )
 
         CredentialFields(
             email = email,
             showPassword = showPassword,
             password = password,
-            onEmailChange = {email = it},
-            onPasswordChange = {password = it},
-            onShowPasswordClick = {showPassword = !showPassword}
+            onEmailChange = {onEmailChange(it)},
+            onPasswordChange = {onPasswordChange(it)},
+            onShowPasswordClick = {onShowPasswordClick()}
         )
 
         PasswordField(
@@ -69,10 +91,10 @@ fun SignUpScreen(
                 R.drawable.visibility_icon
             else
                 R.drawable.visibility_off_icon,
-            onButtonIconClicked = { showPasswordConfirm = !showPasswordConfirm },
+            onButtonIconClicked = { onShowPasswordConfirmClick() },
             label = R.string.confirm_password,
-            value = passwordCheck,
-            onValueChange = { passwordCheck = it },
+            value = passwordConfirm,
+            onValueChange = { onPasswordConfirmChange(it) },
             showPassword = showPasswordConfirm,
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Password,
@@ -110,6 +132,16 @@ fun SignUpScreen(
 fun SignUpScreenPreview() {
     SignUpScreen(
         onSignUpButtonClicked = {},
-        onCancelButtonClicked = {}
+        onCancelButtonClicked = {},
+        onPasswordConfirmChange = {},
+        onPasswordChange = {},
+        onEmailChange = {},
+        onShowPasswordClick = {},
+        onShowPasswordConfirmClick = {},
+        password = "",
+        email = "",
+        passwordConfirm = "",
+        showPassword = false,
+        showPasswordConfirm = false
     )
 }

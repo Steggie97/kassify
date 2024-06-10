@@ -28,6 +28,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ls.kassify.R
+import com.ls.kassify.data.Transaction
 import com.ls.kassify.ui.DetailItem
 
 @Composable
@@ -35,7 +36,8 @@ fun TransactionDetailsScreen(
     modifier: Modifier = Modifier,
     onEditButtonClicked: () -> Unit,
     onDeleteButtonClicked: () -> Unit,
-    onCancelButtonClicked: () -> Unit
+    onCancelButtonClicked: () -> Unit,
+    transaction: Transaction
 ) {
     var showDeleteDialog by remember { mutableStateOf(false) }
     Column(
@@ -49,7 +51,7 @@ fun TransactionDetailsScreen(
     ) {
         //TODO: Title Transaktiondetails in TopAppBar setzen
         Text(
-            text = "Einzahlung Nr. 1 vom 01.01.2024",
+            text = "Details zur Transaktion:",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
@@ -63,23 +65,23 @@ fun TransactionDetailsScreen(
         ) {
             DetailItem(
                 label = R.string.date,
-                content = "01.01.2024"
+                content = transaction.date
             )
             DetailItem(
                 label = R.string.amount,
-                content = "+ 30,00 €"
+                content = transaction.amount.toString()
             )
             DetailItem(
                 label = R.string.category,
-                content = "Erlöse"
+                content = transaction.category
             )
             DetailItem(
                 label = R.string.receipt_number,
-                content = "RG-Nr. 1234"
+                content = transaction.receiptNo
             )
             DetailItem(
                 label = R.string.text,
-                content = "Barverkauf von verschiedenen Artikeln, die keine Umsatzsteuer enthalten",
+                content = transaction.text,
                 lastItem = true
             )
         }
@@ -155,6 +157,14 @@ fun TransactionDetailsScreenPreview() {
     TransactionDetailsScreen(
         onEditButtonClicked = {},
         onDeleteButtonClicked = {},
-        onCancelButtonClicked = {}
+        onCancelButtonClicked = {},
+        transaction = Transaction(
+            transId = 0,
+            date = "02.05.2024",
+            amount = -30.50,
+            category = "laufende KFZ-Kosten",
+            receiptNo = "Rg-Nr.12342",
+            text = "Aral - tanken"
+        )
     )
 }

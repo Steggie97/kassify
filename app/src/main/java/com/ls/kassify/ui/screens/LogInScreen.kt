@@ -35,15 +35,25 @@ import com.ls.kassify.ui.CredentialFields
 
 @Composable
 fun LogInScreen(
+    email: String,
+    password: String,
+    showPassword: Boolean,
+    onEmailChange: (String) -> Unit,
+    onPasswordChange: (String) -> Unit,
+    onShowPasswordClick: () -> Unit,
+
     modifier: Modifier = Modifier,
     onSignUpButtonClicked: () -> Unit,
     onLoginButtonClicked: () -> Unit,
     onForgotPasswordButtonClicked: () -> Unit
 ) {
     //Todo: Viewmodel
+    /*
     var showPassword by rememberSaveable { mutableStateOf(false) }
     var password by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+
+     */
     Column(
         modifier = modifier
             .statusBarsPadding()
@@ -53,21 +63,22 @@ fun LogInScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        val image = painterResource(R.drawable.file)
+        //Logo
         Image(
-            painter = image,
+            painter = painterResource(R.drawable.file),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth(0.6f)
                 .padding(bottom = 16.dp)
         )
+
         CredentialFields(
             email = email,
             showPassword = showPassword,
             password = password,
-            onEmailChange = {email = it},
-            onPasswordChange = {password = it},
-            onShowPasswordClick = {showPassword = !showPassword},
+            onEmailChange = { onEmailChange(it) },
+            onPasswordChange = { onPasswordChange(it) },
+            onShowPasswordClick = { onShowPasswordClick() },
         )
 
         //Forgot-Password-Link
@@ -114,6 +125,12 @@ fun LogInScreenPreview() {
     LogInScreen(
         onLoginButtonClicked = {},
         onForgotPasswordButtonClicked = {},
-        onSignUpButtonClicked = {}
+        onSignUpButtonClicked = {},
+        onPasswordChange = {},
+        onEmailChange = {},
+        onShowPasswordClick = {},
+        email = "",
+        password = "",
+        showPassword = false
     )
 }

@@ -26,6 +26,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ls.kassify.R
+import com.ls.kassify.data.Transaction
 import com.ls.kassify.ui.CategoryFormField
 import com.ls.kassify.ui.DateField
 import com.ls.kassify.ui.FormField
@@ -34,8 +35,15 @@ import com.ls.kassify.ui.FormSwitch
 @Composable
 fun TransactionEditorScreen(
     modifier: Modifier = Modifier,
-    onSaveButtonClicked: () -> Unit,
-    onCancelButtonClicked: () -> Unit
+    onSaveButtonClicked: (Transaction) -> Unit,
+    onCancelButtonClicked: () -> Unit,
+    transaction: Transaction,
+    onDateChange: (String) -> Unit,
+    onAmountChange: (Double) -> Unit,
+    onCategoryChange: (String) -> Unit,
+    onReceiptNoChange: (String) -> Unit,
+    onTextChange: (String) -> Unit
+
 ) {
     var isDeposit by rememberSaveable { mutableStateOf(true) }
     var category by rememberSaveable { mutableStateOf("Erlose") }
@@ -55,7 +63,8 @@ fun TransactionEditorScreen(
                 .fillMaxWidth()
                 .padding(top = 24.dp, bottom = 8.dp),
             label = R.string.date,
-            icon = R.drawable.calendar_icon
+            icon = R.drawable.calendar_icon,
+            onDateChange = { onDateChange(it) }
         )
 
         FormSwitch(
@@ -75,6 +84,7 @@ fun TransactionEditorScreen(
             uncheckedThumbColor = MaterialTheme.colorScheme.secondary,
             uncheckedTrackColor = MaterialTheme.colorScheme.secondaryContainer
         )
+
         CategoryFormField(
             label = R.string.category,
             defaultLabel = "Wahl",
@@ -86,8 +96,8 @@ fun TransactionEditorScreen(
 
         FormField(
             label = R.string.amount,
-            value = "0.00",
-            onValueChange = { /*TODO*/ },
+            value = transaction.amount.toString(),
+            onValueChange = { onAmountChange(it.toDouble()) },
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Number,
                 imeAction = ImeAction.Next
@@ -100,8 +110,8 @@ fun TransactionEditorScreen(
         //Refactoring DropDown-Field:
         FormField(
             label = R.string.category,
-            value = "Erlöse",
-            onValueChange = { /*ToDo*/ },
+            value = transaction.category,
+            onValueChange = { onCategoryChange(it) },
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next
@@ -124,8 +134,8 @@ fun TransactionEditorScreen(
 
         FormField(
             label = R.string.receipt_number,
-            value = "RG-Nr. 12345",
-            onValueChange = { /*ToDo*/ },
+            value = transaction.receiptNo,
+            onValueChange = { onReceiptNoChange(it) },
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Next
@@ -137,8 +147,8 @@ fun TransactionEditorScreen(
 
         FormField(
             label = R.string.text,
-            value = "Beispieltext",
-            onValueChange = { /*ToDo*/ },
+            value = transaction.text,
+            onValueChange = { onTextChange(it) },
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Text,
                 imeAction = ImeAction.Done
@@ -150,7 +160,7 @@ fun TransactionEditorScreen(
 
         //Save-Button
         Button(
-            onClick = { onSaveButtonClicked() },
+            onClick = { onSaveButtonClicked(transaction) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
@@ -176,7 +186,13 @@ fun TransactionEditorScreen(
 fun TransactionEditorScreenPreview() {
     TransactionEditorScreen(
         onSaveButtonClicked = {},
-        onCancelButtonClicked = {}
+        onCancelButtonClicked = {},
+        transaction = Transaction(),
+        onCategoryChange = {},
+        onAmountChange = {},
+        onDateChange = {},
+        onTextChange = {},
+        onReceiptNoChange = {}
     )
 }
 

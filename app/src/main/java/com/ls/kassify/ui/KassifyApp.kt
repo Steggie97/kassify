@@ -1,11 +1,14 @@
 package com.ls.kassify.ui
 
+import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -14,6 +17,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ls.kassify.R
+import com.ls.kassify.data.Transaction
 import com.ls.kassify.ui.screens.LogInScreen
 import com.ls.kassify.ui.screens.SignUpScreen
 import com.ls.kassify.ui.screens.TransactionDetailsScreen
@@ -22,12 +26,10 @@ import com.ls.kassify.ui.screens.TransactionListScreen
 import com.ls.kassify.ui.theme.KassifyTheme
 
 enum class KassifyScreen(@StringRes val title: Int) {
-    Login(title = R.string.app_name),
-    SignUp(title = R.string.app_name),
-    TransactionList(title = R.string.cash_register),
-    TransactionDetails(title = R.string.transaction_details),
-    TransactionEditor(title = R.string.transaction_edit),
-    NewTransaction(title = R.string.transaction_new)
+    Login(title = R.string.app_name), SignUp(title = R.string.app_name), TransactionList(title = R.string.cash_register), TransactionDetails(
+        title = R.string.transaction_details
+    ),
+    TransactionEditor(title = R.string.transaction_edit), NewTransaction(title = R.string.transaction_new)
 }
 
 @Composable
@@ -35,18 +37,20 @@ fun KassifyApp(
     viewModel: KassifyViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ) {
+    val appUiState by viewModel.uiState.collectAsState()
+    val context = LocalContext.current
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = KassifyScreen.valueOf(
         backStackEntry?.destination?.route ?: KassifyScreen.Login.name
     )
-    Scaffold(
-        topBar = {
+    Scaffold(topBar = {
+        if(currentScreen != KassifyScreen.Login || currentScreen != KassifyScreen.SignUp)
             KassifyAppBar(
                 title = currentScreen.title
             )
-        }
-    ) { innerPadding ->
-        //val uiState by viewModel.uiState.collectAsState()
+        else
+            null
+    }) { innerPadding ->
         NavHost(
             navController = navController,
             startDestination = KassifyScreen.Login.name,
@@ -54,75 +58,119 @@ fun KassifyApp(
         ) {
             //Login Screen
             composable(route = KassifyScreen.Login.name) {
-                LogInScreen(
-                    onForgotPasswordButtonClicked = {},
+                LogInScreen(onForgotPasswordButtonClicked = {},
                     onLoginButtonClicked = {
                         navController.navigate(KassifyScreen.TransactionList.name)
                     },
                     onSignUpButtonClicked = {
                         navController.navigate(KassifyScreen.SignUp.name)
-                    }
-                )
+                    },
+                    email = appUiState.email,
+                    password = appUiState.password,
+                    showPassword = viewModel.showPassword,
+                    onEmailChange = { viewModel.updateEmail(it) },
+                    onPasswordChange = { viewModel.updatePassword(it) },
+                    onShowPasswordClick = { viewModel.switchShowPassword() })
             }
 
             //SignUp Screen
             composable(route = KassifyScreen.SignUp.name) {
-                SignUpScreen(
-                    onSignUpButtonClicked = {
-                        navController.navigate(KassifyScreen.Login.name)
-                    },
+                SignUpScreen(onSignUpButtonClicked = {
+                    navController.navigate(KassifyScreen.Login.name)
+                },
                     onCancelButtonClicked = {
                         navController.popBackStack(KassifyScreen.Login.name, inclusive = false)
-                    }
-                )
+                    },
+                    email = appUiState.email,
+                    password = appUiState.password,
+                    passwordConfirm = viewModel.passwordConfirm,
+                    showPassword = viewModel.showPassword,
+                    showPasswordConfirm = viewModel.showPasswordConfirm,
+                    onEmailChange = { viewModel.updateEmail(it) },
+                    onPasswordChange = { viewModel.updatePassword(it) },
+                    onPasswordConfirmChange = { viewModel.updatePasswordConfirm(it) },
+                    onShowPasswordClick = { viewModel.switchShowPassword() },
+                    onShowPasswordConfirmClick = { viewModel.switchShowPasswordConfirm() })
             }
 
             //TransactionList-Screen
             composable(route = KassifyScreen.TransactionList.name) {
-                TransactionListScreen(
-                    onTransactionCardClicked = {
-                        navController.navigate(KassifyScreen.TransactionDetails.name)
-                    },
-                    onAddButtonClicked = {
-                        navController.navigate(KassifyScreen.NewTransaction.name)
-                    }
+                TransactionListScreen(onTransactionCardClicked = {
+                    navController.navigate(KassifyScreen.TransactionDetails.name)
+                }, onAddButtonClicked = {
+                    navController.navigate(KassifyScreen.NewTransaction.name)
+                },
+                    transactions = appUiState.transactionList
                 )
             }
             //TransactionDetail-Screen
             composable(route = KassifyScreen.TransactionDetails.name) {
-                TransactionDetailsScreen(
-                    onEditButtonClicked = {
-                        navController.navigate(KassifyScreen.TransactionEditor.name)
-                    },
-                    onDeleteButtonClicked = {
-                        navController.popBackStack()
-                    },
-                    onCancelButtonClicked = {
-                        navController.popBackStack()
-                    }
+                TransactionDetailsScreen(onEditButtonClicked = {
+                    navController.navigate(KassifyScreen.TransactionEditor.name)
+                }, onDeleteButtonClicked = {
+                    navController.popBackStack()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.toast_transaction_deleted),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }, onCancelButtonClicked = {
+                    navController.popBackStack()
+                },
+                    //ToDo: Transaktionsaktionen einfügen
+                    transaction = Transaction(
+                        transId = 0,
+                        date = "02.05.2024",
+                        amount = -30.50,
+                        category = "laufende KFZ-Kosten",
+                        receiptNo = "Rg-Nr.12342",
+                        text = "Aral - tanken"
+                    )
                 )
             }
             //TransactionEditor-Screen
             composable(route = KassifyScreen.TransactionEditor.name) {
-                TransactionEditorScreen(
-                    onSaveButtonClicked = {
-                        navController.popBackStack()
-                    },
-                    onCancelButtonClicked = {
-                        navController.popBackStack()
-                    }
+                TransactionEditorScreen(onSaveButtonClicked = {
+                    navController.popBackStack()
+                    //Updating current transaction in transactionlist
+                    //ToDO: Add a Function in Viewmodel
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.toast_transaction_saved),
+                        Toast.LENGTH_SHORT
+                    ).show()
 
+                }, onCancelButtonClicked = {
+                    navController.popBackStack()
+                },
+                    transaction = Transaction(),
+                    onDateChange = {},
+                    onAmountChange = {},
+                    onCategoryChange = {},
+                    onReceiptNoChange = {},
+                    onTextChange = {}
                 )
             }
             //NewTransaction-Screen
             composable(route = KassifyScreen.NewTransaction.name) {
-                TransactionEditorScreen(
-                    onSaveButtonClicked = {
-                        navController.popBackStack()
-                    },
-                    onCancelButtonClicked = {
-                        navController.popBackStack()
-                    }
+                TransactionEditorScreen(onSaveButtonClicked = {
+                    navController.popBackStack()
+                    //Adding new transaction to transactionList
+                    viewModel.addTransaction(it)
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.toast_transaction_saved),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }, onCancelButtonClicked = {
+                    navController.popBackStack()
+                },
+                    transaction = Transaction(),
+                    onDateChange = {},
+                    onAmountChange = {},
+                    onCategoryChange = {},
+                    onReceiptNoChange = {},
+                    onTextChange = {}
                 )
             }
         }
@@ -133,8 +181,7 @@ fun KassifyApp(
 
 //Previews
 @Preview(
-    showBackground = true,
-    showSystemUi = true
+    showBackground = true, showSystemUi = true
 )
 @Composable
 fun KassifyAppPreview() {
@@ -145,8 +192,7 @@ fun KassifyAppPreview() {
 }
 
 @Preview(
-    showBackground = true,
-    showSystemUi = true
+    showBackground = true, showSystemUi = true
 )
 @Composable
 fun KassifyAppDarkThemePreview() {
