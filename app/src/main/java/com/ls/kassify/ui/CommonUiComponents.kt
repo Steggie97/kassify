@@ -5,9 +5,12 @@ import android.icu.util.Calendar
 import android.widget.DatePicker
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -43,6 +46,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -55,6 +59,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ls.kassify.R
+import java.text.NumberFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 //App-UI
 
@@ -85,7 +93,7 @@ fun TransactionCard(
     modifier: Modifier = Modifier,
     onClick: () -> Unit,
     date: String,
-    amount: String,
+    amount: Double,
     text: String
 ) {
     TextButton(
@@ -121,9 +129,14 @@ fun TransactionCard(
                         .padding(horizontal = 4.dp)
                 )
                 Text(
-                    text = amount,
+                    text = NumberFormat.getCurrencyInstance().format(amount),
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.End,
+                    color =
+                    if (amount < 0.00)
+                        MaterialTheme.colorScheme.error
+                    else
+                        colorResource(R.color.green),
                     modifier = Modifier
                         .weight(3 / 12f)
                         .padding(start = 4.dp)
@@ -355,6 +368,35 @@ fun DetailItem(
 }
 
 @Composable
+fun DetailAmount(
+    modifier: Modifier = Modifier,
+    @StringRes label: Int,
+    amount: Double,
+) {
+    //Label
+    Text(
+        text = stringResource(label),
+        fontSize = 14.sp,
+        fontWeight = FontWeight.Thin,
+        modifier = Modifier
+            .padding(start = 8.dp, top = 8.dp)
+    )
+    //Content
+    Text(
+        text = NumberFormat.getCurrencyInstance().format(amount),
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Normal,
+        color =
+        if (amount < 0.00)
+            colorResource(R.color.red)
+        else
+            colorResource(R.color.green),
+        modifier = Modifier
+            .padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 8.dp)
+    )
+}
+
+@Composable
 fun CredentialFields(
     modifier: Modifier = Modifier,
     email: String,
@@ -407,7 +449,7 @@ fun TransactionCardPreview() {
     TransactionCard(
         onClick = {},
         date = "28.05.2024",
-        amount = "- 30,00 €",
+        amount = 30.00,
         text = "Aral"
     )
 }
@@ -425,7 +467,6 @@ fun CategoryFormField(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
     ) {
         Text(
             text = stringResource(id = label),
@@ -459,6 +500,45 @@ fun CategoryFormField(
                         })
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun CashBalanceBox(cashBalance: Double) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(56.dp)
+            .background(color = MaterialTheme.colorScheme.background),
+
+        ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp, bottom = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        )
+        {
+            Text(
+                text =
+                "Kassenbestand am ${
+                    DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN).format(LocalDate.now())
+                }",
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Normal
+            )
+            Text(
+                text = NumberFormat.getCurrencyInstance().format(cashBalance),
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.Bold,
+                color =
+                if (cashBalance < 0.00)
+                    MaterialTheme.colorScheme.error
+                else
+                    colorResource(R.color.green)
+            )
         }
     }
 }

@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ls.kassify.R
 import com.ls.kassify.data.Transaction
+import com.ls.kassify.ui.DetailAmount
 import com.ls.kassify.ui.DetailItem
 
 @Composable
@@ -67,9 +68,9 @@ fun TransactionDetailsScreen(
                 label = R.string.date,
                 content = transaction.date
             )
-            DetailItem(
+            DetailAmount(
                 label = R.string.amount,
-                content = transaction.amount.toString()
+                amount = transaction.amount
             )
             DetailItem(
                 label = R.string.category,
@@ -161,7 +162,7 @@ fun TransactionDetailsScreenPreview() {
         transaction = Transaction(
             transId = 0,
             date = "02.05.2024",
-            amount = -30.50,
+            amount = 30.50,
             category = "laufende KFZ-Kosten",
             receiptNo = "Rg-Nr.12342",
             text = "Aral - tanken"

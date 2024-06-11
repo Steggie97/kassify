@@ -22,12 +22,12 @@ class KassifyViewModel : ViewModel() {
         private set
     var passwordConfirm by mutableStateOf("")
         private set
-    var isDeposit by mutableStateOf(true)
+
+    // amountPrefix:
+    // true -> positive amount,
+    // false -> negative amount
+    var amountPrefix by mutableStateOf(true)
         private set
-    /*
-    var currentTransaction by mutableStateOf(Transaction())
-        private set
-    */
 
     //ViewModel-Functions
     //Login & SignUp Screen
@@ -37,6 +37,18 @@ class KassifyViewModel : ViewModel() {
 
     fun switchShowPasswordConfirm() {
         showPasswordConfirm = !showPasswordConfirm
+    }
+
+    fun updateAmountPrefix(value: Boolean) {
+        amountPrefix = value
+    }
+
+    fun checkAmountPrefix(amount: Double) {
+        if (amount < 0.00) {
+            amountPrefix = false
+        } else {
+            amountPrefix = true
+        }
     }
 
     fun updatePassword(newPassword: String) {
@@ -69,33 +81,76 @@ class KassifyViewModel : ViewModel() {
                 transactionList = newTransactionList
             )
         }
+        updateCashBalance()
     }
 
     fun updateTransaction(newTransaction: Transaction) {
         _uiState.value = _uiState.value.copy(currentTransaction = newTransaction)
     }
 
-    fun updateCurrentTransaction(fieldName: String, value: String) {
-        val updatedTransaction =
+    fun updateCurrentTransaction(fieldName: String, value: String = "") {
+        if (fieldName == "prefix") {
+            updateAmountPrefix(value.toBoolean())
+        }
+        val updatedTransaction: Transaction =
             when (fieldName) {
                 "date" -> _uiState.value.currentTransaction.copy(date = value)
-                "amount" -> _uiState.value.currentTransaction.copy(
-                    amount =
-                    try {
-                        NumberFormat.getCurrencyInstance().parse(value)?.toDouble() ?: 0.00
-                    } catch (e: Exception) {
-                        0.00
-                    }
-                )
+                "prefix" -> if ((amountPrefix && _uiState.value.currentTransaction.amount < 0.00) || (!amountPrefix && _uiState.value.currentTransaction.amount > 0.00))
+                    _uiState.value.currentTransaction.copy(amount = (_uiState.value.currentTransaction.amount * -1.00))
+                else
+                    _uiState.value.currentTransaction.copy(amount = (_uiState.value.currentTransaction.amount))
+
+                "amount" -> {
+                    _uiState.value.currentTransaction.copy(
+                        amount =
+                        try {
+                            if (amountPrefix && _uiState.value.currentTransaction.amount < 0.00 || !amountPrefix && _uiState.value.currentTransaction.amount > 0.00)
+                                (NumberFormat.getInstance().parse(value)?.toDouble() ?: 0.0) * -1
+                            else
+                                (NumberFormat.getInstance().parse(value)?.toDouble() ?: 0.0)
+                        } catch (e: Exception) {
+                            0.0
+                        },
+                    )
+                }
 
                 "category" -> _uiState.value.currentTransaction.copy(category = value)
                 "receiptNo" -> _uiState.value.currentTransaction.copy(receiptNo = value)
                 "text" -> _uiState.value.currentTransaction.copy(text = value)
                 else -> _uiState.value.currentTransaction
             }
-        _uiState.value = _uiState.value.copy(currentTransaction = updatedTransaction)
+
+        _uiState.update { currentState ->
+            currentState.copy(
+                currentTransaction = updatedTransaction,
+                amountInput =
+                if (fieldName == "amount")
+                    value
+                else
+                    _uiState.value.amountInput
+            )
+        }
     }
 
+    fun updateCashBalance() {
+        var newCashBalance: Double = 0.00
+        _uiState.value.transactionList.forEach { newCashBalance += it.amount }
+        _uiState.update { currentState ->
+            currentState.copy(cashBalance = newCashBalance)
+        }
+    }
+
+    fun createNewTransaction() {
+        val newTransaction = Transaction()
+        checkAmountPrefix(newTransaction.amount)
+        _uiState.update { currentState ->
+            currentState.copy(
+                currentTransaction = newTransaction,
+                amountInput = "",
+            )
+        }
+
+    }
 
     //TransactionDetail Screen
 

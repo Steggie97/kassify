@@ -42,16 +42,6 @@ fun SignUpScreen(
     password: String,
     passwordConfirm: String
 ) {
-    /*
-    var showPassword by rememberSaveable { mutableStateOf(false) }
-    var showPasswordConfirm by rememberSaveable { mutableStateOf(false) }
-    var password by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
-    var passwordCheck by remember {
-        mutableStateOf("")
-    }
-
-    */
 
     Column(
         modifier = modifier
@@ -97,7 +87,7 @@ fun SignUpScreen(
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 32.dp, bottom = 64.dp)
+                .padding(top = 32.dp, bottom = 24.dp)
         )
         //SignUp-Button
         Button(

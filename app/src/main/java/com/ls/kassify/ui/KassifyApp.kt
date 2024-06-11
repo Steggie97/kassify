@@ -26,10 +26,14 @@ import com.ls.kassify.ui.screens.TransactionListScreen
 import com.ls.kassify.ui.theme.KassifyTheme
 
 enum class KassifyScreen(@StringRes val title: Int) {
-    Login(title = R.string.app_name), SignUp(title = R.string.app_name), TransactionList(title = R.string.cash_register), TransactionDetails(
+    Login(title = R.string.app_name),
+    SignUp(title = R.string.app_name),
+    TransactionList(title = R.string.cash_register),
+    TransactionDetails(
         title = R.string.transaction_details
     ),
-    TransactionEditor(title = R.string.transaction_edit), NewTransaction(title = R.string.transaction_new)
+    TransactionEditor(title = R.string.transaction_edit),
+    NewTransaction(title = R.string.transaction_new)
 }
 
 @Composable
@@ -44,12 +48,9 @@ fun KassifyApp(
         backStackEntry?.destination?.route ?: KassifyScreen.Login.name
     )
     Scaffold(topBar = {
-        if (currentScreen != KassifyScreen.Login || currentScreen != KassifyScreen.SignUp)
-            KassifyAppBar(
-                title = currentScreen.title
-            )
-        else
-            null
+        KassifyAppBar(
+            title = currentScreen.title
+        )
     }) { innerPadding ->
         NavHost(
             navController = navController,
@@ -95,12 +96,16 @@ fun KassifyApp(
 
             //TransactionList-Screen
             composable(route = KassifyScreen.TransactionList.name) {
-                TransactionListScreen(onTransactionCardClicked = {
-                    navController.navigate(KassifyScreen.TransactionDetails.name)
-                }, onAddButtonClicked = {
-                    navController.navigate(KassifyScreen.NewTransaction.name)
-                },
-                    transactions = appUiState.transactionList
+                TransactionListScreen(
+                    onTransactionCardClicked = {
+                        navController.navigate(KassifyScreen.TransactionDetails.name)
+                    },
+                    onAddButtonClicked = {
+                        viewModel.createNewTransaction()
+                        navController.navigate(KassifyScreen.NewTransaction.name)
+                    },
+                    transactions = appUiState.transactionList,
+                    cashBalance = appUiState.cashBalance,
                 )
             }
             //TransactionDetail-Screen
@@ -121,7 +126,7 @@ fun KassifyApp(
                     transaction = Transaction(
                         transId = 0,
                         date = "02.05.2024",
-                        amount = -30.50,
+                        amount = 5.50,
                         category = "laufende KFZ-Kosten",
                         receiptNo = "Rg-Nr.12342",
                         text = "Aral - tanken"
@@ -144,7 +149,16 @@ fun KassifyApp(
                     navController.popBackStack()
                 },
                     transaction = appUiState.currentTransaction,
+                    amountInput = appUiState.amountInput,
+                    amountPrefix = viewModel.amountPrefix,
+                    cashBalance = appUiState.cashBalance,
                     onDateChange = { fieldName, value ->
+                        viewModel.updateCurrentTransaction(
+                            fieldName,
+                            value
+                        )
+                    },
+                    onCheckedChange = { fieldName, value ->
                         viewModel.updateCurrentTransaction(
                             fieldName,
                             value
@@ -191,7 +205,16 @@ fun KassifyApp(
                     navController.popBackStack()
                 },
                     transaction = appUiState.currentTransaction,
+                    amountInput = appUiState.amountInput,
+                    amountPrefix = viewModel.amountPrefix,
+                    cashBalance = appUiState.cashBalance,
                     onDateChange = { fieldName, value ->
+                        viewModel.updateCurrentTransaction(
+                            fieldName,
+                            value
+                        )
+                    },
+                    onCheckedChange = { fieldName, value ->
                         viewModel.updateCurrentTransaction(
                             fieldName,
                             value
@@ -213,6 +236,7 @@ fun KassifyApp(
                         viewModel.updateCurrentTransaction(
                             fieldName,
                             value
+
                         )
                     },
                     onTextChange = { fieldName, value ->

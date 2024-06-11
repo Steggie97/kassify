@@ -39,13 +39,7 @@ fun LogInScreen(
     onLoginButtonClicked: () -> Unit,
     onForgotPasswordButtonClicked: () -> Unit
 ) {
-    //Todo: Viewmodel
-    /*
-    var showPassword by rememberSaveable { mutableStateOf(false) }
-    var password by remember { mutableStateOf("") }
-    var email by remember { mutableStateOf("") }
 
-     */
     Column(
         modifier = modifier
             .statusBarsPadding()
@@ -77,7 +71,7 @@ fun LogInScreen(
         TextButton(
             onClick = { onForgotPasswordButtonClicked() },
             modifier = Modifier
-                .padding(bottom = 64.dp)
+                .padding(bottom = 24.dp)
                 .fillMaxWidth()
 
         ) {

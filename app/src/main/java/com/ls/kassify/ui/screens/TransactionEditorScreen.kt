@@ -1,11 +1,13 @@
 package com.ls.kassify.ui.screens
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -20,6 +22,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -27,11 +30,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ls.kassify.R
 import com.ls.kassify.data.Transaction
+import com.ls.kassify.ui.CashBalanceBox
 import com.ls.kassify.ui.CategoryFormField
 import com.ls.kassify.ui.DateField
 import com.ls.kassify.ui.FormField
 import com.ls.kassify.ui.FormSwitch
-import java.text.NumberFormat
 
 @Composable
 fun TransactionEditorScreen(
@@ -39,6 +42,10 @@ fun TransactionEditorScreen(
     onSaveButtonClicked: (Transaction) -> Unit,
     onCancelButtonClicked: () -> Unit,
     transaction: Transaction,
+    amountInput: String,
+    cashBalance: Double,
+    amountPrefix: Boolean,
+    onCheckedChange: (String, String) -> Unit,
     onDateChange: (String, String) -> Unit,
     onAmountChange: (String, String) -> Unit,
     onCategoryChange: (String, String) -> Unit,
@@ -46,137 +53,122 @@ fun TransactionEditorScreen(
     onTextChange: (String, String) -> Unit
 
 ) {
-    var isDeposit by rememberSaveable { mutableStateOf(true) }
     var category by rememberSaveable { mutableStateOf("Erlöse") }
-    //TODO: Aktueller Kassenbestand muss in der View sichtbar sein
-    Column(
-        modifier = modifier
-            .statusBarsPadding()
-            .padding(horizontal = 24.dp)
-            .safeDrawingPadding()
-            .verticalScroll(rememberScrollState()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
     ) {
-        //Date-Field with Datepicker
-        DateField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 24.dp, bottom = 8.dp),
-            label = R.string.date,
-            icon = R.drawable.calendar_icon,
-            onDateChange = { onDateChange("date", it) },
-            selectedDate = transaction.date
-        )
+        Column(
+            modifier = modifier
+                .padding(horizontal = 24.dp)
+                .verticalScroll(rememberScrollState()),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Spacer(modifier = Modifier.height(32.dp))
+            //Date-Field with Datepicker
+            DateField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 24.dp, bottom = 8.dp),
+                label = R.string.date,
+                icon = R.drawable.calendar_icon,
+                onDateChange = { onDateChange("date", it) },
+                selectedDate = transaction.date
+            )
 
-        FormSwitch(
-            label =
-            if (isDeposit)
-                R.string.deposit
-            else
-                R.string.payment,
-            checked = isDeposit,
-            onCheckedChange = { isDeposit = it },
-            iconChecked = R.drawable.add_icon,
-            tintIconChecked = MaterialTheme.colorScheme.background,
-            iconUnchecked = R.drawable.remove_icon,
-            tintIconUnchecked = MaterialTheme.colorScheme.background,
-            checkedThumbColor = MaterialTheme.colorScheme.primary,
-            checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
-            uncheckedThumbColor = MaterialTheme.colorScheme.secondary,
-            uncheckedTrackColor = MaterialTheme.colorScheme.secondaryContainer
-        )
+            FormSwitch(
+                label =
+                if (amountPrefix)
+                    R.string.deposit
+                else
+                    R.string.payment,
+                checked = amountPrefix,
+                onCheckedChange = { onCheckedChange("prefix", it.toString()) },
+                iconChecked = R.drawable.add_icon,
+                tintIconChecked = MaterialTheme.colorScheme.background,
+                iconUnchecked = R.drawable.remove_icon,
+                tintIconUnchecked = MaterialTheme.colorScheme.background,
+                checkedThumbColor = colorResource(R.color.green),
+                //MaterialTheme.colorScheme.primary,
+                checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
+                uncheckedThumbColor = colorResource(R.color.red),
+                //MaterialTheme.colorScheme.secondary,
+                uncheckedTrackColor = MaterialTheme.colorScheme.secondaryContainer
+            )
 
-        CategoryFormField(
-            label = R.string.category,
-            defaultLabel = "Wahl",
-            onCategoryChange = { newCategory -> category = newCategory },
-            modifier = Modifier
-                .padding(bottom = 32.dp)
-                .fillMaxWidth()
-        )
+            FormField(
+                label = R.string.amount,
+                value = amountInput,
+                onValueChange = { onAmountChange("amount", it) },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Number,
+                    imeAction = ImeAction.Next
+                ),
+                modifier = Modifier
+                    .padding(bottom = 8.dp)
+                    .fillMaxWidth()
+            )
 
-        FormField(
-            label = R.string.amount,
-            value = NumberFormat.getCurrencyInstance().format(transaction.amount),
-            onValueChange = { onAmountChange("amount", it) },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Number,
-                imeAction = ImeAction.Next
-            ),
-            modifier = Modifier
-                .padding(bottom = 32.dp)
-                .fillMaxWidth()
-        )
+            CategoryFormField(
+                label = R.string.category,
+                defaultLabel = "Wahl",
+                onCategoryChange = { newCategory -> category = newCategory },
+                modifier = Modifier
+                    .padding(bottom = 16.dp)
+                    .fillMaxWidth()
+            )
 
-        //Refactoring DropDown-Field:
-        FormField(
-            label = R.string.category,
-            value = transaction.category,
-            onValueChange = { onCategoryChange("category", it) },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next
-            ),
-            modifier = Modifier
-                .padding(bottom = 32.dp)
-                .fillMaxWidth()
-        )
-        // TODO: Dropdown-Field für USt-Sachverhalte (keine USt, 19% USt, 7% USt) einfuegen
-        /*
-        if(!isDeposit){
-            val options = List<String>
-            val expanded by remember { mutableStateOf( false ) }
-            ExposedDropdownMenuBox(expanded = , onExpandedChange = ) {
-                
+            // TODO: Dropdown-Field für USt-Sachverhalte (keine USt, 19% USt, 7% USt) einfuegen
+
+            FormField(
+                label = R.string.receipt_number,
+                value = transaction.receiptNo,
+                onValueChange = { onReceiptNoChange("receiptNo", it) },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Next
+                ),
+                modifier = Modifier
+                    .padding(bottom = 24.dp)
+                    .fillMaxWidth()
+            )
+
+            FormField(
+                label = R.string.text,
+                value = transaction.text,
+                onValueChange = { onTextChange("text", it) },
+                keyboardOptions = KeyboardOptions.Default.copy(
+                    keyboardType = KeyboardType.Text,
+                    imeAction = ImeAction.Done
+                ),
+                modifier = Modifier
+                    .padding(bottom = 32.dp)
+                    .fillMaxWidth()
+            )
+
+            //Save-Button
+            Button(
+                onClick = { onSaveButtonClicked(transaction) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+            ) {
+                Text(text = stringResource(R.string.save))
+            }
+
+            //Cancel-Button
+            OutlinedButton(
+                onClick = { onCancelButtonClicked() },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.cancel))
             }
         }
 
-         */
-
-        FormField(
-            label = R.string.receipt_number,
-            value = transaction.receiptNo,
-            onValueChange = { onReceiptNoChange("receiptNo", it) },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Next
-            ),
-            modifier = Modifier
-                .padding(bottom = 32.dp)
-                .fillMaxWidth()
-        )
-
-        FormField(
-            label = R.string.text,
-            value = transaction.text,
-            onValueChange = { onTextChange("text", it) },
-            keyboardOptions = KeyboardOptions.Default.copy(
-                keyboardType = KeyboardType.Text,
-                imeAction = ImeAction.Done
-            ),
-            modifier = Modifier
-                .padding(bottom = 64.dp)
-                .fillMaxWidth()
-        )
-
-        //Save-Button
-        Button(
-            onClick = { onSaveButtonClicked(transaction) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-        ) {
-            Text(text = stringResource(R.string.save))
-        }
-
-        //Cancel-Button
-        OutlinedButton(
-            onClick = { onCancelButtonClicked() },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(stringResource(R.string.cancel))
-        }
+        //Cash Balance Box
+        CashBalanceBox(cashBalance = cashBalance)
     }
 }
 
@@ -194,7 +186,11 @@ fun TransactionEditorScreenPreview() {
         onAmountChange = { fieldName, value -> },
         onDateChange = { fieldName, value -> },
         onTextChange = { fieldName, value -> },
-        onReceiptNoChange = { fieldName, value -> }
+        onReceiptNoChange = { fieldName, value -> },
+        cashBalance = 0.00,
+        amountInput = "",
+        onCheckedChange = { fieldName, value -> },
+        amountPrefix = false
     )
 }
 
