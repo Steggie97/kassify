@@ -18,9 +18,14 @@ class KassifyViewModel : ViewModel() {
 
     var showPassword by mutableStateOf(false)
         private set
+
     var showPasswordConfirm by mutableStateOf(false)
         private set
+
     var passwordConfirm by mutableStateOf("")
+        private set
+
+    var showDeleteDialog by mutableStateOf(false)
         private set
 
     // amountPrefix:
@@ -39,6 +44,9 @@ class KassifyViewModel : ViewModel() {
         showPasswordConfirm = !showPasswordConfirm
     }
 
+    fun updateShowDeleteDialog() {
+        showDeleteDialog = !showDeleteDialog
+    }
     fun updateAmountPrefix(value: Boolean) {
         amountPrefix = value
     }
@@ -141,12 +149,14 @@ class KassifyViewModel : ViewModel() {
     }
 
     fun createNewTransaction() {
-        val newTransaction = Transaction()
+        val newTransaction = Transaction(transId = _uiState.value.nextTransId)
+        val newNextTransId = _uiState.value.nextTransId + 1
         checkAmountPrefix(newTransaction.amount)
         _uiState.update { currentState ->
             currentState.copy(
                 currentTransaction = newTransaction,
                 amountInput = "",
+                nextTransId = newNextTransId
             )
         }
 
@@ -155,12 +165,28 @@ class KassifyViewModel : ViewModel() {
     //TransactionDetail Screen
 
     fun deleteTransaction() {
+        val newTransactionList = _uiState.value.transactionList
+        newTransactionList.remove(_uiState.value.currentTransaction)
 
+        _uiState.update { currentState ->
+            currentState.copy(
+                transactionList = newTransactionList
+            )
+        }
+        updateShowDeleteDialog()
     }
 
     //TransactionList Screen
-    fun getTransaction() {
-
+    fun getTransaction(transId: Int) {
+        for(transaction in _uiState.value.transactionList) {
+            if(transaction.transId == transId) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        currentTransaction = transaction
+                    )
+                }
+            }
+        }
     }
 
 

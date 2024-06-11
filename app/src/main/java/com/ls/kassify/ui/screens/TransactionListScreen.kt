@@ -23,7 +23,7 @@ import com.ls.kassify.ui.TransactionCard
 fun TransactionListScreen(
     modifier: Modifier = Modifier,
     onAddButtonClicked: () -> Unit,
-    onTransactionCardClicked: () -> Unit,
+    onTransactionCardClicked: (Int) -> Unit,
     transactions: List<Transaction>,
     cashBalance: Double
 ) {
@@ -46,7 +46,7 @@ fun TransactionListScreen(
         ) {
             items(transactions) {
                 TransactionCard(
-                    onClick = { onTransactionCardClicked() },
+                    onClick = { onTransactionCardClicked(it.transId) },
                     date = it.date,
                     amount = it.amount,
                     text = it.text,

@@ -37,10 +37,13 @@ fun TransactionDetailsScreen(
     modifier: Modifier = Modifier,
     onEditButtonClicked: () -> Unit,
     onDeleteButtonClicked: () -> Unit,
+    onDeleteConfirmedClicked: () -> Unit,
     onCancelButtonClicked: () -> Unit,
-    transaction: Transaction
+    onCancelDeleteDialogClicked: () -> Unit,
+    transaction: Transaction,
+    showDeleteDialog: Boolean
 ) {
-    var showDeleteDialog by remember { mutableStateOf(false) }
+    //var showDeleteDialog by remember { mutableStateOf(false) }
     Column(
         modifier = modifier
             .statusBarsPadding()
@@ -50,13 +53,12 @@ fun TransactionDetailsScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        //TODO: Title Transaktiondetails in TopAppBar setzen
         Text(
-            text = "Details zur Transaktion:",
+            text = "Details zur Buchung Nr. ${transaction.transId}:",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .padding(top = 24.dp, bottom = 32.dp)
+                .padding(top = 16.dp, bottom = 16.dp)
         )
         Card(
             modifier = Modifier
@@ -99,7 +101,7 @@ fun TransactionDetailsScreen(
 
         //Delete-Button
         Button(
-            onClick = { showDeleteDialog = true },
+            onClick = { onDeleteButtonClicked() },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
@@ -119,8 +121,8 @@ fun TransactionDetailsScreen(
 
         if (showDeleteDialog) {
             DeleteDialog(
-                onConfirmButtonClicked = { onDeleteButtonClicked() },
-                onCancelButtonClicked = { showDeleteDialog = false }
+                onConfirmButtonClicked = { onDeleteConfirmedClicked() },
+                onCancelButtonClicked = { onCancelDeleteDialogClicked() }
             )
         }
     }
@@ -159,6 +161,9 @@ fun TransactionDetailsScreenPreview() {
         onEditButtonClicked = {},
         onDeleteButtonClicked = {},
         onCancelButtonClicked = {},
+        onDeleteConfirmedClicked = {},
+        onCancelDeleteDialogClicked = {},
+        showDeleteDialog = false,
         transaction = Transaction(
             transId = 0,
             date = "02.05.2024",

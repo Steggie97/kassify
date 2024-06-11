@@ -98,6 +98,7 @@ fun KassifyApp(
             composable(route = KassifyScreen.TransactionList.name) {
                 TransactionListScreen(
                     onTransactionCardClicked = {
+                        viewModel.getTransaction(it)
                         navController.navigate(KassifyScreen.TransactionDetails.name)
                     },
                     onAddButtonClicked = {
@@ -110,27 +111,26 @@ fun KassifyApp(
             }
             //TransactionDetail-Screen
             composable(route = KassifyScreen.TransactionDetails.name) {
-                TransactionDetailsScreen(onEditButtonClicked = {
-                    navController.navigate(KassifyScreen.TransactionEditor.name)
-                }, onDeleteButtonClicked = {
-                    navController.popBackStack()
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.toast_transaction_deleted),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }, onCancelButtonClicked = {
-                    navController.popBackStack()
-                },
-                    //ToDo: Transaktionsaktionen einfügen
-                    transaction = Transaction(
-                        transId = 0,
-                        date = "02.05.2024",
-                        amount = 5.50,
-                        category = "laufende KFZ-Kosten",
-                        receiptNo = "Rg-Nr.12342",
-                        text = "Aral - tanken"
-                    )
+                TransactionDetailsScreen(
+                    onEditButtonClicked = {
+                        navController.navigate(KassifyScreen.TransactionEditor.name)
+                    },
+                    onDeleteButtonClicked = { viewModel.updateShowDeleteDialog() },
+                    onDeleteConfirmedClicked = {
+                        viewModel.deleteTransaction()
+                        navController.popBackStack()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.toast_transaction_deleted),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    },
+                    onCancelButtonClicked = {
+                        navController.popBackStack()
+                    },
+                    onCancelDeleteDialogClicked = { viewModel.updateShowDeleteDialog() },
+                    transaction = appUiState.currentTransaction,
+                    showDeleteDialog = viewModel.showDeleteDialog,
                 )
             }
             //TransactionEditor-Screen
@@ -249,7 +249,6 @@ fun KassifyApp(
             }
         }
     }
-
 }
 
 

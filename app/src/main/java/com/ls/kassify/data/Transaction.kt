@@ -8,6 +8,7 @@ data class Transaction(
     var receiptNo: String = "",
     var text: String = "",
 )
+
 /*
 val transactions: List<Transaction> = listOf(
     Transaction(transId = 0, date = "02.05.2024", amount = -30.50, category = "laufende KFZ-Kosten", receiptNo = "Rg-Nr.12342", text = "Aral - tanken"),

@@ -440,20 +440,6 @@ fun CredentialFields(
     )
 }
 
-//Previews
-@Preview(
-    showBackground = true
-)
-@Composable
-fun TransactionCardPreview() {
-    TransactionCard(
-        onClick = {},
-        date = "28.05.2024",
-        amount = 30.00,
-        text = "Aral"
-    )
-}
-
 @Composable
 fun CategoryFormField(
     @StringRes label: Int,
