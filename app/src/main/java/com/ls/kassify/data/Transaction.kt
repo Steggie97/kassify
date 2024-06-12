@@ -3,6 +3,7 @@ package com.ls.kassify.data
 data class Transaction(
     var transId: Int = 0,
     var date: String = "01.01.2024",
+    var isPositiveAmount: Boolean = true,
     var amount: Double = 0.00,
     var category: String = "",
     var receiptNo: String = "",

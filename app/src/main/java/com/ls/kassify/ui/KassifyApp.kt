@@ -80,7 +80,7 @@ fun KassifyApp(
                     navController.navigate(KassifyScreen.Login.name)
                 },
                     onCancelButtonClicked = {
-                        navController.popBackStack(KassifyScreen.Login.name, inclusive = false)
+                        navController.navigateUp()
                     },
                     email = appUiState.email,
                     password = appUiState.password,
@@ -113,12 +113,13 @@ fun KassifyApp(
             composable(route = KassifyScreen.TransactionDetails.name) {
                 TransactionDetailsScreen(
                     onEditButtonClicked = {
+                        viewModel.getTransaction(it)
                         navController.navigate(KassifyScreen.TransactionEditor.name)
                     },
                     onDeleteButtonClicked = { viewModel.updateShowDeleteDialog() },
                     onDeleteConfirmedClicked = {
                         viewModel.deleteTransaction()
-                        navController.popBackStack()
+                        navController.navigateUp()
                         Toast.makeText(
                             context,
                             context.getString(R.string.toast_transaction_deleted),
@@ -126,7 +127,7 @@ fun KassifyApp(
                         ).show()
                     },
                     onCancelButtonClicked = {
-                        navController.popBackStack()
+                        navController.navigateUp()
                     },
                     onCancelDeleteDialogClicked = { viewModel.updateShowDeleteDialog() },
                     transaction = appUiState.currentTransaction,
@@ -136,9 +137,8 @@ fun KassifyApp(
             //TransactionEditor-Screen
             composable(route = KassifyScreen.TransactionEditor.name) {
                 TransactionEditorScreen(onSaveButtonClicked = {
-                    navController.popBackStack()
-                    //Updating current transaction in transactionlist
-                    //ToDO: Add a Function in Viewmodel
+                    viewModel.updateTransaction(it)
+                    navController.navigateUp()
                     Toast.makeText(
                         context,
                         context.getString(R.string.toast_transaction_saved),
@@ -146,7 +146,7 @@ fun KassifyApp(
                     ).show()
 
                 }, onCancelButtonClicked = {
-                    navController.popBackStack()
+                    navController.navigateUp()
                 },
                     transaction = appUiState.currentTransaction,
                     amountInput = appUiState.amountInput,
@@ -193,16 +193,16 @@ fun KassifyApp(
             //NewTransaction-Screen
             composable(route = KassifyScreen.NewTransaction.name) {
                 TransactionEditorScreen(onSaveButtonClicked = {
-                    navController.popBackStack()
                     //Adding new transaction to transactionList
                     viewModel.addTransaction(it)
+                    navController.navigateUp()
                     Toast.makeText(
                         context,
                         context.getString(R.string.toast_transaction_saved),
                         Toast.LENGTH_SHORT
                     ).show()
                 }, onCancelButtonClicked = {
-                    navController.popBackStack()
+                    navController.navigateUp()
                 },
                     transaction = appUiState.currentTransaction,
                     amountInput = appUiState.amountInput,

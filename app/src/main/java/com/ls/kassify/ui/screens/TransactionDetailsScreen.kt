@@ -35,7 +35,7 @@ import com.ls.kassify.ui.DetailItem
 @Composable
 fun TransactionDetailsScreen(
     modifier: Modifier = Modifier,
-    onEditButtonClicked: () -> Unit,
+    onEditButtonClicked: (Int) -> Unit,
     onDeleteButtonClicked: () -> Unit,
     onDeleteConfirmedClicked: () -> Unit,
     onCancelButtonClicked: () -> Unit,
@@ -72,7 +72,11 @@ fun TransactionDetailsScreen(
             )
             DetailAmount(
                 label = R.string.amount,
-                amount = transaction.amount
+                amount =
+                if(transaction.isPositiveAmount == true)
+                    transaction.amount
+                else
+                    (transaction.amount * -1.00)
             )
             DetailItem(
                 label = R.string.category,
@@ -91,7 +95,7 @@ fun TransactionDetailsScreen(
 
         //Edit-Button
         Button(
-            onClick = { onEditButtonClicked() },
+            onClick = { onEditButtonClicked(transaction.transId) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)

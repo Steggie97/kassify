@@ -53,7 +53,6 @@ fun TransactionEditorScreen(
     onTextChange: (String, String) -> Unit
 
 ) {
-    var category by rememberSaveable { mutableStateOf("Erlöse") }
 
     Box(
         modifier = Modifier
@@ -80,11 +79,11 @@ fun TransactionEditorScreen(
 
             FormSwitch(
                 label =
-                if (amountPrefix)
+                if (transaction.isPositiveAmount)
                     R.string.deposit
                 else
                     R.string.payment,
-                checked = amountPrefix,
+                checked = transaction.isPositiveAmount,
                 onCheckedChange = { onCheckedChange("prefix", it.toString()) },
                 iconChecked = R.drawable.add_icon,
                 tintIconChecked = MaterialTheme.colorScheme.background,
@@ -113,8 +112,8 @@ fun TransactionEditorScreen(
 
             CategoryFormField(
                 label = R.string.category,
-                defaultLabel = "Wahl",
-                onCategoryChange = { newCategory -> category = newCategory },
+                defaultLabel = transaction.category,
+                onCategoryChange = { onCategoryChange("category", it) },
                 modifier = Modifier
                     .padding(bottom = 16.dp)
                     .fillMaxWidth()

@@ -27,7 +27,6 @@ fun TransactionListScreen(
     transactions: List<Transaction>,
     cashBalance: Double
 ) {
-    //TODO: Kassenbestand anzeigen
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -48,7 +47,11 @@ fun TransactionListScreen(
                 TransactionCard(
                     onClick = { onTransactionCardClicked(it.transId) },
                     date = it.date,
-                    amount = it.amount,
+                    amount =
+                    if(it.isPositiveAmount)
+                        it.amount
+                    else
+                        (it.amount * -1.00),
                     text = it.text,
                     modifier = Modifier.padding(bottom = 32.dp)
                 )
@@ -65,8 +68,6 @@ fun TransactionListScreen(
         }
         CashBalanceBox(cashBalance = cashBalance)
     }
-
-
 }
 
 @Preview(
