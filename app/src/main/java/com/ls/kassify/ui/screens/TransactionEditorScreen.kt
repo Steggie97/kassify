@@ -43,7 +43,8 @@ fun TransactionEditorScreen(
     cashBalance: Double,
     onDateChange: (String, String, LocalDate) -> Unit,
     onChange: (String,String ) -> Unit,
-    lastTransactionDate: LocalDate? = null
+    dateOfLastTransaction: LocalDate? = null,
+    dateOfNextTransaction: LocalDate = LocalDate.now()
 ) {
 
     Box(
@@ -67,7 +68,8 @@ fun TransactionEditorScreen(
                 icon = R.drawable.calendar_icon,
                 onDateChange = { onDateChange("date", "", it) } ,
                 selectedDate = transaction.date,
-                dateOfLastTransaction = lastTransactionDate
+                dateOfLastTransaction = dateOfLastTransaction,
+                dateOfNextTransaction = dateOfNextTransaction
             )
 
             FormSwitch(
@@ -108,11 +110,21 @@ fun TransactionEditorScreen(
                 defaultLabel = transaction.category,
                 onCategoryChange = { onChange("category", it) },
                 modifier = Modifier
-                    .padding(bottom = 16.dp)
+                    .padding(start = 16.dp, bottom = 8.dp)
                     .fillMaxWidth()
             )
 
-            // TODO: Dropdown-Field für USt-Sachverhalte (keine USt, 19% USt, 7% USt) einfuegen
+            if(!transaction.isPositiveAmount) {
+                // TODO: Dropdown-Field für USt-Sachverhalte (keine USt, 19% USt, 7% USt) einfuegen
+                CategoryFormField(
+                    label = R.string.vat,
+                    defaultLabel = "Steuersatz wählen",
+                    onCategoryChange = {  },
+                    modifier = Modifier
+                        .padding(start = 16.dp, bottom = 8.dp)
+                        .fillMaxWidth()
+                )
+            }
 
             FormField(
                 label = R.string.receipt_number,

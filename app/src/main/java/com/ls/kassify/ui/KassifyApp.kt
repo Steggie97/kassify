@@ -149,6 +149,8 @@ fun KassifyApp(
                         navController.navigateUp()
                     },
                     transaction = appUiState.currentTransaction,
+                    dateOfLastTransaction = viewModel.getLastTransactionDate(appUiState.currentTransaction),
+                    dateOfNextTransaction = viewModel.getNextTransactionDate(appUiState.currentTransaction),
                     amountInput = appUiState.amountInput,
                     cashBalance = appUiState.cashBalance,
                     onDateChange = { fieldName, value, date ->
@@ -184,9 +186,9 @@ fun KassifyApp(
                     },
                     transaction = appUiState.currentTransaction,
                     amountInput = appUiState.amountInput,
-                    lastTransactionDate =
+                    dateOfLastTransaction =
                     if (appUiState.transactionList.size > 0)
-                        appUiState.transactionList.get(appUiState.transactionList.lastIndex).date
+                        appUiState.transactionList[appUiState.transactionList.lastIndex].date
                     else
                         null,
                     cashBalance = appUiState.cashBalance,

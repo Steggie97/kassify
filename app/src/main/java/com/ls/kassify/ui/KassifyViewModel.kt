@@ -2,8 +2,10 @@ package com.ls.kassify.ui
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.ls.kassify.Validation.ValidationState
 import com.ls.kassify.data.Transaction
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,6 +19,9 @@ class KassifyViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(KassifyUiState())
     val uiState: StateFlow<KassifyUiState> = _uiState.asStateFlow()
 
+    var validationState by mutableStateOf(ValidationState())
+        private set
+
     var showPassword by mutableStateOf(false)
         private set
 
@@ -29,11 +34,6 @@ class KassifyViewModel : ViewModel() {
     var showDeleteDialog by mutableStateOf(false)
         private set
 
-    // amountPrefix:
-    // true -> positive amount,
-    // false -> negative amount
-    var amountPrefix by mutableStateOf(true)
-        private set
 
     //ViewModel-Functions
     //Login & SignUp Screen
@@ -47,18 +47,6 @@ class KassifyViewModel : ViewModel() {
 
     fun updateShowDeleteDialog() {
         showDeleteDialog = !showDeleteDialog
-    }
-
-    fun updateAmountPrefix(value: Boolean) {
-        amountPrefix = value
-    }
-
-    fun checkAmountPrefix(amount: Double) {
-        if (amount < 0.00) {
-            amountPrefix = false
-        } else {
-            amountPrefix = true
-        }
     }
 
     fun updatePassword(newPassword: String) {
@@ -107,9 +95,6 @@ class KassifyViewModel : ViewModel() {
     }
 
     fun updateCurrentTransaction(fieldName: String, value: String = "", date: LocalDate? = null) {
-        if (fieldName == "prefix") {
-            updateAmountPrefix(value.toBoolean())
-        }
         val updatedTransaction: Transaction =
             when (fieldName) {
                 "date" -> _uiState.value.currentTransaction.copy(date = date ?: LocalDate.now())
@@ -159,7 +144,6 @@ class KassifyViewModel : ViewModel() {
     fun createNewTransaction() {
         val newTransaction = Transaction(transId = _uiState.value.nextTransId)
         val newNextTransId = _uiState.value.nextTransId + 1
-        checkAmountPrefix(newTransaction.amount)
         _uiState.update { currentState ->
             currentState.copy(
                 currentTransaction = newTransaction,
@@ -206,5 +190,33 @@ class KassifyViewModel : ViewModel() {
             }
         }
         return index
+    }
+
+    fun getLastTransactionDate(transaction: Transaction): LocalDate {
+        val currentTransactionIndex: Int = getTransactionIndex(transaction.transId)
+
+        //Check if current transaction is the first transaction in transaction-list
+        if(currentTransactionIndex == 0) {
+            return transaction.date
+        }
+        return _uiState.value.transactionList[currentTransactionIndex - 1].date
+    }
+
+    fun getNextTransactionDate(transaction: Transaction): LocalDate {
+        val currentTransactionIndex: Int = getTransactionIndex(transaction.transId)
+
+        //Check if current transaction is the last transaction in transaction-list
+        if(currentTransactionIndex == _uiState.value.transactionList.lastIndex) {
+            return LocalDate.now()
+        }
+        return _uiState.value.transactionList[currentTransactionIndex + 1].date
+    }
+
+    fun validateCashBalance(cashBalance: Double, amount: Double): Boolean {
+        return (cashBalance - amount) >= 0.00
+    }
+
+    fun updateValidationState(fieldname: String) {
+
     }
 }

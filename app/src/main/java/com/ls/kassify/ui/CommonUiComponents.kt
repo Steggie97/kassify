@@ -162,7 +162,7 @@ fun FormSwitch(
         modifier = Modifier
             .fillMaxWidth()
             .height(64.dp)
-            .padding(bottom = 16.dp),
+            .padding(start = 16.dp, bottom = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
@@ -206,15 +206,25 @@ fun FormField(
     value: String,
     onValueChange: (String) -> Unit,
     keyboardOptions: KeyboardOptions,
+    errorMessage: String? = null,
     modifier: Modifier = Modifier
 ) {
     TextField(
         label = { Text(stringResource(label)) },
         value = value,
+        isError = errorMessage != null,
         onValueChange = onValueChange,
         keyboardOptions = keyboardOptions,
         modifier = modifier
     )
+    if( errorMessage != null ) {
+        Text(
+            text = errorMessage,
+            color = MaterialTheme.colorScheme.error
+        )
+    }
+
+
 }
 
 @Composable
@@ -309,7 +319,6 @@ fun DateField(
         )
     }
 }
-
 
 @Composable
 fun FormCheckbox(

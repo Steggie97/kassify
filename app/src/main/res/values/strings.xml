@@ -27,4 +27,5 @@
     <string name="toast_transaction_saved">Buchung gespeichert</string>
     <string name="toast_transaction_deleted">Buchung gelöscht</string>
     <string name="confirm">Ok</string>
+    <string name="vat">Vorsteuer</string>
 </resources>
