@@ -31,6 +31,7 @@ import com.ls.kassify.ui.CategoryFormField
 import com.ls.kassify.ui.DateField
 import com.ls.kassify.ui.FormField
 import com.ls.kassify.ui.FormSwitch
+import com.ls.kassify.ui.UStFormField
 import java.time.LocalDate
 
 @Composable
@@ -116,10 +117,10 @@ fun TransactionEditorScreen(
 
             if(!transaction.isPositiveAmount) {
                 // TODO: Dropdown-Field für USt-Sachverhalte (keine USt, 19% USt, 7% USt) einfuegen
-                CategoryFormField(
+                UStFormField(
                     label = R.string.vat,
                     defaultLabel = "Steuersatz wählen",
-                    onCategoryChange = {  },
+                    onUStChange = { onChange("USt", it) },
                     modifier = Modifier
                         .padding(start = 16.dp, bottom = 8.dp)
                         .fillMaxWidth()

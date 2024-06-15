@@ -497,6 +497,56 @@ fun CategoryFormField(
 }
 
 @Composable
+fun UStFormField(
+    @StringRes label: Int,
+    defaultLabel: String,
+    onUStChange: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val options = listOf("keine", "19%", "7%")
+    var expanded by remember { mutableStateOf(false) }
+    var selectedOption by remember { mutableStateOf(defaultLabel) }
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = stringResource(id = label),
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .weight(1f)
+        )
+        Box() {
+            TextButton(onClick = { expanded = true }) {
+                Text(
+                    text = selectedOption,
+                    //fontSize = 20.sp
+                )
+                Icon(imageVector = Icons.Filled.ArrowDropDown, contentDescription = null)
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                options.forEach { option ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = option,
+                            )
+                        },
+                        onClick = {
+                            selectedOption = option
+                            onUStChange(option)
+                            expanded = false
+                        })
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun CashBalanceBox(cashBalance: Double) {
     Box(
         modifier = Modifier
