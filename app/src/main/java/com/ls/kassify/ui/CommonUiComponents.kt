@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -68,20 +69,28 @@ import java.util.Locale
 @Composable
 fun KassifyAppBar(
     @StringRes title: Int,
+    onCancelButtonClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
-        title = {
-            Text(
-                text = stringResource(title),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth()
-            )
-        },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             containerColor = MaterialTheme.colorScheme.primaryContainer
         ),
-        navigationIcon = {/*TODO*/ }
+        title = {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    text = stringResource(title),
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.align(Alignment.Center)
+                )
+                IconButton(onClick = { onCancelButtonClicked() }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = stringResource(R.string.back)
+                    )
+                }
+            }
+        }
     )
 }
 

@@ -48,7 +48,10 @@ fun KassifyApp(
     )
     Scaffold(topBar = {
         KassifyAppBar(
-            title = currentScreen.title
+            title = currentScreen.title,
+            onCancelButtonClicked = {
+                navController.navigateUp()
+            },
         )
     }) { innerPadding ->
         NavHost(

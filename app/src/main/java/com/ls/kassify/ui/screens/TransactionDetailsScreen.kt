@@ -137,7 +137,7 @@ fun DeleteDialog(
     onCancelButtonClicked: () -> Unit
 ) {
     AlertDialog(
-        onDismissRequest = { /*TODO*/ },
+        onDismissRequest = { onCancelButtonClicked() },
         title = { Text(text = stringResource(R.string.delete_transaction)) },
         text = { Text(text = stringResource(R.string.ask_delete_confirm)) },
         dismissButton = {
