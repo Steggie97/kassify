@@ -17,7 +17,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.ls.kassify.R
-import com.ls.kassify.data.Transaction
 import com.ls.kassify.ui.screens.LogInScreen
 import com.ls.kassify.ui.screens.SignUpScreen
 import com.ls.kassify.ui.screens.TransactionDetailsScreen
@@ -136,53 +135,30 @@ fun KassifyApp(
             }
             //TransactionEditor-Screen
             composable(route = KassifyScreen.TransactionEditor.name) {
-                TransactionEditorScreen(onSaveButtonClicked = {
-                    viewModel.updateTransaction(it)
-                    navController.navigateUp()
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.toast_transaction_saved),
-                        Toast.LENGTH_SHORT
-                    ).show()
-
-                }, onCancelButtonClicked = {
-                    navController.navigateUp()
-                },
+                TransactionEditorScreen(
+                    onSaveButtonClicked = {
+                        viewModel.updateTransaction(it)
+                        navController.navigateUp()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.toast_transaction_saved),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    },
+                    onCancelButtonClicked = {
+                        navController.navigateUp()
+                    },
                     transaction = appUiState.currentTransaction,
                     amountInput = appUiState.amountInput,
-                    amountPrefix = viewModel.amountPrefix,
                     cashBalance = appUiState.cashBalance,
-                    onDateChange = { fieldName, value ->
+                    onDateChange = { fieldName, value, date ->
                         viewModel.updateCurrentTransaction(
                             fieldName,
-                            value
+                            value,
+                            date
                         )
                     },
-                    onCheckedChange = { fieldName, value ->
-                        viewModel.updateCurrentTransaction(
-                            fieldName,
-                            value
-                        )
-                    },
-                    onAmountChange = { fieldName, value ->
-                        viewModel.updateCurrentTransaction(
-                            fieldName,
-                            value
-                        )
-                    },
-                    onCategoryChange = { fieldName, value ->
-                        viewModel.updateCurrentTransaction(
-                            fieldName,
-                            value
-                        )
-                    },
-                    onReceiptNoChange = { fieldName, value ->
-                        viewModel.updateCurrentTransaction(
-                            fieldName,
-                            value
-                        )
-                    },
-                    onTextChange = { fieldName, value ->
+                    onChange = { fieldName, value ->
                         viewModel.updateCurrentTransaction(
                             fieldName,
                             value
@@ -192,65 +168,46 @@ fun KassifyApp(
             }
             //NewTransaction-Screen
             composable(route = KassifyScreen.NewTransaction.name) {
-                TransactionEditorScreen(onSaveButtonClicked = {
-                    //Adding new transaction to transactionList
-                    viewModel.addTransaction(it)
-                    navController.navigateUp()
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.toast_transaction_saved),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                }, onCancelButtonClicked = {
-                    navController.navigateUp()
-                },
+                TransactionEditorScreen(
+                    onSaveButtonClicked = {
+                        //Adding new transaction to transactionList
+                        viewModel.addTransaction(it)
+                        navController.navigateUp()
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.toast_transaction_saved),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    },
+                    onCancelButtonClicked = {
+                        navController.navigateUp()
+                    },
                     transaction = appUiState.currentTransaction,
                     amountInput = appUiState.amountInput,
-                    amountPrefix = viewModel.amountPrefix,
+                    lastTransactionDate =
+                    if (appUiState.transactionList.size > 0)
+                        appUiState.transactionList.get(appUiState.transactionList.lastIndex).date
+                    else
+                        null,
                     cashBalance = appUiState.cashBalance,
-                    onDateChange = { fieldName, value ->
+                    onDateChange = { fieldName, value, date ->
+                        viewModel.updateCurrentTransaction(
+                            fieldName,
+                            value,
+                            date
+                        )
+                    },
+                    onChange = { fieldName, value ->
                         viewModel.updateCurrentTransaction(
                             fieldName,
                             value
                         )
                     },
-                    onCheckedChange = { fieldName, value ->
-                        viewModel.updateCurrentTransaction(
-                            fieldName,
-                            value
-                        )
-                    },
-                    onAmountChange = { fieldName, value ->
-                        viewModel.updateCurrentTransaction(
-                            fieldName,
-                            value
-                        )
-                    },
-                    onCategoryChange = { fieldName, value ->
-                        viewModel.updateCurrentTransaction(
-                            fieldName,
-                            value
-                        )
-                    },
-                    onReceiptNoChange = { fieldName, value ->
-                        viewModel.updateCurrentTransaction(
-                            fieldName,
-                            value
-
-                        )
-                    },
-                    onTextChange = { fieldName, value ->
-                        viewModel.updateCurrentTransaction(
-                            fieldName,
-                            value
-                        )
-                    }
                 )
             }
         }
     }
 }
-
 
 //Previews
 @Preview(

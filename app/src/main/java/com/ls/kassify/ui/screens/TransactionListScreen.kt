@@ -18,6 +18,7 @@ import com.ls.kassify.R
 import com.ls.kassify.data.Transaction
 import com.ls.kassify.ui.CashBalanceBox
 import com.ls.kassify.ui.TransactionCard
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun TransactionListScreen(
@@ -46,7 +47,7 @@ fun TransactionListScreen(
             items(transactions) {
                 TransactionCard(
                     onClick = { onTransactionCardClicked(it.transId) },
-                    date = it.date,
+                    date = DateTimeFormatter.ofPattern("dd.MM.yyyy").format(it.date),
                     amount =
                     if(it.isPositiveAmount)
                         it.amount

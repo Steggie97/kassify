@@ -16,10 +16,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -31,6 +27,8 @@ import com.ls.kassify.R
 import com.ls.kassify.data.Transaction
 import com.ls.kassify.ui.DetailAmount
 import com.ls.kassify.ui.DetailItem
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun TransactionDetailsScreen(
@@ -68,7 +66,7 @@ fun TransactionDetailsScreen(
         ) {
             DetailItem(
                 label = R.string.date,
-                content = transaction.date
+                content = DateTimeFormatter.ofPattern("dd.MM.yyy").format(transaction.date)
             )
             DetailAmount(
                 label = R.string.amount,
@@ -170,7 +168,7 @@ fun TransactionDetailsScreenPreview() {
         showDeleteDialog = false,
         transaction = Transaction(
             transId = 0,
-            date = "02.05.2024",
+            date = LocalDate.now(),
             amount = 30.50,
             category = "laufende KFZ-Kosten",
             receiptNo = "Rg-Nr.12342",

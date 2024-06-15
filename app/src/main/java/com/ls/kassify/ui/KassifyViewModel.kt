@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.text.NumberFormat
+import java.time.LocalDate
 
 class KassifyViewModel : ViewModel() {
     // UI-State
@@ -105,13 +106,13 @@ class KassifyViewModel : ViewModel() {
         updateCashBalance()
     }
 
-    fun updateCurrentTransaction(fieldName: String, value: String = "") {
+    fun updateCurrentTransaction(fieldName: String, value: String = "", date: LocalDate? = null) {
         if (fieldName == "prefix") {
             updateAmountPrefix(value.toBoolean())
         }
         val updatedTransaction: Transaction =
             when (fieldName) {
-                "date" -> _uiState.value.currentTransaction.copy(date = value)
+                "date" -> _uiState.value.currentTransaction.copy(date = date ?: LocalDate.now())
                 "prefix" -> _uiState.value.currentTransaction.copy(isPositiveAmount = value.toBoolean())
                 "amount" -> {
                     _uiState.value.currentTransaction.copy(

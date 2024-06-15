@@ -16,10 +16,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -35,6 +31,7 @@ import com.ls.kassify.ui.CategoryFormField
 import com.ls.kassify.ui.DateField
 import com.ls.kassify.ui.FormField
 import com.ls.kassify.ui.FormSwitch
+import java.time.LocalDate
 
 @Composable
 fun TransactionEditorScreen(
@@ -44,14 +41,9 @@ fun TransactionEditorScreen(
     transaction: Transaction,
     amountInput: String,
     cashBalance: Double,
-    amountPrefix: Boolean,
-    onCheckedChange: (String, String) -> Unit,
-    onDateChange: (String, String) -> Unit,
-    onAmountChange: (String, String) -> Unit,
-    onCategoryChange: (String, String) -> Unit,
-    onReceiptNoChange: (String, String) -> Unit,
-    onTextChange: (String, String) -> Unit
-
+    onDateChange: (String, String, LocalDate) -> Unit,
+    onChange: (String,String ) -> Unit,
+    lastTransactionDate: LocalDate? = null
 ) {
 
     Box(
@@ -73,8 +65,9 @@ fun TransactionEditorScreen(
                     .padding(top = 24.dp, bottom = 8.dp),
                 label = R.string.date,
                 icon = R.drawable.calendar_icon,
-                onDateChange = { onDateChange("date", it) },
-                selectedDate = transaction.date
+                onDateChange = { onDateChange("date", "", it) } ,
+                selectedDate = transaction.date,
+                dateOfLastTransaction = lastTransactionDate
             )
 
             FormSwitch(
@@ -84,7 +77,7 @@ fun TransactionEditorScreen(
                 else
                     R.string.payment,
                 checked = transaction.isPositiveAmount,
-                onCheckedChange = { onCheckedChange("prefix", it.toString()) },
+                onCheckedChange = { onChange("prefix", it.toString()) },
                 iconChecked = R.drawable.add_icon,
                 tintIconChecked = MaterialTheme.colorScheme.background,
                 iconUnchecked = R.drawable.remove_icon,
@@ -100,7 +93,7 @@ fun TransactionEditorScreen(
             FormField(
                 label = R.string.amount,
                 value = amountInput,
-                onValueChange = { onAmountChange("amount", it) },
+                onValueChange = { onChange("amount", it) },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next
@@ -113,7 +106,7 @@ fun TransactionEditorScreen(
             CategoryFormField(
                 label = R.string.category,
                 defaultLabel = transaction.category,
-                onCategoryChange = { onCategoryChange("category", it) },
+                onCategoryChange = { onChange("category", it) },
                 modifier = Modifier
                     .padding(bottom = 16.dp)
                     .fillMaxWidth()
@@ -124,7 +117,7 @@ fun TransactionEditorScreen(
             FormField(
                 label = R.string.receipt_number,
                 value = transaction.receiptNo,
-                onValueChange = { onReceiptNoChange("receiptNo", it) },
+                onValueChange = { onChange("receiptNo", it) },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Next
@@ -137,7 +130,7 @@ fun TransactionEditorScreen(
             FormField(
                 label = R.string.text,
                 value = transaction.text,
-                onValueChange = { onTextChange("text", it) },
+                onValueChange = { onChange("text", it) },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Text,
                     imeAction = ImeAction.Done
@@ -181,15 +174,10 @@ fun TransactionEditorScreenPreview() {
         onSaveButtonClicked = {},
         onCancelButtonClicked = {},
         transaction = Transaction(),
-        onCategoryChange = { fieldName, value -> },
-        onAmountChange = { fieldName, value -> },
-        onDateChange = { fieldName, value -> },
-        onTextChange = { fieldName, value -> },
-        onReceiptNoChange = { fieldName, value -> },
+        onChange = { fieldName, value -> },
+        onDateChange = { fieldName, value, date -> },
         cashBalance = 0.00,
         amountInput = "",
-        onCheckedChange = { fieldName, value -> },
-        amountPrefix = false
     )
 }
 

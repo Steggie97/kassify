@@ -1,8 +1,5 @@
 package com.ls.kassify.ui
 
-import android.app.DatePickerDialog
-import android.icu.util.Calendar
-import android.widget.DatePicker
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
@@ -45,7 +42,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -55,10 +51,12 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ls.kassify.R
+import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.datetime.date.datepicker
+import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -85,7 +83,6 @@ fun KassifyAppBar(
         ),
         navigationIcon = {/*TODO*/ }
     )
-
 }
 
 @Composable
@@ -144,7 +141,6 @@ fun TransactionCard(
             }
         }
     }
-
 }
 
 @Composable
@@ -259,43 +255,23 @@ fun DateField(
     modifier: Modifier = Modifier,
     @StringRes label: Int,
     @DrawableRes icon: Int,
-    selectedDate: String,
-    onDateChange: (String) -> Unit
+    selectedDate: LocalDate = LocalDate.now(),
+    onDateChange: (LocalDate) -> Unit,
+    dateOfLastTransaction: LocalDate? = null,
+    dateOfNextTransaction: LocalDate = LocalDate.now()
 ) {
-    // Variablen für Datepicker-Dialog:
-    val context = LocalContext.current
-    val calendar = Calendar.getInstance()
     val interactionSource = remember { MutableInteractionSource() }
-    val isPressed: Boolean by interactionSource.collectIsPressedAsState()
+    val dateDialogState = rememberMaterialDialogState()
 
-    var selectedDate by remember {
-        mutableStateOf(
-            "${calendar.get(Calendar.DAY_OF_MONTH)}.${
-                calendar.get(
-                    Calendar.MONTH
-                ) + 1
-            }.${calendar.get(Calendar.YEAR)}"
-        )
+    if(interactionSource.collectIsPressedAsState().value){
+        dateDialogState.show()
     }
-    val year: Int = calendar.get(Calendar.YEAR)
-    val month: Int = calendar.get(Calendar.MONTH)
-    val day: Int = calendar.get(Calendar.DAY_OF_MONTH)
 
-    val datePickerDialog = remember {
-        DatePickerDialog(
-            context,
-            { _: DatePicker, selectedYear: Int, selectedMonth: Int, selectedDay: Int ->
-                selectedDate = "$selectedDay.${selectedMonth + 1}.$selectedYear"
-            },
-            year,
-            month,
-            day
-        )
-    }
+    //Clickable Text-Field:
     // UI-Composables
     TextField(
         modifier = modifier,
-        value = selectedDate,
+        value = DateTimeFormatter.ofPattern("dd.MM.yyyy").format(selectedDate),
         onValueChange = {},
         label = { Text(stringResource(label)) },
         trailingIcon = {
@@ -308,10 +284,32 @@ fun DateField(
         readOnly = true
     )
 
-    if (isPressed) {
-        datePickerDialog.show()
+    // Datepicker-Dialog with Date-Validator
+    MaterialDialog(
+        dialogState = dateDialogState,
+        buttons = {
+            positiveButton(text = stringResource(R.string.confirm)){
+
+            }
+            negativeButton(text= stringResource(R.string.cancel))
+        }
+    ) {
+        datepicker(
+            initialDate = selectedDate,
+            title = "Datum wählen",
+            allowedDateValidator = {
+                if (dateOfLastTransaction != null)
+                    //Future dates/ dates after the date of the next transaction & dates before the last transactions can not be picked:
+                    it <= dateOfNextTransaction && it >= dateOfLastTransaction
+                else
+                    //Only the future dates can not be picked
+                    it <= dateOfNextTransaction
+            },
+            onDateChange = { onDateChange(it) }
+        )
     }
 }
+
 
 @Composable
 fun FormCheckbox(
@@ -417,7 +415,6 @@ fun CredentialFields(
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 32.dp)
-
     )
 
     PasswordField(
@@ -510,7 +507,7 @@ fun CashBalanceBox(cashBalance: Double) {
             Text(
                 text =
                 "Kassenbestand am ${
-                    DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.GERMAN).format(LocalDate.now())
+                    DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()).format(LocalDate.now())
                 }",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Normal

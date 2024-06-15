@@ -69,6 +69,11 @@ dependencies {
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.material)
+    implementation(libs.material3)
+    
+    // Date picker Material-Design Dialog
+    implementation(libs.compose.material.dialogs.datetime)
 
     //Test-Dependencies:
     testImplementation(libs.junit)
@@ -78,8 +83,5 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
-    implementation("androidx.compose.material:material:1.4.1")
-    implementation("androidx.compose.material3:material3:1.0.1")
-  //  implementation("androidx.compose.ui.tooling.preview")
 
 }
