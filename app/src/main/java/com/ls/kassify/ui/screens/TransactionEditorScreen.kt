@@ -41,11 +41,13 @@ fun TransactionEditorScreen(
     onCancelButtonClicked: () -> Unit,
     transaction: Transaction,
     amountInput: String,
+    amountErrorMessage: String? = null,
     cashBalance: Double,
     onDateChange: (String, String, LocalDate) -> Unit,
-    onChange: (String,String ) -> Unit,
+    onChange: (String, String) -> Unit,
     dateOfLastTransaction: LocalDate? = null,
-    dateOfNextTransaction: LocalDate = LocalDate.now()
+    dateOfNextTransaction: LocalDate = LocalDate.now(),
+    isError: Boolean = false
 ) {
 
     Box(
@@ -67,7 +69,7 @@ fun TransactionEditorScreen(
                     .padding(top = 24.dp, bottom = 8.dp),
                 label = R.string.date,
                 icon = R.drawable.calendar_icon,
-                onDateChange = { onDateChange("date", "", it) } ,
+                onDateChange = { onDateChange("date", "", it) },
                 selectedDate = transaction.date,
                 dateOfLastTransaction = dateOfLastTransaction,
                 dateOfNextTransaction = dateOfNextTransaction
@@ -101,6 +103,7 @@ fun TransactionEditorScreen(
                     keyboardType = KeyboardType.Number,
                     imeAction = ImeAction.Next
                 ),
+                errorMessage = amountErrorMessage,
                 modifier = Modifier
                     .padding(bottom = 8.dp)
                     .fillMaxWidth()
@@ -115,7 +118,7 @@ fun TransactionEditorScreen(
                     .fillMaxWidth()
             )
 
-            if(!transaction.isPositiveAmount) {
+            if (!transaction.isPositiveAmount) {
                 // TODO: Dropdown-Field für USt-Sachverhalte (keine USt, 19% USt, 7% USt) einfuegen
                 UStFormField(
                     label = R.string.vat,
@@ -156,6 +159,7 @@ fun TransactionEditorScreen(
             //Save-Button
             Button(
                 onClick = { onSaveButtonClicked(transaction) },
+                enabled = !isError,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)

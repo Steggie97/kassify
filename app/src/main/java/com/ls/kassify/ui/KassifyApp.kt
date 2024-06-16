@@ -52,6 +52,7 @@ fun KassifyApp(
             onCancelButtonClicked = {
                 navController.navigateUp()
             },
+            canNavigateBack = navController.previousBackStackEntry != null
         )
     }) { innerPadding ->
         NavHost(
@@ -61,7 +62,8 @@ fun KassifyApp(
         ) {
             //Login Screen
             composable(route = KassifyScreen.Login.name) {
-                LogInScreen(onForgotPasswordButtonClicked = {},
+                LogInScreen(
+                    onForgotPasswordButtonClicked = {},
                     onLoginButtonClicked = {
                         navController.navigate(KassifyScreen.TransactionList.name)
                     },
@@ -69,31 +71,41 @@ fun KassifyApp(
                         navController.navigate(KassifyScreen.SignUp.name)
                     },
                     email = appUiState.email,
+                    emailErrorMessage = viewModel.validEmail.errorMessage,
                     password = appUiState.password,
+                    passwordErrorMessage = viewModel.validPassword.errorMessage,
                     showPassword = viewModel.showPassword,
                     onEmailChange = { viewModel.updateEmail(it) },
                     onPasswordChange = { viewModel.updatePassword(it) },
-                    onShowPasswordClick = { viewModel.switchShowPassword() })
+                    onShowPasswordClick = { viewModel.switchShowPassword() },
+                    isError = viewModel.isError
+                )
             }
 
             //SignUp Screen
             composable(route = KassifyScreen.SignUp.name) {
-                SignUpScreen(onSignUpButtonClicked = {
-                    navController.navigate(KassifyScreen.Login.name)
-                },
+                SignUpScreen(
+                    onSignUpButtonClicked = {
+                        navController.navigate(KassifyScreen.Login.name)
+                    },
                     onCancelButtonClicked = {
                         navController.navigateUp()
                     },
                     email = appUiState.email,
+                    emailErrorMessage = viewModel.validEmail.errorMessage,
                     password = appUiState.password,
+                    passwordErrorMessage = viewModel.validPassword.errorMessage,
                     passwordConfirm = viewModel.passwordConfirm,
+                    passwordConfirmErrorMessage = viewModel.validPasswordConfirm.errorMessage,
                     showPassword = viewModel.showPassword,
                     showPasswordConfirm = viewModel.showPasswordConfirm,
                     onEmailChange = { viewModel.updateEmail(it) },
                     onPasswordChange = { viewModel.updatePassword(it) },
                     onPasswordConfirmChange = { viewModel.updatePasswordConfirm(it) },
                     onShowPasswordClick = { viewModel.switchShowPassword() },
-                    onShowPasswordConfirmClick = { viewModel.switchShowPasswordConfirm() })
+                    onShowPasswordConfirmClick = { viewModel.switchShowPasswordConfirm() },
+                    isError = viewModel.isError
+                )
             }
 
             //TransactionList-Screen
@@ -155,6 +167,7 @@ fun KassifyApp(
                     dateOfLastTransaction = viewModel.getLastTransactionDate(appUiState.currentTransaction),
                     dateOfNextTransaction = viewModel.getNextTransactionDate(appUiState.currentTransaction),
                     amountInput = appUiState.amountInput,
+                    amountErrorMessage = viewModel.validAmount.errorMessage,
                     cashBalance = appUiState.cashBalance,
                     onDateChange = { fieldName, value, date ->
                         viewModel.updateCurrentTransaction(
@@ -168,7 +181,8 @@ fun KassifyApp(
                             fieldName,
                             value
                         )
-                    }
+                    },
+                    isError = viewModel.isError
                 )
             }
             //NewTransaction-Screen
@@ -189,6 +203,7 @@ fun KassifyApp(
                     },
                     transaction = appUiState.currentTransaction,
                     amountInput = appUiState.amountInput,
+                    amountErrorMessage = viewModel.validAmount.errorMessage,
                     dateOfLastTransaction =
                     if (appUiState.transactionList.size > 0)
                         appUiState.transactionList[appUiState.transactionList.lastIndex].date
@@ -208,6 +223,7 @@ fun KassifyApp(
                             value
                         )
                     },
+                    isError = viewModel.isError
                 )
             }
         }

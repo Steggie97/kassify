@@ -13,7 +13,7 @@ class ValidatePassword {
         if (!(password.any { it.isDigit() } && password.any { it.isLowerCase() } && password.any { it.isUpperCase() } && password.any { it.isLetter() })) {
             return ValidationResult(
                 successful = false,
-                errorMessage = "Das Passwort muss mindestens einen Großbuchstaben, einen Kleinbuchstaben und eine Zahl enthalten."
+                errorMessage = "Das Passwort muss einen Großbuchstaben, einen Kleinbuchstaben und eine Zahl enthalten."
             )
         }
 

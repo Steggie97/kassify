@@ -33,11 +33,13 @@ fun LogInScreen(
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onShowPasswordClick: () -> Unit,
-
     modifier: Modifier = Modifier,
     onSignUpButtonClicked: () -> Unit,
     onLoginButtonClicked: () -> Unit,
-    onForgotPasswordButtonClicked: () -> Unit
+    onForgotPasswordButtonClicked: () -> Unit,
+    emailErrorMessage: String? = null,
+    passwordErrorMessage: String? = null,
+    isError: Boolean = false
 ) {
 
     Column(
@@ -65,6 +67,9 @@ fun LogInScreen(
             onEmailChange = { onEmailChange(it) },
             onPasswordChange = { onPasswordChange(it) },
             onShowPasswordClick = { onShowPasswordClick() },
+            emailErrorMessage = emailErrorMessage,
+            passwordErrorMessage = passwordErrorMessage,
+            isLastField = true
         )
 
         //Forgot-Password-Link
@@ -84,6 +89,7 @@ fun LogInScreen(
         // Login-Button
         Button(
             onClick = { onLoginButtonClicked() },
+            enabled = !isError,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)

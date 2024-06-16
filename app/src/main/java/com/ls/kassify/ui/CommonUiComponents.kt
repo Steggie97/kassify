@@ -46,6 +46,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -56,6 +57,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ls.kassify.R
 import com.vanpra.composematerialdialogs.MaterialDialog
+import com.vanpra.composematerialdialogs.datetime.date.DatePickerDefaults
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import java.text.NumberFormat
@@ -70,6 +72,7 @@ import java.util.Locale
 fun KassifyAppBar(
     @StringRes title: Int,
     onCancelButtonClicked: () -> Unit,
+    canNavigateBack: Boolean,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
@@ -83,11 +86,13 @@ fun KassifyAppBar(
                     textAlign = TextAlign.Center,
                     modifier = Modifier.align(Alignment.Center)
                 )
-                IconButton(onClick = { onCancelButtonClicked() }) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = stringResource(R.string.back)
-                    )
+                if (canNavigateBack) {
+                    IconButton(onClick = { onCancelButtonClicked() }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = stringResource(R.string.back)
+                        )
+                    }
                 }
             }
         }
@@ -218,19 +223,27 @@ fun FormField(
     errorMessage: String? = null,
     modifier: Modifier = Modifier
 ) {
-    TextField(
-        label = { Text(stringResource(label)) },
-        value = value,
-        isError = errorMessage != null,
-        onValueChange = onValueChange,
-        keyboardOptions = keyboardOptions,
-        modifier = modifier
-    )
-    if( errorMessage != null ) {
-        Text(
-            text = errorMessage,
-            color = MaterialTheme.colorScheme.error
+    Column(modifier = modifier) {
+        TextField(
+            label = { Text(stringResource(label)) },
+            value = value,
+            isError = errorMessage != null,
+            onValueChange = onValueChange,
+            keyboardOptions = keyboardOptions,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 2.dp)
         )
+        Row(horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.Top) {
+            if (errorMessage != null) {
+                Text(
+                    text = errorMessage,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(start = 16.dp)
+                )
+            }
+        }
     }
 
 
@@ -245,28 +258,45 @@ fun PasswordField(
     onValueChange: (String) -> Unit,
     onButtonIconClicked: () -> Unit,
     showPassword: Boolean = false,
+    errorMessage: String? = null,
     keyboardOptions: KeyboardOptions
 ) {
-    TextField(
-        label = { Text(stringResource(label)) },
-        value = value,
-        onValueChange = onValueChange,
-        keyboardOptions = keyboardOptions,
-        visualTransformation =
-        if (showPassword)
-            VisualTransformation.None
-        else
-            PasswordVisualTransformation(),
-        trailingIcon = {
-            IconButton(onClick = onButtonIconClicked) {
-                Icon(
-                    painter = painterResource(icon),
-                    contentDescription = null
+    Column(modifier = modifier) {
+        TextField(
+            label = { Text(stringResource(label)) },
+            value = value,
+            onValueChange = onValueChange,
+            keyboardOptions = keyboardOptions,
+            visualTransformation =
+            if (showPassword)
+                VisualTransformation.None
+            else
+                PasswordVisualTransformation(),
+            trailingIcon = {
+                IconButton(onClick = onButtonIconClicked) {
+                    Icon(
+                        painter = painterResource(icon),
+                        contentDescription = null
+                    )
+                }
+            },
+            isError = errorMessage != null,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 2.dp)
+        )
+        Row(horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.Top) {
+            if (errorMessage != null) {
+                Text(
+                    text = errorMessage,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(start = 16.dp)
                 )
             }
-        },
-        modifier = modifier
-    )
+        }
+    }
+
 }
 
 @Composable
@@ -282,7 +312,7 @@ fun DateField(
     val interactionSource = remember { MutableInteractionSource() }
     val dateDialogState = rememberMaterialDialogState()
 
-    if(interactionSource.collectIsPressedAsState().value){
+    if (interactionSource.collectIsPressedAsState().value) {
         dateDialogState.show()
     }
 
@@ -306,11 +336,19 @@ fun DateField(
     // Datepicker-Dialog with Date-Validator
     MaterialDialog(
         dialogState = dateDialogState,
+        backgroundColor = MaterialTheme.colorScheme.background,
         buttons = {
-            positiveButton(text = stringResource(R.string.confirm)){
+            positiveButton(
+                text = stringResource(R.string.confirm), textStyle = TextStyle(
+                    color = MaterialTheme.colorScheme.primary
+                )
+            ) {
 
             }
-            negativeButton(text= stringResource(R.string.cancel))
+            negativeButton(
+                text = stringResource(R.string.cancel),
+                textStyle = TextStyle(color = MaterialTheme.colorScheme.primary)
+            )
         }
     ) {
         datepicker(
@@ -318,13 +356,21 @@ fun DateField(
             title = "Datum wählen",
             allowedDateValidator = {
                 if (dateOfLastTransaction != null)
-                    //Future dates/ dates after the date of the next transaction & dates before the last transactions can not be picked:
+                //Future dates/ dates after the date of the next transaction & dates before the last transactions can not be picked:
                     it <= dateOfNextTransaction && it >= dateOfLastTransaction
                 else
-                    //Only the future dates can not be picked
+                //Only the future dates can not be picked
                     it <= dateOfNextTransaction
             },
-            onDateChange = { onDateChange(it) }
+            onDateChange = { onDateChange(it) },
+            colors = DatePickerDefaults.colors(
+                headerBackgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                headerTextColor = MaterialTheme.colorScheme.onBackground,
+                calendarHeaderTextColor = MaterialTheme.colorScheme.primary,
+                dateActiveTextColor = MaterialTheme.colorScheme.primary,
+                dateActiveBackgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                dateInactiveTextColor = MaterialTheme.colorScheme.secondary
+            )
         )
     }
 }
@@ -416,16 +462,20 @@ fun DetailAmount(
 fun CredentialFields(
     modifier: Modifier = Modifier,
     email: String,
+    emailErrorMessage: String? = null,
+    passwordErrorMessage: String? = null,
     showPassword: Boolean,
     password: String,
     onEmailChange: (String) -> Unit,
     onPasswordChange: (String) -> Unit,
     onShowPasswordClick: () -> Unit,
+    isLastField: Boolean = false
 ) {
     FormField(
         label = R.string.e_mail,
         value = email,
         onValueChange = onEmailChange,
+        errorMessage = emailErrorMessage,
         keyboardOptions = KeyboardOptions.Default.copy(
             keyboardType = KeyboardType.Email,
             imeAction = ImeAction.Next
@@ -445,10 +495,15 @@ fun CredentialFields(
         label = R.string.password,
         value = password,
         onValueChange = onPasswordChange,
+        errorMessage = passwordErrorMessage,
         showPassword = showPassword,
         keyboardOptions = KeyboardOptions.Default.copy(
             keyboardType = KeyboardType.Password,
-            imeAction = ImeAction.Next
+            imeAction =
+            if (isLastField)
+                ImeAction.Done
+            else
+                ImeAction.Next
         ),
         modifier = modifier
             .fillMaxWidth()
@@ -575,7 +630,8 @@ fun CashBalanceBox(cashBalance: Double) {
             Text(
                 text =
                 "Kassenbestand am ${
-                    DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()).format(LocalDate.now())
+                    DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault())
+                        .format(LocalDate.now())
                 }",
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.Normal

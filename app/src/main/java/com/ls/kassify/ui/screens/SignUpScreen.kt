@@ -40,7 +40,11 @@ fun SignUpScreen(
     showPasswordConfirm: Boolean,
     email: String,
     password: String,
-    passwordConfirm: String
+    passwordConfirm: String,
+    emailErrorMessage: String? = null,
+    passwordErrorMessage: String? = null,
+    passwordConfirmErrorMessage: String? = null,
+    isError: Boolean = false
 ) {
 
     Column(
@@ -67,7 +71,9 @@ fun SignUpScreen(
             password = password,
             onEmailChange = { onEmailChange(it) },
             onPasswordChange = { onPasswordChange(it) },
-            onShowPasswordClick = { onShowPasswordClick() }
+            onShowPasswordClick = { onShowPasswordClick() },
+            emailErrorMessage = emailErrorMessage,
+            passwordErrorMessage = passwordErrorMessage
         )
 
         PasswordField(
@@ -81,6 +87,7 @@ fun SignUpScreen(
             value = passwordConfirm,
             onValueChange = { onPasswordConfirmChange(it) },
             showPassword = showPasswordConfirm,
+            errorMessage = passwordConfirmErrorMessage,
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Password,
                 imeAction = ImeAction.Done
@@ -92,6 +99,7 @@ fun SignUpScreen(
         //SignUp-Button
         Button(
             onClick = { onSignUpButtonClicked() },
+            enabled = !isError,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 16.dp)
