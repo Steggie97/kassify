@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Kassify</string>
     <string name="cancel">Abbrechen</string>
-    <string name="login">Login</string>
+    <string name="login">Anmelden</string>
     <string name="delete">Löschen</string>
     <string name="edit">Bearbeiten</string>
     <string name="save">Speichern</string>
@@ -28,4 +28,59 @@
     <string name="toast_transaction_deleted">Buchung gelöscht</string>
     <string name="confirm">Ok</string>
     <string name="vat">Vorsteuer</string>
+    <string name="signin_success">Anmeldung erfolgreich</string>
+
+    <string name="amplify_ui_authenticator_title_signin">Anmelden</string>
+    <string name="amplify_ui_authenticator_title_signup">Registrieren</string>
+    <string name="amplify_ui_authenticator_title_password_reset">Passwort zurücksetzen</string>
+
+    <string name="amplify_ui_authenticator_button_signup">Konto erstellen</string>
+    <string name="amplify_ui_authenticator_button_signin">Anmelden</string>
+    <string name="amplify_ui_authenticator_button_forgot_password">Passwort vergessen?</string>
+    <string name="amplify_ui_authenticator_button_submit">Senden</string>
+    <string name="amplify_ui_authenticator_button_back_to_signin">Zurück zur Anmeldung</string>
+    <string name="amplify_ui_authenticator_button_skip">Überspringen</string>
+
+    <string name="amplify_ui_authenticator_field_label_password">Passwort</string>
+    <string name="amplify_ui_authenticator_field_label_email">E-Mail</string>
+    <string name="amplify_ui_authenticator_field_label_password_confirm">Passwort bestätigen</string>
+    <string name="amplify_ui_authenticator_field_label_new_password">Neues Passwort</string>
+    <string name="amplify_ui_authenticator_field_label_new_password_confirm">Neues Passwort bestätigen</string>
+    <string name="amplify_ui_authenticator_field_label_confirmation_code">Bestätigungscode</string>
+
+    <string name="amplify_ui_authenticator_field_hint_password_confirm">Passwort erneut eingeben</string>
+    <string name="amplify_ui_authenticator_field_warn_unmatched_password">Passwörter stimmen nicht überein</string>
+    <string name="amplify_ui_authenticator_field_warn_empty">%s Feld darf nicht leer sein.</string>
+    <string name="amplify_ui_authenticator_field_warn_invalid_format">Ungültiges %s Format</string>
+    <string name="amplify_ui_authenticator_field_hint">%s eingeben </string>
+
+    <!-- Amplify Authenticator Messages -->
+    <string name="amplify_ui_authenticator_message_code_sent">Bestätigungscode wurde gesendet</string>
+    <string name="amplify_ui_authenticator_message_password_reset">Passwort wurde zurückgesetzt.</string>
+
+    <string name="amplify_ui_authenticator_field_a11y_password_show">Passwort anzeigen</string>
+    <string name="amplify_ui_authenticator_field_a11y_password_hide">Passwort verbergen</string>
+    <string name="amplify_ui_authenticator_field_password_requirements">Das Passwort muss enthalten:</string>
+    <string name="amplify_ui_authenticator_field_password_missing_special">* mindestens ein Sonderzeichen</string>
+    <string name="amplify_ui_authenticator_field_password_missing_number">* mindestens eine Zahl</string>
+    <string name="amplify_ui_authenticator_field_password_missing_upper">* mindestens ein Großbuchstabe</string>
+    <string name="amplify_ui_authenticator_field_password_missing_lower">* mindestens ein Kleinbuchstabe</string>
+    <plurals name="amplify_ui_authenticator_field_password_too_short">
+        <!-- in English 6-99 all use the same grammar -->
+        <item quantity="other">* mindestens %d Zeichen</item>
+    </plurals>
+
+    <!-- Amplify Error Messages -->
+    <string name="amplify_ui_authenticator_error_invalid_signin">E-Mail oder Passwort ist falsch.</string>
+    <string name="amplify_ui_authenticator_error_cannot_reset_password">Benutzerkennwort kann im aktuellen Zustand nicht zurückgesetzt werden</string>
+    <string name="amplify_ui_authenticator_error_send_code">Bestätigungscode konnte nicht gesendet werden</string>
+    <string name="amplify_ui_authenticator_error_expired_code">Der Bestätigungscode ist abgelaufen</string>
+    <string name="amplify_ui_authenticator_error_network">Bitte überprüfen Sie Ihre Netzwerkverbindung</string>
+    <string name="amplify_ui_authenticator_error_unknown">Entschuldigung, etwas ist schief gelaufen</string>
+
+    <string name="amplify_ui_authenticator_confirmation_code_sent">Ein Bestätigungscode wurde gesendet an <b>%s</b>.</string>
+    <string name="amplify_ui_authenticator_confirmation_code_sent_unknown">Ein Bestätigungscode wurde gesendet.</string>
+    <string name="amplify_ui_authenticator_field_warn_incorrect_code">Falscher Bestätigungscode</string>
+    <string name="amplify_ui_authenticator_field_warn_existing">%s existiert bereits</string>
+
 </resources>

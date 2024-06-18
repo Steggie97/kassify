@@ -16,6 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.amplifyframework.core.Amplify
 import com.ls.kassify.R
 import com.ls.kassify.ui.screens.LogInScreen
 import com.ls.kassify.ui.screens.SignUpScreen
@@ -44,20 +45,23 @@ fun KassifyApp(
     val context = LocalContext.current
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = KassifyScreen.valueOf(
-        backStackEntry?.destination?.route ?: KassifyScreen.Login.name
+        backStackEntry?.destination?.route ?: KassifyScreen.TransactionList.name
     )
     Scaffold(topBar = {
         KassifyAppBar(
             title = currentScreen.title,
             onCancelButtonClicked = {
-                navController.navigateUp()
+                //navController.navigateUp()
+                Amplify.Auth.signOut { }
             },
-            canNavigateBack = navController.previousBackStackEntry != null
+            canNavigateBack = true//navController.previousBackStackEntry != null
         )
     }) { innerPadding ->
+
+
         NavHost(
             navController = navController,
-            startDestination = KassifyScreen.Login.name,
+            startDestination = KassifyScreen.TransactionList.name,
             modifier = Modifier.padding(innerPadding)
         ) {
             //Login Screen

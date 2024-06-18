@@ -28,6 +28,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
@@ -224,7 +225,7 @@ fun FormField(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        TextField(
+        OutlinedTextField(
             label = { Text(stringResource(label)) },
             value = value,
             isError = errorMessage != null,
@@ -318,7 +319,7 @@ fun DateField(
 
     //Clickable Text-Field:
     // UI-Composables
-    TextField(
+    OutlinedTextField(
         modifier = modifier,
         value = DateTimeFormatter.ofPattern("dd.MM.yyyy").format(selectedDate),
         onValueChange = {},

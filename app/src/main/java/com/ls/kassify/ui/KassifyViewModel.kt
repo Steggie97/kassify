@@ -74,7 +74,6 @@ class KassifyViewModel : ViewModel() {
                 true
             }
     }
-
     //ViewModel-Functions
     //Login & SignUp Screen
     fun switchShowPassword() {
