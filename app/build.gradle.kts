@@ -11,8 +11,6 @@ android {
     buildFeatures {
         viewBinding=true
     }
-
-
     defaultConfig {
         applicationId = "com.ls.kassify"
         minSdk = 33
@@ -25,7 +23,6 @@ android {
             useSupportLibrary = true
         }
     }
-
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -36,6 +33,8 @@ android {
         }
     }
     compileOptions {
+        // Support for Java 8 features
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
@@ -72,8 +71,14 @@ dependencies {
     implementation(libs.androidx.material)
     implementation(libs.material3)
     
-    // Date picker Material-Design Dialog
+    // Date picker MaterialDesignDialog
     implementation(libs.compose.material.dialogs.datetime)
+
+    // AWS Amplify dependencies
+    implementation(libs.aws.api)
+    implementation(libs.authenticator)
+    coreLibraryDesugaring(libs.desugar.jdk.libs)
+
 
     //Test-Dependencies:
     testImplementation(libs.junit)
