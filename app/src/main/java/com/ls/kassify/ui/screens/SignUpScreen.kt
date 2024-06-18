@@ -58,7 +58,7 @@ fun SignUpScreen(
     ) {
         //Logo
         Image(
-            painter = painterResource(R.drawable.file),
+            painter = painterResource(R.drawable.logo),
             contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth(0.6f)
