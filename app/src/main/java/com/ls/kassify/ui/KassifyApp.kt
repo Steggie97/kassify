@@ -3,12 +3,16 @@ package com.ls.kassify.ui
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -18,6 +22,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.amplifyframework.core.Amplify
 import com.ls.kassify.R
+import com.ls.kassify.ui.screens.DeleteDialog
 import com.ls.kassify.ui.screens.LogInScreen
 import com.ls.kassify.ui.screens.SignUpScreen
 import com.ls.kassify.ui.screens.TransactionDetailsScreen
@@ -28,6 +33,7 @@ import com.ls.kassify.ui.theme.KassifyTheme
 enum class KassifyScreen(@StringRes val title: Int) {
     Login(title = R.string.app_name),
     SignUp(title = R.string.app_name),
+    ForgotPass(title = R.string.forgot_password),
     TransactionList(title = R.string.cash_register),
     TransactionDetails(
         title = R.string.transaction_details
@@ -42,22 +48,36 @@ fun KassifyApp(
     navController: NavHostController = rememberNavController()
 ) {
     val appUiState by viewModel.uiState.collectAsState()
+    val showLogoutDialog = viewModel.showLogoutDialog
     val context = LocalContext.current
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = KassifyScreen.valueOf(
         backStackEntry?.destination?.route ?: KassifyScreen.TransactionList.name
     )
+    val onCancelButtonClicked: () -> Unit = {
+        if (currentScreen == KassifyScreen.TransactionList) {
+            viewModel.updateShowLogoutDialog()
+        } else {
+            navController.navigateUp()
+        }
+    }
     Scaffold(topBar = {
         KassifyAppBar(
             title = currentScreen.title,
-            onCancelButtonClicked = {
-                //navController.navigateUp()
-                Amplify.Auth.signOut { }
-            },
-            canNavigateBack = true//navController.previousBackStackEntry != null
+            onCancelButtonClicked = onCancelButtonClicked,
+            canNavigateBack = true // navController.previousBackStackEntry != null
         )
     }) { innerPadding ->
-
+        if (showLogoutDialog) {
+            LogoutDialog(
+                onConfirmButtonClicked = {
+                    Amplify.Auth.signOut {
+                        navController.navigate(KassifyScreen.Login.name)
+                    }
+                },
+                onCancelButtonClicked = { viewModel.updateShowLogoutDialog() }
+            )
+        }
 
         NavHost(
             navController = navController,
@@ -67,7 +87,9 @@ fun KassifyApp(
             //Login Screen
             composable(route = KassifyScreen.Login.name) {
                 LogInScreen(
-                    onForgotPasswordButtonClicked = {},
+                    onForgotPasswordButtonClicked = {
+                        navController.navigate(KassifyScreen.ForgotPass.name)
+                    },
                     onLoginButtonClicked = {
                         navController.navigate(KassifyScreen.TransactionList.name)
                     },
@@ -243,7 +265,6 @@ fun KassifyAppPreview() {
     KassifyTheme(darkTheme = false) {
         KassifyApp()
     }
-
 }
 
 @Preview(
@@ -254,4 +275,26 @@ fun KassifyAppDarkThemePreview() {
     KassifyTheme(darkTheme = true) {
         KassifyApp()
     }
+}
+
+@Composable
+fun LogoutDialog(
+    onConfirmButtonClicked: () -> Unit,
+    onCancelButtonClicked: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = { onCancelButtonClicked() },
+        title = { Text(text = stringResource(R.string.logout)) },
+        text = { Text(text = stringResource(R.string.logout_question)) },
+        dismissButton = {
+            TextButton(onClick = { onCancelButtonClicked() }) {
+                Text(text = stringResource(R.string.cancel))
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = { onConfirmButtonClicked() }) {
+                Text(text = stringResource(R.string.logout))
+            }
+        }
+    )
 }

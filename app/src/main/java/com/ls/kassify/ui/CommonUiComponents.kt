@@ -157,7 +157,6 @@ fun TransactionCard(
         }
     }
 }
-
 @Composable
 fun FormSwitch(
     modifier: Modifier = Modifier,

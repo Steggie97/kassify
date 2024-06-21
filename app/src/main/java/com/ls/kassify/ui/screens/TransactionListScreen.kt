@@ -1,5 +1,6 @@
 package com.ls.kassify.ui.screens
 
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

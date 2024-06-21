@@ -34,6 +34,9 @@ class KassifyViewModel : ViewModel() {
     var showDeleteDialog by mutableStateOf(false)
         private set
 
+    var showLogoutDialog by mutableStateOf(false)
+        private set
+
     // Validation:
     var validEmail: ValidationResult = ValidationResult(successful = true)
         private set
@@ -86,6 +89,9 @@ class KassifyViewModel : ViewModel() {
 
     fun updateShowDeleteDialog() {
         showDeleteDialog = !showDeleteDialog
+    }
+    fun updateShowLogoutDialog() {
+        showLogoutDialog = !showLogoutDialog
     }
 
     fun updatePassword(newPassword: String) {
