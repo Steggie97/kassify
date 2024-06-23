@@ -1,5 +1,6 @@
 package com.ls.kassify.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,15 +10,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
@@ -49,24 +54,24 @@ fun TransactionEditorScreen(
     dateOfNextTransaction: LocalDate = LocalDate.now(),
     isError: Boolean = false
 ) {
-
     Box(
         modifier = Modifier
             .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
             modifier = modifier
-                .padding(horizontal = 24.dp)
+                .padding(16.dp)
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Spacer(modifier = Modifier.height(32.dp))
-            //Date-Field with Datepicker
+            Spacer(modifier = Modifier.height(16.dp))
+
             DateField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 24.dp, bottom = 8.dp),
+                    .padding(vertical = 8.dp),
                 label = R.string.date,
                 icon = R.drawable.calendar_icon,
                 onDateChange = { onDateChange("date", "", it) },
@@ -105,7 +110,7 @@ fun TransactionEditorScreen(
                 ),
                 errorMessage = amountErrorMessage,
                 modifier = Modifier
-                    .padding(bottom = 8.dp)
+                    .padding(vertical = 8.dp)
                     .fillMaxWidth()
             )
 
@@ -114,18 +119,17 @@ fun TransactionEditorScreen(
                 defaultLabel = transaction.category,
                 onCategoryChange = { onChange("category", it) },
                 modifier = Modifier
-                    .padding(start = 16.dp, bottom = 8.dp)
+                    .padding(vertical = 8.dp)
                     .fillMaxWidth()
             )
 
             if (!transaction.isPositiveAmount) {
-                // TODO: Dropdown-Field für USt-Sachverhalte (keine USt, 19% USt, 7% USt) einfuegen
                 UStFormField(
                     label = R.string.vat,
                     defaultLabel = "Steuersatz wählen",
                     onUStChange = { onChange("USt", it) },
                     modifier = Modifier
-                        .padding(start = 16.dp, bottom = 8.dp)
+                        .padding(vertical = 8.dp)
                         .fillMaxWidth()
                 )
             }
@@ -139,7 +143,7 @@ fun TransactionEditorScreen(
                     imeAction = ImeAction.Next
                 ),
                 modifier = Modifier
-                    .padding(bottom = 24.dp)
+                    .padding(vertical = 8.dp)
                     .fillMaxWidth()
             )
 
@@ -152,32 +156,29 @@ fun TransactionEditorScreen(
                     imeAction = ImeAction.Done
                 ),
                 modifier = Modifier
-                    .padding(bottom = 32.dp)
+                    .padding(vertical = 8.dp)
                     .fillMaxWidth()
             )
 
-            //Save-Button
             Button(
                 onClick = { onSaveButtonClicked(transaction) },
                 enabled = !isError,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp)
+                    .padding(vertical = 8.dp)
             ) {
                 Text(text = stringResource(R.string.save))
             }
 
-            //Cancel-Button
             OutlinedButton(
                 onClick = { onCancelButtonClicked() },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(stringResource(R.string.cancel))
             }
-        }
 
-        //Cash Balance Box
-        CashBalanceBox(cashBalance = cashBalance)
+            CashBalanceBox(cashBalance = cashBalance)
+        }
     }
 }
 
@@ -197,5 +198,3 @@ fun TransactionEditorScreenPreview() {
         amountInput = "",
     )
 }
-
-

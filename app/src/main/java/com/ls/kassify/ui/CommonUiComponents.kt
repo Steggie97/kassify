@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import com.ls.kassify.ui.theme.TextDownloadableFontsSnippet2.fontFamily
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -54,6 +55,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ls.kassify.R
@@ -85,7 +87,10 @@ fun KassifyAppBar(
                 Text(
                     text = stringResource(title),
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.align(Alignment.Center)
+                    modifier = Modifier.align(Alignment.Center),
+                    fontWeight = FontWeight.ExtraBold,
+                    fontFamily = fontFamily,
+                    fontSize = 25.sp
                 )
                 if (canNavigateBack) {
                     IconButton(onClick = { onCancelButtonClicked() }) {
