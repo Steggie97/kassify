@@ -16,6 +16,7 @@ import com.ls.kassify.ui.theme.TextDownloadableFontsSnippet2.fontFamily
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -45,6 +46,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -55,7 +57,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ls.kassify.R
@@ -111,17 +112,22 @@ fun TransactionCard(
     onClick: () -> Unit,
     date: String,
     amount: Double,
-    text: String
+    text: String,
+    shape: androidx.compose.ui.graphics.Shape,
+    backgroundColor: Color = MaterialTheme.colorScheme.secondaryContainer
 ) {
     TextButton(
         onClick = { onClick() },
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(0.dp)
+        contentPadding = PaddingValues(0.dp),
+        shape = shape
     ) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(64.dp),
+            shape = RoundedCornerShape(20.dp),
+            colors = CardDefaults.cardColors(containerColor = backgroundColor),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         ) {
             Row(
@@ -133,6 +139,7 @@ fun TransactionCard(
             ) {
                 Text(
                     text = date,
+                    fontSize = 18.sp,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .weight(3 / 12f)
@@ -140,6 +147,7 @@ fun TransactionCard(
                 )
                 Text(
                     text = text,
+                    fontSize = 18.sp,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .weight(3 / 10f)
@@ -149,6 +157,7 @@ fun TransactionCard(
                     text = NumberFormat.getCurrencyInstance().format(amount),
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.End,
+                    fontSize = 18.sp,
                     color =
                     if (amount < 0.00)
                         MaterialTheme.colorScheme.error
@@ -352,7 +361,7 @@ fun DateField(
             }
             negativeButton(
                 text = stringResource(R.string.cancel),
-                textStyle = TextStyle(color = MaterialTheme.colorScheme.primary)
+                textStyle = TextStyle(color = MaterialTheme.colorScheme.primary),
             )
         }
     ) {
@@ -552,6 +561,8 @@ fun CategoryFormField(
                         text = {
                             Text(
                                 text = option,
+                                fontSize = 15.sp,
+                                fontFamily= fontFamily
                             )
                         },
                         onClick = {
@@ -639,12 +650,16 @@ fun CashBalanceBox(cashBalance: Double) {
                         .format(LocalDate.now())
                 }",
                 style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Normal
+                fontWeight = FontWeight.Normal,
+                fontFamily = fontFamily,
+                fontSize = 18.sp
             )
             Text(
                 text = NumberFormat.getCurrencyInstance().format(cashBalance),
                 style = MaterialTheme.typography.bodyLarge,
                 fontWeight = FontWeight.Bold,
+                fontFamily = fontFamily,
+                fontSize = 18.sp,
                 color =
                 if (cashBalance < 0.00)
                     MaterialTheme.colorScheme.error

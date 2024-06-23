@@ -29,6 +29,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.ls.kassify.R
 import com.ls.kassify.data.Transaction
 import com.ls.kassify.ui.CashBalanceBox
@@ -37,6 +38,7 @@ import com.ls.kassify.ui.DateField
 import com.ls.kassify.ui.FormField
 import com.ls.kassify.ui.FormSwitch
 import com.ls.kassify.ui.UStFormField
+import com.ls.kassify.ui.theme.TextDownloadableFontsSnippet2.fontFamily
 import java.time.LocalDate
 
 @Composable
@@ -167,14 +169,19 @@ fun TransactionEditorScreen(
                     .fillMaxWidth()
                     .padding(vertical = 8.dp)
             ) {
-                Text(text = stringResource(R.string.save))
+                Text(
+                    text = stringResource(R.string.save),
+                    fontFamily = fontFamily,
+                    fontSize = 18.sp,)
             }
 
             OutlinedButton(
                 onClick = { onCancelButtonClicked() },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(stringResource(R.string.cancel))
+                Text(text =stringResource(R.string.cancel),
+                    fontFamily = fontFamily,
+                    fontSize = 18.sp,)
             }
 
             CashBalanceBox(cashBalance = cashBalance)
