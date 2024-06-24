@@ -24,7 +24,7 @@
     <string name="transaction_new">Neue Buchung anlegen</string>
     <string name="transaction_details">Buchungs-Details</string>
     <string name="delete_transaction">Buchung löschen</string>
-    <string name="logout">Ausgang</string>
+    <string name="logout">Logout</string>
     <string name="logout_question">Möchten Sie sich abmelden?</string>
     <string name="ask_delete_confirm">Möchten Sie die Buchung wirklich löschen?</string>
     <string name="toast_transaction_saved">Buchung gespeichert</string>

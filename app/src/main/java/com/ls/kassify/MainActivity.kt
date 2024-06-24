@@ -52,18 +52,113 @@ class MainActivity : ComponentActivity() {
             KassifyTheme {
                 Surface(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .statusBarsPadding()
-                        .safeDrawingPadding(),
+                        .fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
                     CompositionLocalProvider(
-                        LocalFontFamilyResolver provides createFontFamilyResolver(LocalContext.current, handler)
+                        LocalFontFamilyResolver provides createFontFamilyResolver(
+                            LocalContext.current,
+                            handler
+                        )
                     ) {
-                        KassifyApp()
+
+                        // Authenticator bitte nicht löschen, nur bei Bedarf auskommentieren (Enthält LogIn-Screen, etc.)
+
+                        Authenticator(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 8.dp),
+                            headerContent = {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(top = 64.dp),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Image(
+                                        painter = painterResource(R.drawable.logo),
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .fillMaxWidth(0.6f)
+                                            .padding(bottom = 32.dp)
+                                    )
+                                }
+                            },
+                            signInContent = { signInState ->
+                                SignIn(
+                                    state = signInState,
+                                    headerContent = {
+                                        Column {
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(bottom = 8.dp),
+                                                horizontalArrangement = Arrangement.Center
+                                            )
+                                            {
+                                                Text(
+                                                    text = stringResource(R.string.amplify_ui_authenticator_title_signin),
+                                                    style = MaterialTheme.typography.titleLarge,
+                                                    color = MaterialTheme.colorScheme.onBackground
+                                                )
+                                            }
+                                        }
+                                    }
+                                )
+                            },
+                            signUpContent = { signUpState ->
+                                SignUp(
+                                    state = signUpState,
+                                    headerContent = {
+                                        Column {
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(bottom = 8.dp),
+                                                horizontalArrangement = Arrangement.Center
+                                            )
+                                            {
+                                                Text(
+                                                    text = stringResource(R.string.amplify_ui_authenticator_title_signup),
+                                                    style = MaterialTheme.typography.titleLarge,
+                                                    color = MaterialTheme.colorScheme.onBackground
+                                                )
+                                            }
+                                        }
+                                    }
+                                )
+
+                            },
+                            passwordResetContent = { passwordResetState ->
+                                PasswordReset(
+                                    state = passwordResetState,
+                                    headerContent = {
+                                        Column {
+                                            Row(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(bottom = 8.dp),
+                                                horizontalArrangement = Arrangement.Center
+                                            )
+                                            {
+                                                Text(
+                                                    text = stringResource(R.string.amplify_ui_authenticator_title_password_reset),
+                                                    style = MaterialTheme.typography.titleLarge,
+                                                    color = MaterialTheme.colorScheme.onBackground
+                                                )
+                                            }
+                                        }
+                                    }
+                                )
+                            }
+                        ) { //Vorstehende Klammer kann Auskommentiert werden
+                        // Anzeige des TransactionList-Screens, nach erfolgreicher Anmeldung
+                            KassifyApp()
+                        } // Vorstehende Klammer kann auskommentiert werden.
                     }
                 }
             }
         }
     }
 }
+

@@ -48,7 +48,6 @@ fun KassifyApp(
     navController: NavHostController = rememberNavController()
 ) {
     val appUiState by viewModel.uiState.collectAsState()
-    val showLogoutDialog = viewModel.showLogoutDialog
     val context = LocalContext.current
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = KassifyScreen.valueOf(
@@ -68,12 +67,13 @@ fun KassifyApp(
             canNavigateBack = true // navController.previousBackStackEntry != null
         )
     }) { innerPadding ->
-        if (showLogoutDialog) {
+        if (viewModel.showLogoutDialog) {
             LogoutDialog(
                 onConfirmButtonClicked = {
                     Amplify.Auth.signOut {
-                        navController.navigate(KassifyScreen.Login.name)
+                        //navController.navigate(KassifyScreen.Login.name)
                     }
+                    viewModel.updateShowLogoutDialog()
                 },
                 onCancelButtonClicked = { viewModel.updateShowLogoutDialog() }
             )

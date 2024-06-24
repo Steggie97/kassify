@@ -41,12 +41,9 @@ fun TransactionDetailsScreen(
     transaction: Transaction,
     showDeleteDialog: Boolean
 ) {
-    //var showDeleteDialog by remember { mutableStateOf(false) }
     Column(
         modifier = modifier
-            .statusBarsPadding()
-            .padding(horizontal = 24.dp)
-            .safeDrawingPadding()
+            .padding(start = 16.dp, end = 16.dp, top = 8.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
@@ -56,12 +53,12 @@ fun TransactionDetailsScreen(
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
-                .padding(top = 16.dp, bottom = 16.dp)
+                .padding(bottom = 8.dp)
         )
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 32.dp, bottom = 64.dp),
+                .padding(top = 16.dp, bottom = 32.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
             DetailItem(

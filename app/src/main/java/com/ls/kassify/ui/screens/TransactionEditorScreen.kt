@@ -63,7 +63,8 @@ fun TransactionEditorScreen(
     ) {
         Column(
             modifier = modifier
-                .padding(16.dp)
+                .padding(top = 32.dp, start = 16.dp, end = 16.dp)
+                .fillMaxWidth()
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
@@ -95,10 +96,8 @@ fun TransactionEditorScreen(
                 iconUnchecked = R.drawable.remove_icon,
                 tintIconUnchecked = MaterialTheme.colorScheme.background,
                 checkedThumbColor = colorResource(R.color.green),
-                //MaterialTheme.colorScheme.primary,
                 checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
                 uncheckedThumbColor = colorResource(R.color.red),
-                //MaterialTheme.colorScheme.secondary,
                 uncheckedTrackColor = MaterialTheme.colorScheme.secondaryContainer
             )
 
@@ -121,7 +120,7 @@ fun TransactionEditorScreen(
                 defaultLabel = transaction.category,
                 onCategoryChange = { onChange("category", it) },
                 modifier = Modifier
-                    .padding(vertical = 8.dp)
+                    .padding(bottom = 8.dp)
                     .fillMaxWidth()
             )
 
@@ -131,7 +130,7 @@ fun TransactionEditorScreen(
                     defaultLabel = "Steuersatz wählen",
                     onUStChange = { onChange("USt", it) },
                     modifier = Modifier
-                        .padding(vertical = 8.dp)
+                        .padding(bottom = 8.dp)
                         .fillMaxWidth()
                 )
             }
@@ -183,9 +182,8 @@ fun TransactionEditorScreen(
                     fontFamily = fontFamily,
                     fontSize = 18.sp,)
             }
-
-            CashBalanceBox(cashBalance = cashBalance)
         }
+        CashBalanceBox(cashBalance = cashBalance)
     }
 }
 
