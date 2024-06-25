@@ -57,6 +57,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.amplifyframework.auth.AuthCodeDeliveryDetails
 import com.ls.kassify.R
 import com.ls.kassify.ui.theme.TextDownloadableFontsSnippet2.fontFamily
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -102,6 +103,53 @@ fun KassifyAppBar(
         }
     )
 }
+
+// Composable Functions for AWS Amplify-Authenticator
+@Composable
+fun AuthHeaderContent(
+    @StringRes title: Int
+) {
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement.Center
+        )
+        {
+            Text(
+                text = stringResource(title),
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+        }
+    }
+}
+
+@Composable
+fun DetailsNoticeContent(details: AuthCodeDeliveryDetails) {
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(bottom = 8.dp),
+            horizontalArrangement = Arrangement.Center
+        )
+        {
+            Text(
+                text = stringResource(
+                    R.string.amplify_ui_authenticator_confirmation_code_sent,
+                    details.destination
+                ),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
+        }
+    }
+}
+
+//Composable-Functions App Content:
 
 @Composable
 fun TransactionCard(

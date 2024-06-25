@@ -37,6 +37,8 @@ import com.amplifyframework.ui.authenticator.ui.SignIn
 import com.amplifyframework.ui.authenticator.ui.SignUp
 import com.amplifyframework.ui.authenticator.ui.SignUpConfirm
 import com.amplifyframework.ui.authenticator.ui.SignUpConfirmFooter
+import com.ls.kassify.ui.AuthHeaderContent
+import com.ls.kassify.ui.DetailsNoticeContent
 import com.ls.kassify.ui.KassifyApp
 import com.ls.kassify.ui.theme.KassifyTheme
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -92,21 +94,7 @@ class MainActivity : ComponentActivity() {
                                 SignIn(
                                     state = signInState,
                                     headerContent = {
-                                        Column {
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(bottom = 8.dp),
-                                                horizontalArrangement = Arrangement.Center
-                                            )
-                                            {
-                                                Text(
-                                                    text = stringResource(R.string.amplify_ui_authenticator_title_signin),
-                                                    style = MaterialTheme.typography.titleLarge,
-                                                    color = MaterialTheme.colorScheme.onBackground
-                                                )
-                                            }
-                                        }
+                                        AuthHeaderContent(title = R.string.amplify_ui_authenticator_title_signin)
                                     }
                                 )
                             },
@@ -114,21 +102,7 @@ class MainActivity : ComponentActivity() {
                                 SignUp(
                                     state = signUpState,
                                     headerContent = {
-                                        Column {
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(bottom = 8.dp),
-                                                horizontalArrangement = Arrangement.Center
-                                            )
-                                            {
-                                                Text(
-                                                    text = stringResource(R.string.amplify_ui_authenticator_title_signup),
-                                                    style = MaterialTheme.typography.titleLarge,
-                                                    color = MaterialTheme.colorScheme.onBackground
-                                                )
-                                            }
-                                        }
+                                        AuthHeaderContent(title = R.string.amplify_ui_authenticator_title_signup)
                                     }
                                 )
 
@@ -137,21 +111,7 @@ class MainActivity : ComponentActivity() {
                                 PasswordReset(
                                     state = passwordResetState,
                                     headerContent = {
-                                        Column {
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(bottom = 8.dp),
-                                                horizontalArrangement = Arrangement.Center
-                                            )
-                                            {
-                                                Text(
-                                                    text = stringResource(R.string.amplify_ui_authenticator_title_password_reset),
-                                                    style = MaterialTheme.typography.titleLarge,
-                                                    color = MaterialTheme.colorScheme.onBackground
-                                                )
-                                            }
-                                        }
+                                        AuthHeaderContent(title = R.string.amplify_ui_authenticator_title_password_reset)
                                     }
                                 )
                             },
@@ -159,39 +119,11 @@ class MainActivity : ComponentActivity() {
                                 PasswordResetConfirm(
                                     state = passwordResetConfirmState,
                                     headerContent = {
-                                        Column {
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(bottom = 8.dp),
-                                                horizontalArrangement = Arrangement.Center
-                                            )
-                                            {
-                                                Text(
-                                                    text = stringResource(R.string.amplify_ui_authenticator_title_password_reset),
-                                                    style = MaterialTheme.typography.titleLarge,
-                                                    color = MaterialTheme.colorScheme.onBackground
-                                                )
-                                            }
-                                        }
+                                        AuthHeaderContent(title = R.string.amplify_ui_authenticator_title_password_reset)
                                     },
                                     deliveryNoticeContent = { details ->
-                                        Column {
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(bottom = 8.dp),
-                                                horizontalArrangement = Arrangement.Center
-                                            )
-                                            {
-                                                if (details != null) {
-                                                    Text(
-                                                        text = stringResource(R.string.amplify_ui_authenticator_confirmation_code_sent, details.destination),
-                                                        style = MaterialTheme.typography.bodyMedium,
-                                                        color = MaterialTheme.colorScheme.onBackground
-                                                    )
-                                                }
-                                            }
+                                        if (details != null) {
+                                            DetailsNoticeContent(details = details)
                                         }
                                     }
 
@@ -201,65 +133,18 @@ class MainActivity : ComponentActivity() {
                                 SignUpConfirm(
                                     state = signUpConfirmState,
                                     headerContent = {
-                                        Column {
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(bottom = 8.dp),
-                                                horizontalArrangement = Arrangement.Center
-                                            )
-                                            {
-                                                Text(
-                                                    text = stringResource(R. string.amplify_ui_authenticator_title_signup_confirm),
-                                                    style = MaterialTheme.typography.titleLarge,
-                                                    color = MaterialTheme.colorScheme.onBackground
-                                                )
-                                            }
-                                        }
+                                        AuthHeaderContent(title = R.string.amplify_ui_authenticator_title_signup_confirm)
                                     },
                                     deliveryNoticeContent = { details ->
-                                        Column {
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(bottom = 8.dp),
-                                                horizontalArrangement = Arrangement.Center
-                                            )
-                                            {
-                                                if (details != null) {
-                                                    Text(
-                                                        text = stringResource(R.string.amplify_ui_authenticator_confirmation_code_sent, details.destination),
-                                                        style = MaterialTheme.typography.bodyMedium,
-                                                        color = MaterialTheme.colorScheme.onBackground
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    },
-                                    /*
-                                    footerContent = { state ->
-                                        val scope = rememberCoroutineScope()
-                                        Column {
-                                            Text(
-                                                text = stringResource(R.string.amplify_ui_authenticator_button_lost_code),
-                                                color = MaterialTheme.colorScheme.onBackground,
-                                                style = MaterialTheme.typography.bodyMedium,
-                                                modifier = Modifier.padding(vertical = 8.dp)
-                                            )
-                                            TextButton(onClick = { scope.launch { state.resendCode() } }) {
-                                                Text(
-                                                    text = stringResource(R.string.amplify_ui_authenticator_button_resend_code),
-                                                )
-                                            }
+                                        if (details != null) {
+                                            DetailsNoticeContent(details = details)
                                         }
                                     }
-
-                                     */
                                 )
 
                             }
                         ) { //Vorstehende Klammer kann Auskommentiert werden
-                        // Anzeige des TransactionList-Screens, nach erfolgreicher Anmeldung
+                            // Anzeige des TransactionList-Screens, nach erfolgreicher Anmeldung
                             KassifyApp()
                         } // Vorstehende Klammer kann auskommentiert werden.
                     }
