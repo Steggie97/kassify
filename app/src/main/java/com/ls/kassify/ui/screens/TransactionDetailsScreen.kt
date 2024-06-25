@@ -4,8 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeDrawingPadding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
@@ -39,7 +37,8 @@ fun TransactionDetailsScreen(
     onCancelButtonClicked: () -> Unit,
     onCancelDeleteDialogClicked: () -> Unit,
     transaction: Transaction,
-    showDeleteDialog: Boolean
+    showDeleteDialog: Boolean,
+    lastTransaction: Boolean
 ) {
     Column(
         modifier = modifier
@@ -68,7 +67,7 @@ fun TransactionDetailsScreen(
             DetailAmount(
                 label = R.string.amount,
                 amount =
-                if(transaction.isPositiveAmount == true)
+                if (transaction.isPositiveAmount == true)
                     transaction.amount
                 else
                     (transaction.amount * -1.00)
@@ -87,26 +86,29 @@ fun TransactionDetailsScreen(
                 lastItem = true
             )
         }
+        // Only the last transaction can be deleted or edited
+        if (lastTransaction) {
+            //Edit-Button
+            Button(
+                onClick = { onEditButtonClicked(transaction.transId) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+            ) {
+                Text(stringResource(R.string.edit))
+            }
 
-        //Edit-Button
-        Button(
-            onClick = { onEditButtonClicked(transaction.transId) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-        ) {
-            Text(stringResource(R.string.edit))
+            //Delete-Button
+            Button(
+                onClick = { onDeleteButtonClicked() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 16.dp)
+            ) {
+                Text(stringResource(R.string.delete))
+            }
         }
 
-        //Delete-Button
-        Button(
-            onClick = { onDeleteButtonClicked() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-        ) {
-            Text(stringResource(R.string.delete))
-        }
 
         //Cancel-Button
         OutlinedButton(
@@ -170,6 +172,7 @@ fun TransactionDetailsScreenPreview() {
             category = "laufende KFZ-Kosten",
             receiptNo = "Rg-Nr.12342",
             text = "Aral - tanken"
-        )
+        ),
+        lastTransaction = true
     )
 }

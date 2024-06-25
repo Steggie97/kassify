@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import com.ls.kassify.ui.theme.TextDownloadableFontsSnippet2.fontFamily
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
@@ -46,7 +45,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -60,6 +58,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ls.kassify.R
+import com.ls.kassify.ui.theme.TextDownloadableFontsSnippet2.fontFamily
 import com.vanpra.composematerialdialogs.MaterialDialog
 import com.vanpra.composematerialdialogs.datetime.date.DatePickerDefaults
 import com.vanpra.composematerialdialogs.datetime.date.datepicker
@@ -76,8 +75,6 @@ import java.util.Locale
 fun KassifyAppBar(
     @StringRes title: Int,
     onCancelButtonClicked: () -> Unit,
-    canNavigateBack: Boolean,
-    modifier: Modifier = Modifier
 ) {
     TopAppBar(
         colors = TopAppBarDefaults.mediumTopAppBarColors(
@@ -93,14 +90,14 @@ fun KassifyAppBar(
                     fontFamily = fontFamily,
                     fontSize = 25.sp
                 )
-                if (canNavigateBack) {
-                    IconButton(onClick = { onCancelButtonClicked() }) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = stringResource(R.string.back)
-                        )
-                    }
+
+                IconButton(onClick = { onCancelButtonClicked() }) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = stringResource(R.string.back)
+                    )
                 }
+
             }
         }
     )
@@ -171,6 +168,7 @@ fun TransactionCard(
         }
     }
 }
+
 @Composable
 fun FormSwitch(
     modifier: Modifier = Modifier,
@@ -190,7 +188,7 @@ fun FormSwitch(
         modifier = Modifier
             .fillMaxWidth()
             .height(64.dp)
-            //.padding(start = 16.dp, bottom = 8.dp)
+        //.padding(start = 16.dp, bottom = 8.dp)
         ,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -563,7 +561,7 @@ fun CategoryFormField(
                             Text(
                                 text = option,
                                 fontSize = 15.sp,
-                                fontFamily= fontFamily
+                                fontFamily = fontFamily
                             )
                         },
                         onClick = {

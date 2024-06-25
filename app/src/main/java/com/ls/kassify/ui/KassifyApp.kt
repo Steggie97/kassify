@@ -22,22 +22,14 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.amplifyframework.core.Amplify
 import com.ls.kassify.R
-import com.ls.kassify.ui.screens.DeleteDialog
-import com.ls.kassify.ui.screens.LogInScreen
-import com.ls.kassify.ui.screens.SignUpScreen
 import com.ls.kassify.ui.screens.TransactionDetailsScreen
 import com.ls.kassify.ui.screens.TransactionEditorScreen
 import com.ls.kassify.ui.screens.TransactionListScreen
 import com.ls.kassify.ui.theme.KassifyTheme
 
 enum class KassifyScreen(@StringRes val title: Int) {
-    Login(title = R.string.app_name),
-    SignUp(title = R.string.app_name),
-    ForgotPass(title = R.string.forgot_password),
     TransactionList(title = R.string.cash_register),
-    TransactionDetails(
-        title = R.string.transaction_details
-    ),
+    TransactionDetails(title = R.string.transaction_details),
     TransactionEditor(title = R.string.transaction_edit),
     NewTransaction(title = R.string.transaction_new)
 }
@@ -64,15 +56,12 @@ fun KassifyApp(
         KassifyAppBar(
             title = currentScreen.title,
             onCancelButtonClicked = onCancelButtonClicked,
-            canNavigateBack = true // navController.previousBackStackEntry != null
         )
     }) { innerPadding ->
         if (viewModel.showLogoutDialog) {
             LogoutDialog(
                 onConfirmButtonClicked = {
-                    Amplify.Auth.signOut {
-                        //navController.navigate(KassifyScreen.Login.name)
-                    }
+                    Amplify.Auth.signOut { }
                     viewModel.updateShowLogoutDialog()
                 },
                 onCancelButtonClicked = { viewModel.updateShowLogoutDialog() }
@@ -84,55 +73,6 @@ fun KassifyApp(
             startDestination = KassifyScreen.TransactionList.name,
             modifier = Modifier.padding(innerPadding)
         ) {
-            //Login Screen
-            composable(route = KassifyScreen.Login.name) {
-                LogInScreen(
-                    onForgotPasswordButtonClicked = {
-                        navController.navigate(KassifyScreen.ForgotPass.name)
-                    },
-                    onLoginButtonClicked = {
-                        navController.navigate(KassifyScreen.TransactionList.name)
-                    },
-                    onSignUpButtonClicked = {
-                        navController.navigate(KassifyScreen.SignUp.name)
-                    },
-                    email = appUiState.email,
-                    emailErrorMessage = viewModel.validEmail.errorMessage,
-                    password = appUiState.password,
-                    passwordErrorMessage = viewModel.validPassword.errorMessage,
-                    showPassword = viewModel.showPassword,
-                    onEmailChange = { viewModel.updateEmail(it) },
-                    onPasswordChange = { viewModel.updatePassword(it) },
-                    onShowPasswordClick = { viewModel.switchShowPassword() },
-                    isError = viewModel.isError
-                )
-            }
-
-            //SignUp Screen
-            composable(route = KassifyScreen.SignUp.name) {
-                SignUpScreen(
-                    onSignUpButtonClicked = {
-                        navController.navigate(KassifyScreen.Login.name)
-                    },
-                    onCancelButtonClicked = {
-                        navController.navigateUp()
-                    },
-                    email = appUiState.email,
-                    emailErrorMessage = viewModel.validEmail.errorMessage,
-                    password = appUiState.password,
-                    passwordErrorMessage = viewModel.validPassword.errorMessage,
-                    passwordConfirm = viewModel.passwordConfirm,
-                    passwordConfirmErrorMessage = viewModel.validPasswordConfirm.errorMessage,
-                    showPassword = viewModel.showPassword,
-                    showPasswordConfirm = viewModel.showPasswordConfirm,
-                    onEmailChange = { viewModel.updateEmail(it) },
-                    onPasswordChange = { viewModel.updatePassword(it) },
-                    onPasswordConfirmChange = { viewModel.updatePasswordConfirm(it) },
-                    onShowPasswordClick = { viewModel.switchShowPassword() },
-                    onShowPasswordConfirmClick = { viewModel.switchShowPasswordConfirm() },
-                    isError = viewModel.isError
-                )
-            }
 
             //TransactionList-Screen
             composable(route = KassifyScreen.TransactionList.name) {
@@ -143,6 +83,7 @@ fun KassifyApp(
                     },
                     onAddButtonClicked = {
                         viewModel.createNewTransaction()
+                        viewModel.updateNextCashBalance(transaction = appUiState.currentTransaction)
                         navController.navigate(KassifyScreen.NewTransaction.name)
                     },
                     transactions = appUiState.transactionList,
@@ -154,6 +95,10 @@ fun KassifyApp(
                 TransactionDetailsScreen(
                     onEditButtonClicked = {
                         viewModel.getTransaction(it)
+                        viewModel.updateNextCashBalance(
+                            transaction = appUiState.currentTransaction,
+                            isNewTransaction = false
+                        )
                         navController.navigate(KassifyScreen.TransactionEditor.name)
                     },
                     onDeleteButtonClicked = { viewModel.updateShowDeleteDialog() },
@@ -172,6 +117,7 @@ fun KassifyApp(
                     onCancelDeleteDialogClicked = { viewModel.updateShowDeleteDialog() },
                     transaction = appUiState.currentTransaction,
                     showDeleteDialog = viewModel.showDeleteDialog,
+                    lastTransaction = viewModel.lastTransactionInList(appUiState.currentTransaction)
                 )
             }
             //TransactionEditor-Screen
@@ -194,7 +140,7 @@ fun KassifyApp(
                     dateOfNextTransaction = viewModel.getNextTransactionDate(appUiState.currentTransaction),
                     amountInput = appUiState.amountInput,
                     amountErrorMessage = viewModel.validAmount.errorMessage,
-                    cashBalance = appUiState.cashBalance,
+                    cashBalance = appUiState.nextCashBalance,
                     onDateChange = { fieldName, value, date ->
                         viewModel.updateCurrentTransaction(
                             fieldName,
@@ -235,7 +181,7 @@ fun KassifyApp(
                         appUiState.transactionList[appUiState.transactionList.lastIndex].date
                     else
                         null,
-                    cashBalance = appUiState.cashBalance,
+                    cashBalance = appUiState.nextCashBalance,
                     onDateChange = { fieldName, value, date ->
                         viewModel.updateCurrentTransaction(
                             fieldName,
@@ -253,27 +199,6 @@ fun KassifyApp(
                 )
             }
         }
-    }
-}
-
-//Previews
-@Preview(
-    showBackground = true, showSystemUi = true
-)
-@Composable
-fun KassifyAppPreview() {
-    KassifyTheme(darkTheme = false) {
-        KassifyApp()
-    }
-}
-
-@Preview(
-    showBackground = true, showSystemUi = true
-)
-@Composable
-fun KassifyAppDarkThemePreview() {
-    KassifyTheme(darkTheme = true) {
-        KassifyApp()
     }
 }
 
@@ -297,4 +222,25 @@ fun LogoutDialog(
             }
         }
     )
+}
+
+//Previews
+@Preview(
+    showBackground = true, showSystemUi = true
+)
+@Composable
+fun KassifyAppPreview() {
+    KassifyTheme(darkTheme = false) {
+        KassifyApp()
+    }
+}
+
+@Preview(
+    showBackground = true, showSystemUi = true
+)
+@Composable
+fun KassifyAppDarkThemePreview() {
+    KassifyTheme(darkTheme = true) {
+        KassifyApp()
+    }
 }

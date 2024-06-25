@@ -1,13 +1,8 @@
 package com.ls.kassify.ui.theme
 
-import android.util.Log
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.googlefonts.GoogleFont
-import androidx.compose.ui.text.googlefonts.isAvailableOnDevice
 import com.ls.kassify.R
 import com.ls.kassify.ui.theme.TextDownloadableFontsSnippet1.provider
 

@@ -21,6 +21,7 @@ class ValidateAmount {
                 } betragen."
             )
         }
+
         return ValidationResult(
             successful = true
         )

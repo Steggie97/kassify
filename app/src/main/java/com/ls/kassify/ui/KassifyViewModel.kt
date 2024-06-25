@@ -5,9 +5,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.ls.kassify.Validation.ValidateAmount
-import com.ls.kassify.Validation.ValidateConfirmPassword
-import com.ls.kassify.Validation.ValidateEmail
-import com.ls.kassify.Validation.ValidatePassword
 import com.ls.kassify.Validation.ValidationResult
 import com.ls.kassify.data.Transaction
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,15 +19,6 @@ class KassifyViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(KassifyUiState())
     val uiState: StateFlow<KassifyUiState> = _uiState.asStateFlow()
 
-    var showPassword by mutableStateOf(false)
-        private set
-
-    var showPasswordConfirm by mutableStateOf(false)
-        private set
-
-    var passwordConfirm by mutableStateOf("")
-        private set
-
     var showDeleteDialog by mutableStateOf(false)
         private set
 
@@ -38,83 +26,37 @@ class KassifyViewModel : ViewModel() {
         private set
 
     // Validation:
-    var validEmail: ValidationResult = ValidationResult(successful = true)
-        private set
-
-    var validPassword: ValidationResult = ValidationResult(successful = true)
-        private set
-
-    var validPasswordConfirm: ValidationResult = ValidationResult(successful = true)
-        private set
-
     var validAmount: ValidationResult = ValidationResult(successful = true)
         private set
 
     var isError: Boolean = false
         private set
 
-    private fun updateValidationResult(fieldName: String) {
-        when (fieldName) {
-            "email" -> validEmail = ValidateEmail().execute(_uiState.value.email)
-            "password" -> validPassword = ValidatePassword().execute(_uiState.value.password)
-            "passwordConfirm" -> validPasswordConfirm =
-                ValidateConfirmPassword().execute(_uiState.value.password, passwordConfirm)
-
-            "amount" -> validAmount = ValidateAmount().execute(
-                _uiState.value.currentTransaction.amount,
-                _uiState.value.currentTransaction.isPositiveAmount,
-                _uiState.value.cashBalance
-            )
-        }
+    private fun updateValidationResult() {
+        validAmount = ValidateAmount().execute(
+            _uiState.value.currentTransaction.amount,
+            _uiState.value.currentTransaction.isPositiveAmount,
+            _uiState.value.nextCashBalance
+        )
         updateErrorState()
     }
 
     private fun updateErrorState() {
         isError =
-            if (validEmail.successful && validPassword.successful && validPasswordConfirm.successful && validAmount.successful) {
+            if (validAmount.successful) {
                 false
             } else {
                 true
             }
     }
     //ViewModel-Functions
-    //Login & SignUp Screen
-    fun switchShowPassword() {
-        showPassword = !showPassword
-    }
-
-    fun switchShowPasswordConfirm() {
-        showPasswordConfirm = !showPasswordConfirm
-    }
 
     fun updateShowDeleteDialog() {
         showDeleteDialog = !showDeleteDialog
     }
+
     fun updateShowLogoutDialog() {
         showLogoutDialog = !showLogoutDialog
-    }
-
-    fun updatePassword(newPassword: String) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                password = newPassword
-            )
-        }
-        updateValidationResult("password")
-    }
-
-    fun updatePasswordConfirm(newPasswordConfirm: String) {
-        passwordConfirm = newPasswordConfirm
-        updateValidationResult("passwordConfirm")
-    }
-
-    fun updateEmail(newEmail: String) {
-        _uiState.update { currentState ->
-            currentState.copy(
-                email = newEmail
-            )
-        }
-        updateValidationResult("email")
     }
 
     //Transaction-Editor Screen
@@ -142,7 +84,12 @@ class KassifyViewModel : ViewModel() {
         updateCashBalance()
     }
 
-    fun updateCurrentTransaction(fieldName: String, value: String = "", date: LocalDate? = null) {
+    fun updateCurrentTransaction(
+        fieldName: String,
+        value: String = "",
+        date: LocalDate? = null,
+        isNewTransaction: Boolean = true
+    ) {
         val updatedTransaction: Transaction =
             when (fieldName) {
                 "date" -> _uiState.value.currentTransaction.copy(date = date ?: LocalDate.now())
@@ -174,7 +121,7 @@ class KassifyViewModel : ViewModel() {
                     _uiState.value.amountInput
             )
         }
-        updateValidationResult("amount")
+        updateValidationResult()
     }
 
     fun updateCashBalance() {
@@ -186,7 +133,25 @@ class KassifyViewModel : ViewModel() {
                 newCashBalance -= it.amount
         }
         _uiState.update { currentState ->
-            currentState.copy(cashBalance = newCashBalance)
+            currentState.copy(
+                cashBalance = newCashBalance,
+                nextCashBalance = newCashBalance
+            )
+        }
+    }
+
+    fun updateNextCashBalance(transaction: Transaction, isNewTransaction: Boolean = true) {
+        var cashBalance = _uiState.value.nextCashBalance
+        if (!isNewTransaction && transaction.isPositiveAmount) {
+            cashBalance = cashBalance - transaction.amount
+        }
+        if (!isNewTransaction && !transaction.isPositiveAmount) {
+            cashBalance = cashBalance + transaction.amount
+        }
+        _uiState.update { currentState ->
+            currentState.copy(
+                nextCashBalance = cashBalance
+            )
         }
     }
 
@@ -241,12 +206,12 @@ class KassifyViewModel : ViewModel() {
         return index
     }
 
-    fun getLastTransactionDate(transaction: Transaction): LocalDate {
+    fun getLastTransactionDate(transaction: Transaction): LocalDate? {
         val currentTransactionIndex: Int = getTransactionIndex(transaction.transId)
 
         //Check if current transaction is the first transaction in transaction-list
         if (currentTransactionIndex == 0) {
-            return transaction.date
+            return null
         }
         return _uiState.value.transactionList[currentTransactionIndex - 1].date
     }
@@ -259,5 +224,12 @@ class KassifyViewModel : ViewModel() {
             return LocalDate.now()
         }
         return _uiState.value.transactionList[currentTransactionIndex + 1].date
+    }
+
+    fun lastTransactionInList(transaction: Transaction): Boolean {
+        if (_uiState.value.transactionList.size == 0) {
+            return false
+        }
+        return _uiState.value.transactionList[_uiState.value.transactionList.size - 1] == transaction
     }
 }
