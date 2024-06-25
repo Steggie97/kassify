@@ -13,9 +13,9 @@ const schema = a.schema({
       date: a.date().required(),
       amountPrefix: a.boolean().required(),
       amount: a.float().required(),
-      categoryId: a.integer(),
+      categoryId: a.id(),
       category: a.belongsTo('Category', 'categoryId'),
-      vatId: a.integer(),
+      vatId: a.id(),
       vat: a.belongsTo('VatType', 'vatId'),
       receiptNo: a.string().default(""),
       transText: a.string().default("")
@@ -24,7 +24,8 @@ const schema = a.schema({
 
     Category: a
       .model({
-        categoryId: a.integer(),
+        categoryId: a.id(),
+        categorySkr04: a.integer(),
         categoryName: a.string(),
         categoryType: a.enum(['Ertragskonto', 'Aufwandskonto', 'Normalkonto']),
         transactions: a.hasMany('Transaction', 'categoryId')
@@ -33,7 +34,8 @@ const schema = a.schema({
 
     VatType: a
       .model({
-        vatId: a.integer(),
+        vatId: a.id(),
+        vatNo: a.integer(),
         vatType: a.string(),
         transactions: a.hasMany('Transaction', 'vatId')
       })
