@@ -42,12 +42,7 @@ class KassifyViewModel : ViewModel() {
     }
 
     private fun updateErrorState() {
-        isError =
-            if (validAmount.successful) {
-                false
-            } else {
-                true
-            }
+        isError = !validAmount.successful
     }
     //ViewModel-Functions
 
@@ -88,7 +83,6 @@ class KassifyViewModel : ViewModel() {
         fieldName: String,
         value: String = "",
         date: LocalDate? = null,
-        isNewTransaction: Boolean = true
     ) {
         val updatedTransaction: Transaction =
             when (fieldName) {
@@ -124,7 +118,7 @@ class KassifyViewModel : ViewModel() {
         updateValidationResult()
     }
 
-    fun updateCashBalance() {
+    private fun updateCashBalance() {
         var newCashBalance: Double = 0.00
         _uiState.value.transactionList.forEach {
             if (it.isPositiveAmount)
@@ -143,10 +137,10 @@ class KassifyViewModel : ViewModel() {
     fun updateNextCashBalance(transaction: Transaction, isNewTransaction: Boolean = true) {
         var cashBalance = _uiState.value.nextCashBalance
         if (!isNewTransaction && transaction.isPositiveAmount) {
-            cashBalance = cashBalance - transaction.amount
+            cashBalance -= transaction.amount
         }
         if (!isNewTransaction && !transaction.isPositiveAmount) {
-            cashBalance = cashBalance + transaction.amount
+            cashBalance += transaction.amount
         }
         _uiState.update { currentState ->
             currentState.copy(
@@ -167,8 +161,8 @@ class KassifyViewModel : ViewModel() {
         }
 
     }
-    //TransactionDetail Screen
 
+    //TransactionDetail Screen
     fun deleteTransaction() {
         val newTransactionList = _uiState.value.transactionList
         newTransactionList.remove(_uiState.value.currentTransaction)
@@ -196,9 +190,9 @@ class KassifyViewModel : ViewModel() {
         }
     }
 
-    fun getTransactionIndex(transId: Int): Int {
+    private fun getTransactionIndex(transId: Int): Int {
         var index: Int = -1
-        for (i: Int in 0..(_uiState.value.transactionList.size - 1)) {
+        for (i: Int in 0..<_uiState.value.transactionList.size) {
             if (transId == _uiState.value.transactionList[i].transId) {
                 index = i
             }

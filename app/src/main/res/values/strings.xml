@@ -36,6 +36,7 @@
     <string name="amplify_ui_authenticator_title_signin">Anmelden</string>
     <string name="amplify_ui_authenticator_title_signup">Registrieren</string>
     <string name="amplify_ui_authenticator_title_password_reset">Passwort zurücksetzen</string>
+    <string name="amplify_ui_authenticator_title_signup_confirm">Code eingeben</string>
 
     <string name="amplify_ui_authenticator_button_signup">Konto erstellen</string>
     <string name="amplify_ui_authenticator_button_signin">Anmelden</string>
@@ -43,6 +44,9 @@
     <string name="amplify_ui_authenticator_button_submit">Senden</string>
     <string name="amplify_ui_authenticator_button_back_to_signin">Zurück zur Anmeldung</string>
     <string name="amplify_ui_authenticator_button_skip">Überspringen</string>
+    <string name="amplify_ui_authenticator_button_resend_code">Neuen Code senden</string>
+    <string name="amplify_ui_authenticator_button_lost_code">Code verloren?</string>
+
 
     <string name="amplify_ui_authenticator_field_label_password">Passwort</string>
     <string name="amplify_ui_authenticator_field_label_email">E-Mail</string>
