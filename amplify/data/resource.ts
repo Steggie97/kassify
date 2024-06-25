@@ -7,11 +7,37 @@ specifies that any unauthenticated user can "create", "read", "update",
 and "delete" any "Todo" records.
 =========================================================================*/
 const schema = a.schema({
-  Todo: a
+  Transaction: a
     .model({
-      content: a.string(),
+      transId: a.id(),
+      date: a.date().required(),
+      amountPrefix: a.boolean().required(),
+      amount: a.float().required(),
+      categoryId: a.integer(),
+      category: a.belongsTo('Category', 'categoryId'),
+      vatId: a.integer(),
+      vat: a.belongsTo('VatType', 'vatId'),
+      receiptNo: a.string().default(""),
+      transText: a.string().default("")
     })
-    .authorization((allow) => [allow.guest()]),
+    .authorization((allow) => [allow.owner()]),
+
+    Category: a
+      .model({
+        categoryId: a.integer(),
+        categoryName: a.string(),
+        categoryType: a.enum(['Ertragskonto', 'Aufwandskonto', 'Normalkonto']),
+        transactions: a.hasMany('Transaction', 'categoryId')
+      })
+      .authorization((allow) => [allow.authenticated().to(['read'])]),
+
+    VatType: a
+      .model({
+        vatId: a.integer(),
+        vatType: a.string(),
+        transactions: a.hasMany('Transaction', 'vatId')
+      })
+      .authorization((allow) => [allow.authenticated().to(['read'])])
 });
 
 export type Schema = ClientSchema<typeof schema>;
