@@ -58,6 +58,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.amplifyframework.auth.AuthCodeDeliveryDetails
+import com.amplifyframework.datastore.generated.model.Category
 import com.ls.kassify.R
 import com.ls.kassify.ui.theme.TextDownloadableFontsSnippet2.fontFamily
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -576,6 +577,7 @@ fun CategoryFormField(
     @StringRes label: Int,
     defaultLabel: String,
     onCategoryChange: (String) -> Unit,
+    categories: List<Category>,
     modifier: Modifier = Modifier
 ) {
     val options = listOf("Erlöse", "Kosten", "Erträge", "Steuern")
@@ -594,7 +596,8 @@ fun CategoryFormField(
         Box() {
             TextButton(onClick = { expanded = true }) {
                 Text(
-                    text = selectedOption,
+                    text = selectedOption
+                    //text = selectedOption,
                     //fontSize = 20.sp
                 )
                 Icon(imageVector = Icons.Filled.ArrowDropDown, contentDescription = null)
@@ -603,18 +606,24 @@ fun CategoryFormField(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                options.forEach { option ->
+                categories.forEach { category ->
+                //options.forEach { option ->
                     DropdownMenuItem(
                         text = {
                             Text(
-                                text = option,
+                                text = category.categoryName,
+                                //text = option,
                                 fontSize = 15.sp,
                                 fontFamily = fontFamily
                             )
                         },
                         onClick = {
-                            selectedOption = option
-                            onCategoryChange(option)
+                            selectedOption = category.categoryName
+                                //option
+                            onCategoryChange(
+                                category.categoryName
+                                //option
+                                )
                             expanded = false
                         })
                 }

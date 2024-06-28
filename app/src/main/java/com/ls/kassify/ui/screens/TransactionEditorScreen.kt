@@ -26,6 +26,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.amplifyframework.datastore.generated.model.Category
 import com.ls.kassify.R
 import com.ls.kassify.data.TransactionModel
 import com.ls.kassify.ui.CashBalanceBox
@@ -50,6 +51,7 @@ fun TransactionEditorScreen(
     onChange: (String, String) -> Unit,
     dateOfLastTransaction: LocalDate? = null,
     dateOfNextTransaction: LocalDate = LocalDate.now(),
+    categories: List<Category>,
     isError: Boolean = false
 ) {
     Box(
@@ -114,6 +116,7 @@ fun TransactionEditorScreen(
             CategoryFormField(
                 label = R.string.category,
                 defaultLabel = transaction.category,
+                categories = categories,
                 onCategoryChange = { onChange("category", it) },
                 modifier = Modifier
                     .padding(bottom = 8.dp)
@@ -197,5 +200,6 @@ fun TransactionEditorScreenPreview() {
         onDateChange = { fieldName, value, date -> },
         cashBalance = 0.00,
         amountInput = "",
+        categories = emptyList()
     )
 }

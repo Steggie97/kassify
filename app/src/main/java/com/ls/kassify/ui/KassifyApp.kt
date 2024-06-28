@@ -142,6 +142,7 @@ fun KassifyApp(
                     transaction = appUiState.currentTransaction,
                     dateOfLastTransaction = viewModel.getLastTransactionDate(appUiState.currentTransaction),
                     dateOfNextTransaction = viewModel.getNextTransactionDate(appUiState.currentTransaction),
+                    categories = appUiState.categoryList,
                     amountInput = appUiState.amountInput,
                     amountErrorMessage = viewModel.validAmount.errorMessage,
                     cashBalance = appUiState.nextCashBalance,
@@ -166,22 +167,7 @@ fun KassifyApp(
                 TransactionEditorScreen(
                     onSaveButtonClicked = {
                         //Adding new transaction to transactionList
-                        //viewModel.addTransaction(it)
-                        val newTransaction = Transaction.builder()
-                            .date(Temporal.Date(it.date.toString()))
-                            .amountPrefix(it.isPositiveAmount)
-                            .amount(it.amount)
-                            .accountNo(it.accountNo)
-                            //.categoryNo(transaction.category)
-                            //.vatNo(transaction.vat)
-                            .receiptNo(it.receiptNo)
-                            .transactionText(it.text)
-                            .build()
-                        Amplify.API.mutate(
-                            ModelMutation.create(newTransaction),
-                            { Log.i("Amplify", "Added Transaction with id: ${it.data.id}") },
-                            { Log.e("Amplify", "Create failed", it) }
-                        )
+                        viewModel.addTransaction(it)
                         navController.navigateUp()
                         Toast.makeText(
                             context,
@@ -193,6 +179,7 @@ fun KassifyApp(
                         navController.navigateUp()
                     },
                     transaction = appUiState.currentTransaction,
+                    categories = appUiState.categoryList,
                     amountInput = appUiState.amountInput,
                     amountErrorMessage = viewModel.validAmount.errorMessage,
                     dateOfLastTransaction =

@@ -6,8 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.amplifyframework.api.graphql.model.ModelMutation
+import com.amplifyframework.api.graphql.model.ModelQuery
 import com.amplifyframework.core.Amplify
 import com.amplifyframework.core.model.temporal.Temporal
+import com.amplifyframework.datastore.generated.model.Category
 import com.ls.kassify.Validation.ValidateAmount
 import com.ls.kassify.Validation.ValidationResult
 import com.ls.kassify.data.TransactionModel
@@ -59,8 +61,26 @@ class KassifyViewModel : ViewModel() {
         showLogoutDialog = !showLogoutDialog
     }
 
-    //Transaction-Editor Screen
+    private fun updateCategoryList() {
+        var newCategoryList: List<Category> = listOf()
+        try {
+            Amplify.API.query(
+                ModelQuery.list(Category::class.java),
+                { newCategoryList = it.data.items.toList() },
+                { Log.e("Amplify", "Failed to query Categories", it) }
+            )
 
+            _uiState.update { currentState ->
+                currentState.copy(
+                    categoryList = newCategoryList
+                )
+            }
+        } catch (e: Exception) {
+            Log.e("Amplify", e.toString())
+        }
+    }
+
+    //Transaction-Editor Screen
     fun addTransaction(transaction: TransactionModel) {
         val newTransaction = Transaction.builder()
             .date(Temporal.Date(transaction.date.toString()))
@@ -173,6 +193,7 @@ class KassifyViewModel : ViewModel() {
     }
 
     fun createNewTransaction() {
+        updateCategoryList()
         val newTransaction = TransactionModel(transNo = _uiState.value.nextTransId)
         val newNextTransId = _uiState.value.nextTransId + 1
         _uiState.update { currentState ->
