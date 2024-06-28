@@ -7,6 +7,7 @@ data class Transaction(
     var date: LocalDate = LocalDate.now(),
     var isPositiveAmount: Boolean = true,
     var amount: Double = 0.00,
+    var accountNo: Int  = 1600,
     var category: String = "keine Zuordnung",
     var vat: String = "keine",
     var receiptNo: String = "",
