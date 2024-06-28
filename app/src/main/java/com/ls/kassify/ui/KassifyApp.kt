@@ -1,5 +1,6 @@
 package com.ls.kassify.ui
 
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
@@ -20,7 +21,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.amplifyframework.api.graphql.model.ModelMutation
 import com.amplifyframework.core.Amplify
+import com.amplifyframework.core.model.temporal.Temporal
+import com.amplifyframework.datastore.generated.model.Transaction
 import com.ls.kassify.R
 import com.ls.kassify.ui.screens.TransactionDetailsScreen
 import com.ls.kassify.ui.screens.TransactionEditorScreen
@@ -162,7 +166,22 @@ fun KassifyApp(
                 TransactionEditorScreen(
                     onSaveButtonClicked = {
                         //Adding new transaction to transactionList
-                        viewModel.addTransaction(it)
+                        //viewModel.addTransaction(it)
+                        val newTransaction = Transaction.builder()
+                            .date(Temporal.Date(it.date.toString()))
+                            .amountPrefix(it.isPositiveAmount)
+                            .amount(it.amount)
+                            .accountNo(it.accountNo)
+                            //.categoryNo(transaction.category)
+                            //.vatNo(transaction.vat)
+                            .receiptNo(it.receiptNo)
+                            .transactionText(it.text)
+                            .build()
+                        Amplify.API.mutate(
+                            ModelMutation.create(newTransaction),
+                            { Log.i("Amplify", "Added Transaction with id: ${it.data.id}") },
+                            { Log.e("Amplify", "Create failed", it) }
+                        )
                         navController.navigateUp()
                         Toast.makeText(
                             context,

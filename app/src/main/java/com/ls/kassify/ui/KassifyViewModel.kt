@@ -1,18 +1,23 @@
 package com.ls.kassify.ui
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.amplifyframework.api.graphql.model.ModelMutation
+import com.amplifyframework.core.Amplify
+import com.amplifyframework.core.model.temporal.Temporal
 import com.ls.kassify.Validation.ValidateAmount
 import com.ls.kassify.Validation.ValidationResult
-import com.ls.kassify.data.Transaction
+import com.ls.kassify.data.TransactionModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.text.NumberFormat
 import java.time.LocalDate
+import com.amplifyframework.datastore.generated.model.Transaction
 
 class KassifyViewModel : ViewModel() {
     // UI-State
@@ -56,7 +61,23 @@ class KassifyViewModel : ViewModel() {
 
     //Transaction-Editor Screen
 
-    fun addTransaction(transaction: Transaction) {
+    fun addTransaction(transaction: TransactionModel) {
+        val newTransaction = Transaction.builder()
+            .date(Temporal.Date(transaction.date.toString()))
+            .amountPrefix(transaction.isPositiveAmount)
+            .amount(transaction.amount)
+            .accountNo(transaction.accountNo)
+            //.categoryNo(transaction.category)
+            //.vatNo(transaction.vat)
+            .receiptNo(transaction.receiptNo)
+            .transactionText(transaction.text)
+            .build()
+        Amplify.API.mutate(
+            ModelMutation.create(newTransaction),
+            { Log.i("Amplify", "Added Transaction with id: ${it.data.id}") },
+            { Log.e("Amplify", "Create failed", it) }
+        )
+        /*
         val newTransactionList = _uiState.value.transactionList
         newTransactionList.add(transaction)
         _uiState.update { currentState ->
@@ -65,10 +86,12 @@ class KassifyViewModel : ViewModel() {
             )
         }
         updateCashBalance()
+
+         */
     }
 
-    fun updateTransaction(updatedTransaction: Transaction) {
-        val newTransactionList: MutableList<Transaction> = _uiState.value.transactionList
+    fun updateTransaction(updatedTransaction: TransactionModel) {
+        val newTransactionList: MutableList<TransactionModel> = _uiState.value.transactionList
         val index: Int = getTransactionIndex(updatedTransaction.transNo)
         if (index != -1) {
             newTransactionList[index] = updatedTransaction
@@ -84,7 +107,7 @@ class KassifyViewModel : ViewModel() {
         value: String = "",
         date: LocalDate? = null,
     ) {
-        val updatedTransaction: Transaction =
+        val updatedTransaction: TransactionModel =
             when (fieldName) {
                 "date" -> _uiState.value.currentTransaction.copy(date = date ?: LocalDate.now())
                 "prefix" -> _uiState.value.currentTransaction.copy(isPositiveAmount = value.toBoolean())
@@ -134,7 +157,7 @@ class KassifyViewModel : ViewModel() {
         }
     }
 
-    fun updateNextCashBalance(transaction: Transaction, isNewTransaction: Boolean = true) {
+    fun updateNextCashBalance(transaction: TransactionModel, isNewTransaction: Boolean = true) {
         var cashBalance = _uiState.value.nextCashBalance
         if (!isNewTransaction && transaction.isPositiveAmount) {
             cashBalance -= transaction.amount
@@ -150,7 +173,7 @@ class KassifyViewModel : ViewModel() {
     }
 
     fun createNewTransaction() {
-        val newTransaction = Transaction(transNo = _uiState.value.nextTransId)
+        val newTransaction = TransactionModel(transNo = _uiState.value.nextTransId)
         val newNextTransId = _uiState.value.nextTransId + 1
         _uiState.update { currentState ->
             currentState.copy(
@@ -159,7 +182,6 @@ class KassifyViewModel : ViewModel() {
                 nextTransId = newNextTransId
             )
         }
-
     }
 
     //TransactionDetail Screen
@@ -200,7 +222,7 @@ class KassifyViewModel : ViewModel() {
         return index
     }
 
-    fun getLastTransactionDate(transaction: Transaction): LocalDate? {
+    fun getLastTransactionDate(transaction: TransactionModel): LocalDate? {
         val currentTransactionIndex: Int = getTransactionIndex(transaction.transNo)
 
         //Check if current transaction is the first transaction in transaction-list
@@ -210,7 +232,7 @@ class KassifyViewModel : ViewModel() {
         return _uiState.value.transactionList[currentTransactionIndex - 1].date
     }
 
-    fun getNextTransactionDate(transaction: Transaction): LocalDate {
+    fun getNextTransactionDate(transaction: TransactionModel): LocalDate {
         val currentTransactionIndex: Int = getTransactionIndex(transaction.transNo)
 
         //Check if current transaction is the last transaction in transaction-list
@@ -220,7 +242,7 @@ class KassifyViewModel : ViewModel() {
         return _uiState.value.transactionList[currentTransactionIndex + 1].date
     }
 
-    fun lastTransactionInList(transaction: Transaction): Boolean {
+    fun lastTransactionInList(transaction: TransactionModel): Boolean {
         if (_uiState.value.transactionList.size == 0) {
             return false
         }

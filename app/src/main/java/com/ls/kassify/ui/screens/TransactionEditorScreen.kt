@@ -27,7 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ls.kassify.R
-import com.ls.kassify.data.Transaction
+import com.ls.kassify.data.TransactionModel
 import com.ls.kassify.ui.CashBalanceBox
 import com.ls.kassify.ui.CategoryFormField
 import com.ls.kassify.ui.DateField
@@ -40,9 +40,9 @@ import java.time.LocalDate
 @Composable
 fun TransactionEditorScreen(
     modifier: Modifier = Modifier,
-    onSaveButtonClicked: (Transaction) -> Unit,
+    onSaveButtonClicked: (TransactionModel) -> Unit,
     onCancelButtonClicked: () -> Unit,
-    transaction: Transaction,
+    transaction: TransactionModel,
     amountInput: String,
     amountErrorMessage: String? = null,
     cashBalance: Double,
@@ -192,7 +192,7 @@ fun TransactionEditorScreenPreview() {
     TransactionEditorScreen(
         onSaveButtonClicked = {},
         onCancelButtonClicked = {},
-        transaction = Transaction(),
+        transaction = TransactionModel(),
         onChange = { fieldName, value -> },
         onDateChange = { fieldName, value, date -> },
         cashBalance = 0.00,

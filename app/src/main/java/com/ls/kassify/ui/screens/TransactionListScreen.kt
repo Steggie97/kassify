@@ -17,7 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.ls.kassify.R
-import com.ls.kassify.data.Transaction
+import com.ls.kassify.data.TransactionModel
 import com.ls.kassify.ui.CashBalanceBox
 import com.ls.kassify.ui.TransactionCard
 import java.time.format.DateTimeFormatter
@@ -27,7 +27,7 @@ fun TransactionListScreen(
     modifier: Modifier = Modifier,
     onAddButtonClicked: () -> Unit,
     onTransactionCardClicked: (Int) -> Unit,
-    transactions: List<Transaction>,
+    transactions: List<TransactionModel>,
     cashBalance: Double
 ) {
     Box(

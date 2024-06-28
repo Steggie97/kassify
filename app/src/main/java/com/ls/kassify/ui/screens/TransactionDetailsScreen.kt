@@ -22,7 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.ls.kassify.R
-import com.ls.kassify.data.Transaction
+import com.ls.kassify.data.TransactionModel
 import com.ls.kassify.ui.DetailAmount
 import com.ls.kassify.ui.DetailItem
 import java.time.LocalDate
@@ -36,7 +36,7 @@ fun TransactionDetailsScreen(
     onDeleteConfirmedClicked: () -> Unit,
     onCancelButtonClicked: () -> Unit,
     onCancelDeleteDialogClicked: () -> Unit,
-    transaction: Transaction,
+    transaction: TransactionModel,
     showDeleteDialog: Boolean,
     lastTransaction: Boolean
 ) {
@@ -165,7 +165,7 @@ fun TransactionDetailsScreenPreview() {
         onDeleteConfirmedClicked = {},
         onCancelDeleteDialogClicked = {},
         showDeleteDialog = false,
-        transaction = Transaction(
+        transaction = TransactionModel(
             transNo = 0,
             date = LocalDate.now(),
             amount = 30.50,

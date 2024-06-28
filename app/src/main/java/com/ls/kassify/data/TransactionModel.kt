@@ -2,7 +2,7 @@ package com.ls.kassify.data
 
 import java.time.LocalDate
 
-data class Transaction(
+data class TransactionModel(
     var transNo: Int = 0,
     var date: LocalDate = LocalDate.now(),
     var isPositiveAmount: Boolean = true,
