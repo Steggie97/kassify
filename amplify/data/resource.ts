@@ -9,35 +9,29 @@ and "delete" any "Todo" records.
 const schema = a.schema({
   Transaction: a
     .model({
-      transId: a.id(),
+      transactionNo: a.integer(),
       date: a.date().required(),
       amountPrefix: a.boolean().required(),
       amount: a.float().required(),
-      categoryId: a.id(),
-      category: a.belongsTo('Category', 'categoryId'),
-      vatId: a.id(),
-      vat: a.belongsTo('VatType', 'vatId'),
+      categoryNo: a.integer(),
+      vatNo: a.integer(),
       receiptNo: a.string().default(""),
-      transText: a.string().default("")
+      transactionText: a.string().default("")
     })
     .authorization((allow) => [allow.owner()]),
 
     Category: a
       .model({
-        categoryId: a.id(),
-        categorySkr04: a.integer(),
+        categoryNo: a.integer(),
         categoryName: a.string(),
-        categoryType: a.enum(['Ertragskonto', 'Aufwandskonto', 'Normalkonto']),
-        transactions: a.hasMany('Transaction', 'categoryId')
+        categoryType: a.enum(['Ertragskonto', 'Aufwandskonto', 'Normalkonto'])
       })
       .authorization((allow) => [allow.authenticated().to(['read'])]),
 
     VatType: a
       .model({
-        vatId: a.id(),
         vatNo: a.integer(),
         vatType: a.string(),
-        transactions: a.hasMany('Transaction', 'vatId')
       })
       .authorization((allow) => [allow.authenticated().to(['read'])])
 });

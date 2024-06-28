@@ -48,7 +48,7 @@ fun TransactionDetailsScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Details zur Buchung Nr. ${transaction.transId}:",
+            text = "Details zur Buchung Nr. ${transaction.transNo}:",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
@@ -90,7 +90,7 @@ fun TransactionDetailsScreen(
         if (lastTransaction) {
             //Edit-Button
             Button(
-                onClick = { onEditButtonClicked(transaction.transId) },
+                onClick = { onEditButtonClicked(transaction.transNo) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)
@@ -166,7 +166,7 @@ fun TransactionDetailsScreenPreview() {
         onCancelDeleteDialogClicked = {},
         showDeleteDialog = false,
         transaction = Transaction(
-            transId = 0,
+            transNo = 0,
             date = LocalDate.now(),
             amount = 30.50,
             category = "laufende KFZ-Kosten",

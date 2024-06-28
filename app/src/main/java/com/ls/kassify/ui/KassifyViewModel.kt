@@ -69,7 +69,7 @@ class KassifyViewModel : ViewModel() {
 
     fun updateTransaction(updatedTransaction: Transaction) {
         val newTransactionList: MutableList<Transaction> = _uiState.value.transactionList
-        val index: Int = getTransactionIndex(updatedTransaction.transId)
+        val index: Int = getTransactionIndex(updatedTransaction.transNo)
         if (index != -1) {
             newTransactionList[index] = updatedTransaction
             _uiState.update { currentState ->
@@ -150,7 +150,7 @@ class KassifyViewModel : ViewModel() {
     }
 
     fun createNewTransaction() {
-        val newTransaction = Transaction(transId = _uiState.value.nextTransId)
+        val newTransaction = Transaction(transNo = _uiState.value.nextTransId)
         val newNextTransId = _uiState.value.nextTransId + 1
         _uiState.update { currentState ->
             currentState.copy(
@@ -179,7 +179,7 @@ class KassifyViewModel : ViewModel() {
     //TransactionList Screen
     fun getTransaction(transId: Int) {
         for (transaction in _uiState.value.transactionList) {
-            if (transaction.transId == transId) {
+            if (transaction.transNo == transId) {
                 _uiState.update { currentState ->
                     currentState.copy(
                         currentTransaction = transaction,
@@ -193,7 +193,7 @@ class KassifyViewModel : ViewModel() {
     private fun getTransactionIndex(transId: Int): Int {
         var index: Int = -1
         for (i: Int in 0..<_uiState.value.transactionList.size) {
-            if (transId == _uiState.value.transactionList[i].transId) {
+            if (transId == _uiState.value.transactionList[i].transNo) {
                 index = i
             }
         }
@@ -201,7 +201,7 @@ class KassifyViewModel : ViewModel() {
     }
 
     fun getLastTransactionDate(transaction: Transaction): LocalDate? {
-        val currentTransactionIndex: Int = getTransactionIndex(transaction.transId)
+        val currentTransactionIndex: Int = getTransactionIndex(transaction.transNo)
 
         //Check if current transaction is the first transaction in transaction-list
         if (currentTransactionIndex == 0) {
@@ -211,7 +211,7 @@ class KassifyViewModel : ViewModel() {
     }
 
     fun getNextTransactionDate(transaction: Transaction): LocalDate {
-        val currentTransactionIndex: Int = getTransactionIndex(transaction.transId)
+        val currentTransactionIndex: Int = getTransactionIndex(transaction.transNo)
 
         //Check if current transaction is the last transaction in transaction-list
         if (currentTransactionIndex == _uiState.value.transactionList.lastIndex) {

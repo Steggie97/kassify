@@ -49,7 +49,7 @@ fun TransactionListScreen(
             items(transactions) {
                 TransactionCard(
                     shape= RectangleShape,
-                    onClick = { onTransactionCardClicked(it.transId) },
+                    onClick = { onTransactionCardClicked(it.transNo) },
                     date = DateTimeFormatter.ofPattern("dd.MM.yyyy").format(it.date),
                     amount =
                     if(it.isPositiveAmount)
