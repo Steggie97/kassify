@@ -3,6 +3,7 @@ package com.ls.kassify.ui
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
@@ -45,7 +46,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -82,7 +85,8 @@ fun KassifyAppBar(
 ) {
     TopAppBar(
         colors = TopAppBarDefaults.mediumTopAppBarColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = MaterialTheme.colorScheme.secondary,
+            titleContentColor = MaterialTheme.colorScheme.background
         ),
         title = {
             Box(modifier = Modifier.fillMaxWidth()) {
@@ -122,6 +126,8 @@ fun AuthHeaderContent(
         {
             Text(
                 text = stringResource(title),
+                fontFamily = fontFamily,
+                fontSize=30.sp,
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onBackground
             )
@@ -244,7 +250,8 @@ fun FormSwitch(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = stringResource(label)
+            text = stringResource(label),
+            fontSize = 18.sp, fontFamily= fontFamily
         )
 
         Switch(
@@ -266,10 +273,11 @@ fun FormSwitch(
                 }
             },
             colors = SwitchDefaults.colors(
+                checkedBorderColor = Black,
                 checkedThumbColor = checkedThumbColor,
-                checkedTrackColor = checkedTrackColor,
+                checkedTrackColor = Color(0xFFB7D99B),
                 uncheckedThumbColor = uncheckedThumbColor,
-                uncheckedTrackColor = uncheckedTrackColor
+                uncheckedTrackColor = Color(0xFFF5A19F)
             ),
             modifier = modifier
                 .fillMaxWidth()
@@ -285,11 +293,11 @@ fun FormField(
     onValueChange: (String) -> Unit,
     keyboardOptions: KeyboardOptions,
     errorMessage: String? = null,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
         OutlinedTextField(
-            label = { Text(stringResource(label)) },
+            label = { Text(stringResource(label),fontSize = 18.sp, fontFamily= fontFamily) },
             value = value,
             isError = errorMessage != null,
             onValueChange = onValueChange,
@@ -386,7 +394,7 @@ fun DateField(
         modifier = modifier,
         value = DateTimeFormatter.ofPattern("dd.MM.yyyy").format(selectedDate),
         onValueChange = {},
-        label = { Text(stringResource(label)) },
+        label = { Text(stringResource(label), fontSize = 18.sp, fontFamily= fontFamily) },
         trailingIcon = {
             Icon(
                 painter = painterResource(icon),
@@ -428,11 +436,11 @@ fun DateField(
             },
             onDateChange = { onDateChange(it) },
             colors = DatePickerDefaults.colors(
-                headerBackgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                headerBackgroundColor = MaterialTheme.colorScheme.surface,
                 headerTextColor = MaterialTheme.colorScheme.onBackground,
-                calendarHeaderTextColor = MaterialTheme.colorScheme.primary,
-                dateActiveTextColor = MaterialTheme.colorScheme.primary,
-                dateActiveBackgroundColor = MaterialTheme.colorScheme.primaryContainer,
+                calendarHeaderTextColor = MaterialTheme.colorScheme.secondary,
+                dateActiveTextColor = MaterialTheme.colorScheme.secondary,
+                dateActiveBackgroundColor = MaterialTheme.colorScheme.surface,
                 dateInactiveTextColor = MaterialTheme.colorScheme.secondary
             )
         )
@@ -539,14 +547,14 @@ fun CredentialFields(
         label = R.string.e_mail,
         value = email,
         onValueChange = onEmailChange,
-        errorMessage = emailErrorMessage,
         keyboardOptions = KeyboardOptions.Default.copy(
             keyboardType = KeyboardType.Email,
             imeAction = ImeAction.Next
         ),
+        errorMessage = emailErrorMessage,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(bottom = 32.dp)
+            .padding(bottom = 32.dp),
     )
 
     PasswordField(
@@ -594,21 +602,29 @@ fun CategoryFormField(
             .fillMaxWidth()
     ) {
         Text(
+            fontSize = 18.sp, fontFamily= fontFamily,
             text = stringResource(id = label),
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .weight(1f)
         )
-        Box() {
+        Box(modifier = Modifier
+            .clip(RoundedCornerShape(12.dp))
+            .border(
+                width = 1.dp,
+                color = Color.Black,
+                shape = RoundedCornerShape(12.dp)
+            )
+            //.background(MaterialTheme.colorScheme.secondary),
+            ) {
             TextButton(onClick = { expanded = true }) {
                 Text(
-                    text = selectedOption
-                    //text = selectedOption,
-                    //fontSize = 20.sp
+                    text = selectedOption,fontSize = 18.sp, fontFamily= fontFamily
                 )
-                Icon(imageVector = Icons.Filled.ArrowDropDown, contentDescription = null)
+                Icon(imageVector = Icons.Filled.ArrowDropDown, contentDescription = null, tint = Black)
             }
             DropdownMenu(
+                modifier = Modifier.background(Color(0xFFF7FBF5)),
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
@@ -658,20 +674,30 @@ fun VatFormField(
             .fillMaxWidth()
     ) {
         Text(
+            fontSize = 18.sp, fontFamily= fontFamily,
             text = stringResource(id = label),
             modifier = Modifier
                 .align(Alignment.CenterVertically)
                 .weight(1f)
         )
-        Box() {
+        Box(modifier = Modifier
+            .clip(RoundedCornerShape(12.dp))
+            .border(
+                width = 1.dp,
+                color = Color.Black,
+                shape = RoundedCornerShape(12.dp)
+            )
+            //.background(MaterialTheme.colorScheme.secondary),
+        )  {
             TextButton(onClick = { expanded = true }) {
                 Text(
                     text = selectedOption,
                     //fontSize = 20.sp
                 )
-                Icon(imageVector = Icons.Filled.ArrowDropDown, contentDescription = null)
+                Icon(imageVector = Icons.Filled.ArrowDropDown, contentDescription = null, tint = Black)
             }
             DropdownMenu(
+                modifier = Modifier.background(Color(0xFFF7FBF5)),
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {

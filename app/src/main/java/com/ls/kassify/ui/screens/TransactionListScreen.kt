@@ -9,9 +9,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.ListItemDefaults.contentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -69,11 +72,13 @@ fun TransactionListScreen(
         }
         FloatingActionButton(
             onClick = { onAddButtonClicked() },
+            containerColor =  MaterialTheme.colorScheme.secondary,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
                 .padding(end = 24.dp, bottom = 16.dp)
         ) {
-            Image(painter = painterResource(R.drawable.add_icon), contentDescription = null)
+            Image(painter = painterResource(R.drawable.add_icon), contentDescription = null,
+                colorFilter = androidx.compose.ui.graphics.ColorFilter.tint(Color.White) )
 
         }
         CashBalanceBox(cashBalance = cashBalance)

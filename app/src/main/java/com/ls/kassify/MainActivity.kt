@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -66,7 +67,7 @@ class MainActivity : ComponentActivity() {
                             LocalContext.current,
                             handler
                         )
-                    ) {
+                    ){
 
                         // Authenticator bitte nicht löschen, nur bei Bedarf auskommentieren (Enthält LogIn-Screen, etc.)
 
@@ -92,6 +93,7 @@ class MainActivity : ComponentActivity() {
                             },
                             signInContent = { signInState ->
                                 SignIn(
+                                    //modifier = Modifier,
                                     state = signInState,
                                     headerContent = {
                                         AuthHeaderContent(title = R.string.amplify_ui_authenticator_title_signin)
@@ -146,11 +148,10 @@ class MainActivity : ComponentActivity() {
                         ) { //Vorstehende Klammer kann Auskommentiert werden
                             // Anzeige des TransactionList-Screens, nach erfolgreicher Anmeldung
                             KassifyApp()
-                        } // Vorstehende Klammer kann auskommentiert werden.
+                        } // Vorstehende Klammer kann auskommentiert werden.*/
                     }
                 }
             }
         }
     }
 }
-

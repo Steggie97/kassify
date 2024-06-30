@@ -4,7 +4,9 @@ import android.util.Log
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -12,9 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -29,6 +35,7 @@ import com.ls.kassify.ui.screens.TransactionDetailsScreen
 import com.ls.kassify.ui.screens.TransactionEditorScreen
 import com.ls.kassify.ui.screens.TransactionListScreen
 import com.ls.kassify.ui.theme.KassifyTheme
+import com.ls.kassify.ui.theme.TextDownloadableFontsSnippet2.fontFamily
 import java.time.ZoneId
 
 enum class KassifyScreen(@StringRes val title: Int) {
@@ -218,17 +225,30 @@ fun LogoutDialog(
     onCancelButtonClicked: () -> Unit
 ) {
     AlertDialog(
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp)),
+        containerColor = MaterialTheme.colorScheme.tertiary,
         onDismissRequest = { onCancelButtonClicked() },
-        title = { Text(text = stringResource(R.string.logout)) },
-        text = { Text(text = stringResource(R.string.logout_question)) },
+        title = { Text(text = stringResource(R.string.logout),
+            fontFamily = fontFamily,
+            fontSize = 30.sp)},
+        text = { Text(text = stringResource(R.string.logout_question),
+            modifier = Modifier
+                .padding(top=9.dp),
+            color = Color.Black,
+            fontFamily = fontFamily,
+            fontSize = 20.sp) },
         dismissButton = {
             TextButton(onClick = { onCancelButtonClicked() }) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(R.string.cancel),
+                    color = Color.Black,fontFamily = fontFamily,
+                    fontSize = 20.sp)
             }
         },
         confirmButton = {
             TextButton(onClick = { onConfirmButtonClicked() }) {
-                Text(text = stringResource(R.string.logout))
+                Text(text = stringResource(R.string.logout),color = Color.Black,fontFamily = fontFamily,
+                    fontSize = 20.sp)
             }
         }
     )

@@ -36,10 +36,10 @@ object TextDownloadableFontsSnippet2 {
      **/
     // [END_EXCLUDE]
 
-    val fontName = GoogleFont("Roboto")
+    val fontName = GoogleFont("Ubuntu")
 
 
-    val fontFamily = FontFamily(
+    var fontFamily = FontFamily(
         Font(googleFont = fontName, fontProvider = provider)
     )
     // [END android_compose_text_df_fontFamily]

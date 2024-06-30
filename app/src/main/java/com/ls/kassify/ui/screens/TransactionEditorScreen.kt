@@ -13,8 +13,9 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ListItemDefaults.contentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -28,11 +29,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.amplifyframework.core.model.temporal.Temporal
 import com.amplifyframework.datastore.generated.model.Category
-import com.amplifyframework.datastore.generated.model.CategoryCategoryType
 import com.amplifyframework.datastore.generated.model.Transaction
 import com.amplifyframework.datastore.generated.model.VatType
 import com.ls.kassify.R
-import com.ls.kassify.data.TransactionModel
 import com.ls.kassify.ui.CashBalanceBox
 import com.ls.kassify.ui.CategoryFormField
 import com.ls.kassify.ui.DateField
@@ -79,6 +78,7 @@ fun TransactionEditorScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
+                //
                 label = R.string.date,
                 icon = R.drawable.calendar_icon,
                 onDateChange = { onDateChange("date", "", it) },
@@ -164,7 +164,7 @@ fun TransactionEditorScreen(
                 ),
                 modifier = Modifier
                     .padding(vertical = 8.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
             )
 
             FormField(
@@ -177,30 +177,39 @@ fun TransactionEditorScreen(
                 ),
                 modifier = Modifier
                     .padding(vertical = 8.dp)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
             )
 
             Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = MaterialTheme.colorScheme.secondary
+                ),
                 onClick = { onSaveButtonClicked(transaction) },
                 enabled = !isError,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp)
+                    //.padding(vertical = 40.dp)
+                    .padding(top = 30.dp)
+                    //background(MaterialTheme.colorScheme.secondary)
             ) {
                 Text(
+                    //color = MaterialTheme.colorScheme.secondary,
                     text = stringResource(R.string.save),
                     fontFamily = fontFamily,
-                    fontSize = 18.sp,)
+                    fontSize = 30.sp)
             }
 
-            OutlinedButton(
+            /*Button(
+                colors = ButtonDefaults.buttonColors(
+                    containerColor =  MaterialTheme.colorScheme.error,
+                ),
                 onClick = { onCancelButtonClicked() },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(text =stringResource(R.string.cancel),
                     fontFamily = fontFamily,
-                    fontSize = 18.sp,)
-            }
+                    fontSize = 20.sp,)
+            }*/
         }
         CashBalanceBox(cashBalance = cashBalance)
     }
