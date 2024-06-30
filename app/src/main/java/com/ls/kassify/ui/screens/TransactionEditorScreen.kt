@@ -123,7 +123,10 @@ fun TransactionEditorScreen(
                 defaultLabel = categories.find { it.categoryNo == transaction.categoryNo }?.categoryName ?: stringResource(
                     R.string.no_category
                 ),
-                categories = categories,
+                categories =
+                if (transaction.amountPrefix) {
+                    categories.filter { it.}
+                },
                 onCategoryChange = { onChange("category", it) },
                 modifier = Modifier
                     .padding(bottom = 8.dp)

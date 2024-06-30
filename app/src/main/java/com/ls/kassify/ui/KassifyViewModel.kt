@@ -202,6 +202,7 @@ class KassifyViewModel : ViewModel() {
 
 
     fun addTransaction(transaction: Transaction) {
+        Log.i("AddTransaction", "Transaction to add: $transaction")
         Amplify.API.mutate(
             ModelMutation.create(transaction),
             { Log.i("Amplify", "Added Transaction with id: ${it.data.id}") },
@@ -308,6 +309,7 @@ class KassifyViewModel : ViewModel() {
             .amountPrefix(true)
             .amount(0.00)
             .categoryNo(9999)
+            .accountNo(1600)
             .vatNo(null)
             .transactionText("")
             .receiptNo("")
