@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.amplifyframework.core.model.temporal.Temporal
 import com.amplifyframework.datastore.generated.model.Category
+import com.amplifyframework.datastore.generated.model.CategoryCategoryType
 import com.amplifyframework.datastore.generated.model.Transaction
 import com.amplifyframework.datastore.generated.model.VatType
 import com.ls.kassify.R
@@ -120,23 +121,29 @@ fun TransactionEditorScreen(
 
             CategoryFormField(
                 label = R.string.category,
-                defaultLabel = categories.find { it.categoryNo == transaction.categoryNo }?.categoryName ?: stringResource(
+                defaultLabel =
+                categories.find { it.categoryNo == transaction.categoryNo }?.categoryName ?: stringResource(
                     R.string.no_category
                 ),
                 categories =
-                if (transaction.amountPrefix) {
-                    categories.filter { it.}
-                },
+                    when(transaction.amountPrefix) {
+                        true -> categories.filter { it.isAcquisition == true }
+                        false -> categories.filter { it.isAcquisition == false }
+                        else -> categories
+                    },
                 onCategoryChange = { onChange("category", it) },
                 modifier = Modifier
                     .padding(bottom = 8.dp)
                     .fillMaxWidth()
             )
 
-            if (!transaction.amountPrefix) {
+            if (!transaction.amountPrefix
+                && categories.find { it.categoryNo == transaction.categoryNo }!!.categoryType.name == "Aufwandskonto"
+                ){
                 VatFormField(
                     label = R.string.vat,
-                    defaultLabel = vatList.find { it.vatNo == transaction.vatNo }?.vatType ?: stringResource(
+                    defaultLabel =
+                    vatList.find { it.vatNo == transaction.vatNo }?.vatType ?: stringResource(
                         R.string.no_tax
                     ),
                     onVatChange = { onChange("vat", it) },
@@ -213,6 +220,8 @@ fun TransactionEditorScreenPreview() {
             .date(Temporal.Date(LocalDate.now().toString()))
             .amountPrefix(true)
             .amount(0.00)
+            .accountNo(1600)
+            .categoryNo(4400)
             .build(),
         onChange = { fieldName, value -> },
         onDateChange = { fieldName, value, date -> },

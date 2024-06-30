@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import com.amplifyframework.api.graphql.model.ModelMutation
 import com.amplifyframework.api.graphql.model.ModelQuery
@@ -252,7 +253,7 @@ class KassifyViewModel : ViewModel() {
                         }
                     ).build()
                 }
-                "category" -> _uiState.value.currentTransaction.copyOfBuilder().categoryNo(getCategoryNo(value)).build()
+                "category" -> _uiState.value.currentTransaction.copyOfBuilder().categoryNo(getCategoryNo(value)).vatNo(null).build()
                 "vat" -> _uiState.value.currentTransaction.copyOfBuilder().vatNo(getVatNo(value)).build()
                 "receiptNo" -> _uiState.value.currentTransaction.copyOfBuilder().receiptNo(value).build()
                 "text" -> _uiState.value.currentTransaction.copyOfBuilder().transactionText(value).build()
@@ -308,8 +309,8 @@ class KassifyViewModel : ViewModel() {
             .date(Temporal.Date(LocalDate.now().toString()))
             .amountPrefix(true)
             .amount(0.00)
-            .categoryNo(9999)
             .accountNo(1600)
+            .categoryNo(9999)
             .vatNo(null)
             .transactionText("")
             .receiptNo("")

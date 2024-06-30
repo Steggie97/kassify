@@ -188,6 +188,7 @@ fun TransactionDetailsScreenPreview() {
                 Temporal.Date(LocalDate.now().toString()))
             .amountPrefix(true)
             .amount(0.00)
+            .accountNo(1600)
             .categoryNo(4400)
             .vatNo(null)
             .build(),
