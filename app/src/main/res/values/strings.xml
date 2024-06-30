@@ -89,5 +89,8 @@
     <string name="amplify_ui_authenticator_confirmation_code_sent_unknown">Ein Bestätigungscode wurde gesendet.</string>
     <string name="amplify_ui_authenticator_field_warn_incorrect_code">Falscher Bestätigungscode</string>
     <string name="amplify_ui_authenticator_field_warn_existing">%s existiert bereits</string>
+    <string name="pre_tax">Vorsteuer</string>
+    <string name="no_category">Keine Zuordnung</string>
+    <string name="no_tax">Keine</string>
 
 </resources>

@@ -59,6 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.amplifyframework.auth.AuthCodeDeliveryDetails
 import com.amplifyframework.datastore.generated.model.Category
+import com.amplifyframework.datastore.generated.model.VatType
 import com.ls.kassify.R
 import com.ls.kassify.ui.theme.TextDownloadableFontsSnippet2.fontFamily
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -580,7 +581,6 @@ fun CategoryFormField(
     categories: List<Category>,
     modifier: Modifier = Modifier
 ) {
-    val options = listOf("Erlöse", "Kosten", "Erträge", "Steuern")
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf(defaultLabel) }
     Row(
@@ -633,13 +633,13 @@ fun CategoryFormField(
 }
 
 @Composable
-fun UStFormField(
+fun VatFormField(
     @StringRes label: Int,
     defaultLabel: String,
-    onUStChange: (String) -> Unit,
+    onVatChange: (String) -> Unit,
+    vatTypes: List<VatType>,
     modifier: Modifier = Modifier
 ) {
-    val options = listOf("keine", "19%", "7%")
     var expanded by remember { mutableStateOf(false) }
     var selectedOption by remember { mutableStateOf(defaultLabel) }
     Row(
@@ -664,16 +664,16 @@ fun UStFormField(
                 expanded = expanded,
                 onDismissRequest = { expanded = false }
             ) {
-                options.forEach { option ->
+                vatTypes.forEach { option ->
                     DropdownMenuItem(
                         text = {
                             Text(
-                                text = option,
+                                text = option.vatType,
                             )
                         },
                         onClick = {
-                            selectedOption = option
-                            onUStChange(option)
+                            selectedOption = option.vatType
+                            onVatChange(option.vatType)
                             expanded = false
                         })
                 }

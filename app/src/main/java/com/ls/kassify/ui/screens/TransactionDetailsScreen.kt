@@ -21,22 +21,29 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.amplifyframework.core.model.temporal.Temporal
+import com.amplifyframework.datastore.generated.model.Category
+import com.amplifyframework.datastore.generated.model.Transaction
+import com.amplifyframework.datastore.generated.model.VatType
 import com.ls.kassify.R
 import com.ls.kassify.data.TransactionModel
 import com.ls.kassify.ui.DetailAmount
 import com.ls.kassify.ui.DetailItem
 import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Composable
 fun TransactionDetailsScreen(
     modifier: Modifier = Modifier,
-    onEditButtonClicked: (Int) -> Unit,
+    onEditButtonClicked: (String) -> Unit,
     onDeleteButtonClicked: () -> Unit,
     onDeleteConfirmedClicked: () -> Unit,
     onCancelButtonClicked: () -> Unit,
     onCancelDeleteDialogClicked: () -> Unit,
-    transaction: TransactionModel,
+    transaction: Transaction,
+    categories: List<Category>,
+    vatList: List<VatType>,
     showDeleteDialog: Boolean,
     lastTransaction: Boolean
 ) {
@@ -48,7 +55,7 @@ fun TransactionDetailsScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Details zur Buchung Nr. ${transaction.transNo}:",
+            text = "Details zur Buchung Nr. ${transaction.transactionNo}:",
             fontSize = 20.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier
@@ -62,27 +69,37 @@ fun TransactionDetailsScreen(
         ) {
             DetailItem(
                 label = R.string.date,
-                content = DateTimeFormatter.ofPattern("dd.MM.yyy").format(transaction.date)
+                content = DateTimeFormatter.ofPattern("dd.MM.yyy").format(transaction.date.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
             )
             DetailAmount(
                 label = R.string.amount,
                 amount =
-                if (transaction.isPositiveAmount == true)
+                if (transaction.amountPrefix == true)
                     transaction.amount
                 else
                     (transaction.amount * -1.00)
             )
             DetailItem(
                 label = R.string.category,
-                content = transaction.category
+                content = categories.find { it.categoryNo == transaction.categoryNo }?.categoryName ?: stringResource(
+                    R.string.no_category
+                )
             )
+            if (transaction.vatNo != null) {
+                DetailItem(
+                    label = R.string.pre_tax,
+                    content = vatList.find { it.vatNo == transaction.vatNo }?.vatType ?: stringResource(
+                        R.string.no_tax
+                    )
+                )
+            }
             DetailItem(
                 label = R.string.receipt_number,
                 content = transaction.receiptNo
             )
             DetailItem(
                 label = R.string.text,
-                content = transaction.text,
+                content = transaction.transactionText,
                 lastItem = true
             )
         }
@@ -90,7 +107,7 @@ fun TransactionDetailsScreen(
         if (lastTransaction) {
             //Edit-Button
             Button(
-                onClick = { onEditButtonClicked(transaction.transNo) },
+                onClick = { onEditButtonClicked(transaction.id) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp)
@@ -165,14 +182,19 @@ fun TransactionDetailsScreenPreview() {
         onDeleteConfirmedClicked = {},
         onCancelDeleteDialogClicked = {},
         showDeleteDialog = false,
-        transaction = TransactionModel(
-            transNo = 0,
-            date = LocalDate.now(),
-            amount = 30.50,
-            category = "laufende KFZ-Kosten",
-            receiptNo = "Rg-Nr.12342",
-            text = "Aral - tanken"
+        transaction =
+        Transaction.builder()
+            .date(
+                Temporal.Date(LocalDate.now().toString()))
+            .amountPrefix(true)
+            .amount(0.00)
+            .categoryNo(4400)
+            .vatNo(null)
+            .build(),
+        categories = listOf(
+            Category.builder().categoryName("Erlöse 19%").categoryNo(4400).build()
         ),
+        vatList = listOf(),
         lastTransaction = true
     )
 }

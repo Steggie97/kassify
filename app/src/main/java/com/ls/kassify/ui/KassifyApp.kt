@@ -21,15 +21,15 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.amplifyframework.api.graphql.model.ModelMutation
+import com.amplifyframework.api.graphql.model.ModelSubscription
 import com.amplifyframework.core.Amplify
-import com.amplifyframework.core.model.temporal.Temporal
 import com.amplifyframework.datastore.generated.model.Transaction
 import com.ls.kassify.R
 import com.ls.kassify.ui.screens.TransactionDetailsScreen
 import com.ls.kassify.ui.screens.TransactionEditorScreen
 import com.ls.kassify.ui.screens.TransactionListScreen
 import com.ls.kassify.ui.theme.KassifyTheme
+import java.time.ZoneId
 
 enum class KassifyScreen(@StringRes val title: Int) {
     TransactionList(title = R.string.cash_register),
@@ -90,7 +90,7 @@ fun KassifyApp(
                         viewModel.updateNextCashBalance(transaction = appUiState.currentTransaction)
                         navController.navigate(KassifyScreen.NewTransaction.name)
                     },
-                    transactions = appUiState.transactionList,
+                    transactions = appUiState.transactions,
                     cashBalance = appUiState.cashBalance,
                 )
             }
@@ -107,7 +107,7 @@ fun KassifyApp(
                     },
                     onDeleteButtonClicked = { viewModel.updateShowDeleteDialog() },
                     onDeleteConfirmedClicked = {
-                        viewModel.deleteTransaction()
+                        viewModel.deleteTransaction(appUiState.currentTransaction)
                         navController.navigateUp()
                         Toast.makeText(
                             context,
@@ -121,7 +121,9 @@ fun KassifyApp(
                     onCancelDeleteDialogClicked = { viewModel.updateShowDeleteDialog() },
                     transaction = appUiState.currentTransaction,
                     showDeleteDialog = viewModel.showDeleteDialog,
-                    lastTransaction = viewModel.lastTransactionInList(appUiState.currentTransaction)
+                    lastTransaction = viewModel.lastTransactionInList(appUiState.currentTransaction),
+                    categories = appUiState.categoryList,
+                    vatList = appUiState.vatList
                 )
             }
             //TransactionEditor-Screen
@@ -143,6 +145,7 @@ fun KassifyApp(
                     dateOfLastTransaction = viewModel.getLastTransactionDate(appUiState.currentTransaction),
                     dateOfNextTransaction = viewModel.getNextTransactionDate(appUiState.currentTransaction),
                     categories = appUiState.categoryList,
+                    vatList = appUiState.vatList,
                     amountInput = appUiState.amountInput,
                     amountErrorMessage = viewModel.validAmount.errorMessage,
                     cashBalance = appUiState.nextCashBalance,
@@ -180,11 +183,12 @@ fun KassifyApp(
                     },
                     transaction = appUiState.currentTransaction,
                     categories = appUiState.categoryList,
+                    vatList = appUiState.vatList,
                     amountInput = appUiState.amountInput,
                     amountErrorMessage = viewModel.validAmount.errorMessage,
                     dateOfLastTransaction =
-                    if (appUiState.transactionList.size > 0)
-                        appUiState.transactionList[appUiState.transactionList.lastIndex].date
+                    if (appUiState.transactions.size > 0)
+                        appUiState.transactions[appUiState.transactions.lastIndex].date.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
                     else
                         null,
                     cashBalance = appUiState.nextCashBalance,

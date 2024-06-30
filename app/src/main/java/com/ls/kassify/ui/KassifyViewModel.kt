@@ -7,9 +7,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.amplifyframework.api.graphql.model.ModelMutation
 import com.amplifyframework.api.graphql.model.ModelQuery
+import com.amplifyframework.api.graphql.model.ModelSubscription
 import com.amplifyframework.core.Amplify
 import com.amplifyframework.core.model.temporal.Temporal
 import com.amplifyframework.datastore.generated.model.Category
+import com.amplifyframework.datastore.generated.model.Transaction
+import com.amplifyframework.datastore.generated.model.VatType
 import com.ls.kassify.Validation.ValidateAmount
 import com.ls.kassify.Validation.ValidationResult
 import com.ls.kassify.data.TransactionModel
@@ -19,7 +22,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import java.text.NumberFormat
 import java.time.LocalDate
-import com.amplifyframework.datastore.generated.model.Transaction
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 class KassifyViewModel : ViewModel() {
     // UI-State
@@ -39,10 +43,18 @@ class KassifyViewModel : ViewModel() {
     var isError: Boolean = false
         private set
 
+    // Initial loading and subscribing to Amplify Events
+    init {
+        updateCategoryList()
+        updateVatList()
+        updateTransactionList()
+        subscribeToAmplifyEvents()
+    }
+
     private fun updateValidationResult() {
         validAmount = ValidateAmount().execute(
             _uiState.value.currentTransaction.amount,
-            _uiState.value.currentTransaction.isPositiveAmount,
+            _uiState.value.currentTransaction.amountPrefix,
             _uiState.value.nextCashBalance
         )
         updateErrorState()
@@ -62,90 +74,188 @@ class KassifyViewModel : ViewModel() {
     }
 
     private fun updateCategoryList() {
-        var newCategoryList: List<Category> = listOf()
+        var newCategoryList: List<Category>
         try {
             Amplify.API.query(
                 ModelQuery.list(Category::class.java),
-                { newCategoryList = it.data.items.toList() },
+                {
+                    newCategoryList = it.data.items.toList()
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            categoryList = newCategoryList
+                        )
+                    }
+                    Log.i("Amplify", "Categories loaded: $it.data")
+                },
                 { Log.e("Amplify", "Failed to query Categories", it) }
             )
-
-            _uiState.update { currentState ->
-                currentState.copy(
-                    categoryList = newCategoryList
-                )
-            }
         } catch (e: Exception) {
             Log.e("Amplify", e.toString())
         }
     }
 
-    //Transaction-Editor Screen
-    fun addTransaction(transaction: TransactionModel) {
-        val newTransaction = Transaction.builder()
-            .date(Temporal.Date(transaction.date.toString()))
-            .amountPrefix(transaction.isPositiveAmount)
-            .amount(transaction.amount)
-            .accountNo(transaction.accountNo)
-            //.categoryNo(transaction.category)
-            //.vatNo(transaction.vat)
-            .receiptNo(transaction.receiptNo)
-            .transactionText(transaction.text)
-            .build()
+    private fun updateVatList() {
+        var newVatList: List<VatType>
+        try {
+            Amplify.API.query(
+                ModelQuery.list(VatType::class.java),
+                {
+                    newVatList = it.data.items.toList()
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            vatList = newVatList
+                        )
+                    }
+                    Log.i("Amplify", "VAT-Types loaded: $it.data")
+                },
+                { Log.e("Amplify", "Failed to query VAT-Types", it) }
+            )
+        } catch (e: Exception) {
+            Log.e("Amplify", e.toString())
+        }
+    }
+
+    private fun subscribeToAmplifyEvents() {
+        //Subscription for Create Events:
+        Amplify.API.subscribe(
+            ModelSubscription.onCreate(Transaction::class.java),
+            { Log.i("Amplify", "Transaction create subscription established") },
+            {
+                Log.i("Amplify", "Transaction create subscription received: ${it.data}")
+                val newTransactions: MutableList<Transaction> = _uiState.value.transactions
+                newTransactions.add(it.data)
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        transactions = newTransactions
+                    )
+                }
+                updateCashBalance()
+            },
+            { Log.e("Amplify", "Create Subscription failed", it) },
+            { Log.i("Amplify", "Transaction create subscription completed") }
+        )
+
+        // Subscription for Update-Events:
+        Amplify.API.subscribe(
+            ModelSubscription.onUpdate(Transaction::class.java),
+            { Log.i("Amplify", "Transaction update subscription established") },
+            {
+                Log.i("Amplify", "Transaction update subscription received: ${it.data}")
+                val newTransactions: MutableList<Transaction> = _uiState.value.transactions
+                newTransactions[getTransactionIndex(it.data.id)] = it.data
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        transactions = newTransactions
+                    )
+                }
+                updateCashBalance()
+            },
+            { Log.e("Amplify", "Update Subscription failed", it) },
+            { Log.i("Amplify", "Transaction update subscription completed") }
+        )
+
+        // Subscription for Delete-Events:
+        Amplify.API.subscribe(
+            ModelSubscription.onDelete(Transaction::class.java),
+            { Log.i("Amplify", "Transaction delete subscription established") },
+            {
+                Log.i("Amplify", "Transaction delete subscription received: ${it.data}")
+                val newTransactions: MutableList<Transaction> = _uiState.value.transactions
+                newTransactions.remove(it.data)
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        transactions = newTransactions
+                    )
+                }
+                updateCashBalance()
+            },
+            { Log.e("Amplify", "Delete Subscription failed", it) },
+            { Log.i("Amplify", "Transaction delete subscription completed")}
+        )
+    }
+
+    private fun updateTransactionList() {
+        var newTransactionList: MutableList<Transaction>
+        try {
+            Amplify.API.query(
+                ModelQuery.list(Transaction::class.java),
+                {
+                    newTransactionList = it.data.items.toMutableList()
+                    newTransactionList =
+                        newTransactionList.sortedBy { it.createdAt.toString() }.toMutableList()
+                    Log.i("TransactionList", newTransactionList.toString())
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            transactions = newTransactionList
+                        )
+                    }
+                    updateCashBalance()
+                    Log.i("Amplify", "Transactions updated: ${it.data}")
+                },
+                { Log.e("Amplify", "Failed to query Transactions: ", it) }
+            )
+        } catch (e: Exception) {
+            Log.e("Amplify", e.toString())
+        }
+
+    }
+
+
+    fun addTransaction(transaction: Transaction) {
         Amplify.API.mutate(
-            ModelMutation.create(newTransaction),
+            ModelMutation.create(transaction),
             { Log.i("Amplify", "Added Transaction with id: ${it.data.id}") },
             { Log.e("Amplify", "Create failed", it) }
         )
-        /*
-        val newTransactionList = _uiState.value.transactionList
-        newTransactionList.add(transaction)
-        _uiState.update { currentState ->
-            currentState.copy(
-                transactionList = newTransactionList
-            )
-        }
-        updateCashBalance()
-
-         */
     }
 
-    fun updateTransaction(updatedTransaction: TransactionModel) {
-        val newTransactionList: MutableList<TransactionModel> = _uiState.value.transactionList
-        val index: Int = getTransactionIndex(updatedTransaction.transNo)
-        if (index != -1) {
-            newTransactionList[index] = updatedTransaction
-            _uiState.update { currentState ->
-                currentState.copy(transactionList = newTransactionList)
-            }
-        }
-        updateCashBalance()
+    fun updateTransaction(transaction: Transaction) {
+        Amplify.API.mutate(
+            ModelMutation.update(transaction),
+            { Log.i("Amplify", "Updated Transaction with id: ${it.data.id}") },
+            { Log.e("Amplify", "Update failed", it) }
+        )
     }
 
+    fun deleteTransaction(transaction: Transaction) {
+        Amplify.API.mutate(
+            ModelMutation.delete(transaction),
+            { Log.i("Amplify", "Transaction with id ${it.data.id} deleted") },
+            { Log.e("Amplify", "Deletion failed", it) }
+        )
+        updateShowDeleteDialog()
+    }
     fun updateCurrentTransaction(
         fieldName: String,
         value: String = "",
         date: LocalDate? = null,
     ) {
-        val updatedTransaction: TransactionModel =
+        val updatedTransaction: Transaction =
             when (fieldName) {
-                "date" -> _uiState.value.currentTransaction.copy(date = date ?: LocalDate.now())
-                "prefix" -> _uiState.value.currentTransaction.copy(isPositiveAmount = value.toBoolean())
+                "date" ->
+                    if (date != null) {
+                        _uiState.value.currentTransaction.copyOfBuilder()
+                            .date(Temporal.Date(date.toString())).build()
+                    } else {
+                        _uiState.value.currentTransaction.copyOfBuilder()
+                            .date((Temporal.Date(LocalDate.now().toString()))).build()
+                    }
+                // changing the amountPrefix will reset the category and the vatNo to their default-values
+                "prefix" -> _uiState.value.currentTransaction.copyOfBuilder().amountPrefix(value.toBoolean()).categoryNo(9999).vatNo(null).build()
                 "amount" -> {
-                    _uiState.value.currentTransaction.copy(
-                        amount =
+                    _uiState.value.currentTransaction.copyOfBuilder().amount(
                         try {
                             (NumberFormat.getInstance().parse(value)?.toDouble() ?: 0.0)
                         } catch (e: Exception) {
                             0.0
-                        },
-                    )
+                        }
+                    ).build()
                 }
-
-                "category" -> _uiState.value.currentTransaction.copy(category = value)
-                "receiptNo" -> _uiState.value.currentTransaction.copy(receiptNo = value)
-                "text" -> _uiState.value.currentTransaction.copy(text = value)
-                else -> _uiState.value.currentTransaction
+                "category" -> _uiState.value.currentTransaction.copyOfBuilder().categoryNo(getCategoryNo(value)).build()
+                "vat" -> _uiState.value.currentTransaction.copyOfBuilder().vatNo(getVatNo(value)).build()
+                "receiptNo" -> _uiState.value.currentTransaction.copyOfBuilder().receiptNo(value).build()
+                "text" -> _uiState.value.currentTransaction.copyOfBuilder().transactionText(value).build()
+                else -> _uiState.value.currentTransaction.copyOfBuilder().build()
             }
 
         _uiState.update { currentState ->
@@ -163,8 +273,8 @@ class KassifyViewModel : ViewModel() {
 
     private fun updateCashBalance() {
         var newCashBalance: Double = 0.00
-        _uiState.value.transactionList.forEach {
-            if (it.isPositiveAmount)
+        _uiState.value.transactions.forEach {
+            if (it.amountPrefix)
                 newCashBalance += it.amount
             else
                 newCashBalance -= it.amount
@@ -177,12 +287,12 @@ class KassifyViewModel : ViewModel() {
         }
     }
 
-    fun updateNextCashBalance(transaction: TransactionModel, isNewTransaction: Boolean = true) {
+    fun updateNextCashBalance(transaction: Transaction, isNewTransaction: Boolean = true) {
         var cashBalance = _uiState.value.nextCashBalance
-        if (!isNewTransaction && transaction.isPositiveAmount) {
+        if (!isNewTransaction && transaction.amountPrefix) {
             cashBalance -= transaction.amount
         }
-        if (!isNewTransaction && !transaction.isPositiveAmount) {
+        if (!isNewTransaction && !transaction.amountPrefix) {
             cashBalance += transaction.amount
         }
         _uiState.update { currentState ->
@@ -193,36 +303,30 @@ class KassifyViewModel : ViewModel() {
     }
 
     fun createNewTransaction() {
-        updateCategoryList()
-        val newTransaction = TransactionModel(transNo = _uiState.value.nextTransId)
-        val newNextTransId = _uiState.value.nextTransId + 1
+        val newTransaction = Transaction.builder()
+            .date(Temporal.Date(LocalDate.now().toString()))
+            .amountPrefix(true)
+            .amount(0.00)
+            .categoryNo(9999)
+            .vatNo(null)
+            .transactionText("")
+            .receiptNo("")
+            .transactionNo(_uiState.value.transactions.size + 1)
+            .build()
+
         _uiState.update { currentState ->
             currentState.copy(
                 currentTransaction = newTransaction,
-                amountInput = "",
-                nextTransId = newNextTransId
+                amountInput = ""
             )
         }
-    }
 
-    //TransactionDetail Screen
-    fun deleteTransaction() {
-        val newTransactionList = _uiState.value.transactionList
-        newTransactionList.remove(_uiState.value.currentTransaction)
-
-        _uiState.update { currentState ->
-            currentState.copy(
-                transactionList = newTransactionList
-            )
-        }
-        updateShowDeleteDialog()
-        updateCashBalance()
     }
 
     //TransactionList Screen
-    fun getTransaction(transId: Int) {
-        for (transaction in _uiState.value.transactionList) {
-            if (transaction.transNo == transId) {
+    fun getTransaction(id: String) {
+        for (transaction in _uiState.value.transactions) {
+            if (transaction.id == id) {
                 _uiState.update { currentState ->
                     currentState.copy(
                         currentTransaction = transaction,
@@ -233,40 +337,63 @@ class KassifyViewModel : ViewModel() {
         }
     }
 
-    private fun getTransactionIndex(transId: Int): Int {
+    private fun getTransactionIndex(id: String): Int {
         var index: Int = -1
-        for (i: Int in 0..<_uiState.value.transactionList.size) {
-            if (transId == _uiState.value.transactionList[i].transNo) {
+        for (i: Int in 0..<_uiState.value.transactions.size) {
+            if (id == _uiState.value.transactions[i].id) {
                 index = i
             }
         }
         return index
     }
 
-    fun getLastTransactionDate(transaction: TransactionModel): LocalDate? {
-        val currentTransactionIndex: Int = getTransactionIndex(transaction.transNo)
+    fun getLastTransactionDate(transaction: Transaction): LocalDate? {
+        val currentTransactionIndex: Int = getTransactionIndex(transaction.id)
 
         //Check if current transaction is the first transaction in transaction-list
         if (currentTransactionIndex == 0) {
             return null
         }
-        return _uiState.value.transactionList[currentTransactionIndex - 1].date
+        return convertTemporalDateToLocalDate(_uiState.value.transactions[currentTransactionIndex - 1].date)
     }
 
-    fun getNextTransactionDate(transaction: TransactionModel): LocalDate {
-        val currentTransactionIndex: Int = getTransactionIndex(transaction.transNo)
+    fun getNextTransactionDate(transaction: Transaction): LocalDate {
+        val currentTransactionIndex: Int = getTransactionIndex(transaction.id)
 
         //Check if current transaction is the last transaction in transaction-list
-        if (currentTransactionIndex == _uiState.value.transactionList.lastIndex) {
+        if (currentTransactionIndex == _uiState.value.transactions.lastIndex) {
             return LocalDate.now()
         }
-        return _uiState.value.transactionList[currentTransactionIndex + 1].date
+        return convertTemporalDateToLocalDate(_uiState.value.transactions[currentTransactionIndex + 1].date)
     }
 
-    fun lastTransactionInList(transaction: TransactionModel): Boolean {
-        if (_uiState.value.transactionList.size == 0) {
+    fun lastTransactionInList(transaction: Transaction): Boolean {
+        if (_uiState.value.transactions.size == 0) {
             return false
         }
-        return _uiState.value.transactionList[_uiState.value.transactionList.size - 1] == transaction
+        return _uiState.value.transactions[_uiState.value.transactions.size - 1] == transaction
     }
+
+    private fun convertTemporalDateToLocalDate(date: Temporal.Date): LocalDate {
+        return date.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+    }
+
+    private fun getCategoryNo(name: String): Int {
+        for (i: Int in 0..<_uiState.value.categoryList.size) {
+            if (name == _uiState.value.categoryList[i].categoryName)
+                return _uiState.value.categoryList[i].categoryNo
+        }
+        // Fallback-Value
+        return 9999
+    }
+
+    private fun getVatNo(name: String): Int? {
+        for (i: Int in 0..<_uiState.value.vatList.size){
+            if(name == _uiState.value.vatList[i].vatType) {
+                return _uiState.value.vatList[i].vatNo
+            }
+        }
+        return null
+    }
+
 }

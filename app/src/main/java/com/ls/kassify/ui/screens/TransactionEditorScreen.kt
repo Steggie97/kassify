@@ -26,7 +26,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.amplifyframework.core.model.temporal.Temporal
 import com.amplifyframework.datastore.generated.model.Category
+import com.amplifyframework.datastore.generated.model.Transaction
+import com.amplifyframework.datastore.generated.model.VatType
 import com.ls.kassify.R
 import com.ls.kassify.data.TransactionModel
 import com.ls.kassify.ui.CashBalanceBox
@@ -34,16 +37,17 @@ import com.ls.kassify.ui.CategoryFormField
 import com.ls.kassify.ui.DateField
 import com.ls.kassify.ui.FormField
 import com.ls.kassify.ui.FormSwitch
-import com.ls.kassify.ui.UStFormField
+import com.ls.kassify.ui.VatFormField
 import com.ls.kassify.ui.theme.TextDownloadableFontsSnippet2.fontFamily
 import java.time.LocalDate
+import java.time.ZoneId
 
 @Composable
 fun TransactionEditorScreen(
     modifier: Modifier = Modifier,
-    onSaveButtonClicked: (TransactionModel) -> Unit,
+    onSaveButtonClicked: (Transaction) -> Unit,
     onCancelButtonClicked: () -> Unit,
-    transaction: TransactionModel,
+    transaction: Transaction,
     amountInput: String,
     amountErrorMessage: String? = null,
     cashBalance: Double,
@@ -52,6 +56,7 @@ fun TransactionEditorScreen(
     dateOfLastTransaction: LocalDate? = null,
     dateOfNextTransaction: LocalDate = LocalDate.now(),
     categories: List<Category>,
+    vatList: List<VatType>,
     isError: Boolean = false
 ) {
     Box(
@@ -76,18 +81,18 @@ fun TransactionEditorScreen(
                 label = R.string.date,
                 icon = R.drawable.calendar_icon,
                 onDateChange = { onDateChange("date", "", it) },
-                selectedDate = transaction.date,
+                selectedDate = transaction.date.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
                 dateOfLastTransaction = dateOfLastTransaction,
                 dateOfNextTransaction = dateOfNextTransaction
             )
 
             FormSwitch(
                 label =
-                if (transaction.isPositiveAmount)
+                if (transaction.amountPrefix)
                     R.string.deposit
                 else
                     R.string.payment,
-                checked = transaction.isPositiveAmount,
+                checked = transaction.amountPrefix,
                 onCheckedChange = { onChange("prefix", it.toString()) },
                 iconChecked = R.drawable.add_icon,
                 tintIconChecked = MaterialTheme.colorScheme.background,
@@ -115,7 +120,9 @@ fun TransactionEditorScreen(
 
             CategoryFormField(
                 label = R.string.category,
-                defaultLabel = transaction.category,
+                defaultLabel = categories.find { it.categoryNo == transaction.categoryNo }?.categoryName ?: stringResource(
+                    R.string.no_category
+                ),
                 categories = categories,
                 onCategoryChange = { onChange("category", it) },
                 modifier = Modifier
@@ -123,11 +130,14 @@ fun TransactionEditorScreen(
                     .fillMaxWidth()
             )
 
-            if (!transaction.isPositiveAmount) {
-                UStFormField(
+            if (!transaction.amountPrefix) {
+                VatFormField(
                     label = R.string.vat,
-                    defaultLabel = "Steuersatz wählen",
-                    onUStChange = { onChange("USt", it) },
+                    defaultLabel = vatList.find { it.vatNo == transaction.vatNo }?.vatType ?: stringResource(
+                        R.string.no_tax
+                    ),
+                    onVatChange = { onChange("vat", it) },
+                    vatTypes = vatList,
                     modifier = Modifier
                         .padding(bottom = 8.dp)
                         .fillMaxWidth()
@@ -149,7 +159,7 @@ fun TransactionEditorScreen(
 
             FormField(
                 label = R.string.text,
-                value = transaction.text,
+                value = transaction.transactionText,
                 onValueChange = { onChange("text", it) },
                 keyboardOptions = KeyboardOptions.Default.copy(
                     keyboardType = KeyboardType.Text,
@@ -195,11 +205,17 @@ fun TransactionEditorScreenPreview() {
     TransactionEditorScreen(
         onSaveButtonClicked = {},
         onCancelButtonClicked = {},
-        transaction = TransactionModel(),
+        transaction =
+        Transaction.builder()
+            .date(Temporal.Date(LocalDate.now().toString()))
+            .amountPrefix(true)
+            .amount(0.00)
+            .build(),
         onChange = { fieldName, value -> },
         onDateChange = { fieldName, value, date -> },
         cashBalance = 0.00,
         amountInput = "",
-        categories = emptyList()
+        categories = emptyList(),
+        vatList = emptyList()
     )
 }

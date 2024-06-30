@@ -16,18 +16,24 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.amplifyframework.core.model.temporal.Temporal
+import com.amplifyframework.datastore.generated.model.Transaction
 import com.ls.kassify.R
 import com.ls.kassify.data.TransactionModel
 import com.ls.kassify.ui.CashBalanceBox
 import com.ls.kassify.ui.TransactionCard
+import java.time.LocalDate
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.time.temporal.TemporalAccessor
 
 @Composable
 fun TransactionListScreen(
     modifier: Modifier = Modifier,
     onAddButtonClicked: () -> Unit,
-    onTransactionCardClicked: (Int) -> Unit,
-    transactions: List<TransactionModel>,
+    onTransactionCardClicked: (String) -> Unit,
+    transactions: List<Transaction>,
     cashBalance: Double
 ) {
     Box(
@@ -49,14 +55,14 @@ fun TransactionListScreen(
             items(transactions) {
                 TransactionCard(
                     shape= RectangleShape,
-                    onClick = { onTransactionCardClicked(it.transNo) },
-                    date = DateTimeFormatter.ofPattern("dd.MM.yyyy").format(it.date),
+                    onClick = { onTransactionCardClicked(it.id) },
+                    date = DateTimeFormatter.ofPattern("dd.MM.yyyy").format(it.date.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()),
                     amount =
-                    if(it.isPositiveAmount)
+                    if(it.amountPrefix)
                         it.amount
                     else
                         (it.amount * -1.00),
-                    text = it.text,
+                    text = it.transactionText,
                     modifier = Modifier.padding(bottom = 32.dp)
                 )
             }
