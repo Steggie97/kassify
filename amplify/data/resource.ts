@@ -16,7 +16,7 @@ const schema = a.schema({
       // Kontonummer Gegenkonto - 9999 für keine Zuordnung
       categoryNo: a.integer().required().default(9999),
       // Buchungsschlüssel für USt-Sachverhalte - bei keiner USt kein Wert hinterlegen
-      vatNo: a.integer().default(null),
+      vatNo: a.integer(),
       // Beleg-Nummer
       receiptNo: a.string().default(""),
       // Buchungstext
