@@ -5,11 +5,12 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.ListItemDefaults.contentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -17,19 +18,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.amplifyframework.core.model.temporal.Temporal
+import com.amplifyframework.datastore.generated.model.Category
 import com.amplifyframework.datastore.generated.model.Transaction
+import com.github.mikephil.charting.data.PieEntry
 import com.ls.kassify.R
-import com.ls.kassify.data.TransactionModel
 import com.ls.kassify.ui.CashBalanceBox
+import com.ls.kassify.ui.ReusablePieChart
 import com.ls.kassify.ui.TransactionCard
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.time.temporal.TemporalAccessor
+
 
 @Composable
 fun TransactionListScreen(
@@ -37,8 +40,18 @@ fun TransactionListScreen(
     onAddButtonClicked: () -> Unit,
     onTransactionCardClicked: (String) -> Unit,
     transactions: List<Transaction>,
-    cashBalance: Double
+    cashBalance: Double,
+    transaction: Transaction,
+    categories: List<Category>,
 ) {
+    //val percent=cashBalance/
+    /*val categoried = categories.find { it.categoryNo == transaction.categoryNo }?.categoryName ?: stringResource(
+        R.string.no_category
+    )*/
+    val entries = ArrayList<PieEntry>()
+    entries.add(PieEntry(40f, "Party A"))
+    entries.add(PieEntry(30f, "Party B"))
+    entries.add(PieEntry(30f, "Party C"))
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -70,6 +83,12 @@ fun TransactionListScreen(
                 )
             }
         }
+        /*ReusablePieChart(
+            dataEntries = entries,
+            modifier = Modifier
+                .height(200.dp)
+                .fillMaxWidth()
+        )*/
         FloatingActionButton(
             onClick = { onAddButtonClicked() },
             containerColor =  MaterialTheme.colorScheme.secondary,
@@ -95,6 +114,19 @@ fun TransactionListScreenPreview() {
         onAddButtonClicked = {},
         onTransactionCardClicked = {},
         transactions = listOf(),
-        cashBalance = 0.00
+        cashBalance = 0.00,
+        transaction =
+        Transaction.builder()
+            .date(
+                Temporal.Date(LocalDate.now().toString()))
+            .amountPrefix(true)
+            .amount(0.00)
+            .accountNo(1600)
+            .categoryNo(4400)
+            .vatNo(null)
+            .build(),
+        categories = listOf(
+            Category.builder().categoryName("Erlöse 19%").categoryNo(4400).build()
+        ),
     )
 }

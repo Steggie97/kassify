@@ -14,6 +14,7 @@ activityCompose = "1.9.0"
 composeBom = "2024.05.00"
 material = "1.6.8"
 material3 = "1.2.1"
+mpandroidchart = "v3.1.0"
 navigationRuntimeKtx = "2.7.7"
 navigationCompose = "2.7.7"
 
@@ -41,6 +42,7 @@ androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navig
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 compose-material-dialogs-datetime = { module = "io.github.vanpra.compose-material-dialogs:datetime", version.ref = "materialDialogsVersion" }
+mpandroidchart = { module = "com.github.PhilJay:MPAndroidChart", version.ref = "mpandroidchart" }
 
 
 [plugins]

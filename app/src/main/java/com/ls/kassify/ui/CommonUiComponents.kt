@@ -61,9 +61,15 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
 import com.amplifyframework.auth.AuthCodeDeliveryDetails
 import com.amplifyframework.datastore.generated.model.Category
 import com.amplifyframework.datastore.generated.model.VatType
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
+import com.github.mikephil.charting.utils.ColorTemplate
 import com.ls.kassify.R
 import com.ls.kassify.ui.theme.TextDownloadableFontsSnippet2.fontFamily
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -181,7 +187,7 @@ fun TransactionCard(
                 .fillMaxWidth()
                 .height(64.dp),
             shape = RoundedCornerShape(20.dp),
-            colors = CardDefaults.cardColors(containerColor = backgroundColor),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         ) {
             Row(
@@ -194,6 +200,7 @@ fun TransactionCard(
                 Text(
                     text = date,
                     fontSize = 18.sp,
+                    fontFamily = fontFamily,
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier
                         .weight(3 / 12f)
@@ -212,11 +219,13 @@ fun TransactionCard(
                     style = MaterialTheme.typography.bodyMedium,
                     textAlign = TextAlign.End,
                     fontSize = 18.sp,
+                    fontFamily = fontFamily,
                     color =
                     if (amount < 0.00)
                         MaterialTheme.colorScheme.error
                     else
-                        colorResource(R.color.green),
+                        MaterialTheme.colorScheme.surface,
+                        //colorResource(R.color.green),
                     modifier = Modifier
                         .weight(3 / 12f)
                         .padding(start = 4.dp)
@@ -483,7 +492,8 @@ fun DetailItem(
     //Label
     Text(
         text = stringResource(label),
-        fontSize = 14.sp,
+        fontSize = 20.sp,
+        fontFamily = fontFamily,
         fontWeight = FontWeight.Thin,
         modifier = Modifier
             .padding(start = 8.dp, top = 8.dp)
@@ -491,7 +501,7 @@ fun DetailItem(
     //Content
     Text(
         text = content,
-        fontSize = 16.sp,
+        fontSize = 15.sp,
         fontWeight = FontWeight.Normal,
         modifier = Modifier
             .padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 8.dp)
@@ -510,7 +520,8 @@ fun DetailAmount(
     //Label
     Text(
         text = stringResource(label),
-        fontSize = 14.sp,
+        fontSize = 20.sp,
+        fontFamily = fontFamily,
         fontWeight = FontWeight.Thin,
         modifier = Modifier
             .padding(start = 8.dp, top = 8.dp)
@@ -524,7 +535,7 @@ fun DetailAmount(
         if (amount < 0.00)
             colorResource(R.color.red)
         else
-            colorResource(R.color.green),
+            MaterialTheme.colorScheme.surface,
         modifier = Modifier
             .padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 8.dp)
     )
@@ -761,4 +772,27 @@ fun CashBalanceBox(cashBalance: Double) {
             )
         }
     }
+}
+
+@Composable
+fun ReusablePieChart(dataEntries: List<PieEntry>, modifier: Modifier = Modifier) {
+    AndroidView(
+        modifier = modifier,
+        factory = { context ->
+            PieChart(context).apply {
+                val dataSet = PieDataSet(dataEntries, "Your Label Here")
+                dataSet.colors = ColorTemplate.COLORFUL_COLORS.toList()
+                data = PieData(dataSet)
+                description.isEnabled = false
+                isDrawHoleEnabled = false
+                legend.isEnabled = false
+                animateY(1400)
+            }
+        },
+        update = { pieChart ->
+            pieChart.data.notifyDataChanged()
+            pieChart.notifyDataSetChanged()
+            pieChart.invalidate()
+        }
+    )
 }

@@ -1,21 +1,39 @@
 package com.ls.kassify.ui.screens
 
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.MaterialTheme.colors
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,6 +47,7 @@ import com.ls.kassify.R
 import com.ls.kassify.data.TransactionModel
 import com.ls.kassify.ui.DetailAmount
 import com.ls.kassify.ui.DetailItem
+import com.ls.kassify.ui.theme.TextDownloadableFontsSnippet2.fontFamily
 import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -56,15 +75,19 @@ fun TransactionDetailsScreen(
     ) {
         Text(
             text = "Details zur Buchung Nr. ${transaction.transactionNo}:",
-            fontSize = 20.sp,
+            fontSize = 30.sp,
             fontWeight = FontWeight.Bold,
+            fontFamily = fontFamily,
             modifier = Modifier
-                .padding(bottom = 8.dp)
+                .padding(bottom = 8.dp,top=15.dp)
+
         )
         Card(
+            colors= CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 16.dp, bottom = 32.dp),
+                .padding(top = 16.dp, bottom = 32.dp)
+                .clip(RoundedCornerShape(20.dp)),
             elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
         ) {
             DetailItem(
@@ -105,38 +128,67 @@ fun TransactionDetailsScreen(
         }
         // Only the last transaction can be deleted or edited
         if (lastTransaction) {
-            //Edit-Button
             Button(
+                shape = RectangleShape,
                 onClick = { onEditButtonClicked(transaction.id) },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp)
+                    .padding(bottom = 10.dp, top = 80.dp)
+                    .clip(RoundedCornerShape(10.dp)),
             ) {
-                Text(stringResource(R.string.edit))
+                Text(stringResource(R.string.edit),
+                    fontSize = 40.sp)
             }
-
-            //Delete-Button
-            Button(
-                onClick = { onDeleteButtonClicked() },
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 16.dp)
+                    .padding(top =40.dp, bottom = 10.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text(stringResource(R.string.delete))
+                // Delete Button
+                FloatingActionButton(
+                    onClick = { onDeleteButtonClicked() },
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    modifier = Modifier.size(70.dp)
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.delete_24px),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary),
+                        modifier = Modifier.size(60.dp)
+                    )
+                }
+
+                FloatingActionButton(
+                    onClick = { onCancelButtonClicked() },
+                    containerColor = MaterialTheme.colorScheme.primaryContainer,
+                    modifier = Modifier.size(70.dp)
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.home_24px),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.secondary),
+                        modifier = Modifier.size(60.dp)
+                    )
+                }
+
+                /*// Cancel Button
+                Button(
+                    onClick = { onCancelButtonClicked() },
+                    shape = RoundedCornerShape(30.dp),
+                    modifier = Modifier
+                        .height(60.dp)
+                        .weight(1f)
+                        .padding(start = 30.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.secondary,
+                        contentColor = MaterialTheme.colorScheme.onSecondary
+                    )
+                ) {
+                    Text(text = stringResource(R.string.back), fontSize = 30.sp)
+                }*/
             }
         }
-
-
-        //Cancel-Button
-        OutlinedButton(
-            onClick = { onCancelButtonClicked() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 16.dp)
-        ) {
-            Text(stringResource(R.string.back))
-        }
-
         if (showDeleteDialog) {
             DeleteDialog(
                 onConfirmButtonClicked = { onDeleteConfirmedClicked() },
@@ -153,17 +205,26 @@ fun DeleteDialog(
     onCancelButtonClicked: () -> Unit
 ) {
     AlertDialog(
+        modifier = Modifier
+            .clip(RoundedCornerShape(8.dp)),
+        containerColor = MaterialTheme.colorScheme.primary,
+        titleContentColor = MaterialTheme.colorScheme.outlineVariant,
+        textContentColor =  MaterialTheme.colorScheme.outlineVariant,
         onDismissRequest = { onCancelButtonClicked() },
-        title = { Text(text = stringResource(R.string.delete_transaction)) },
-        text = { Text(text = stringResource(R.string.ask_delete_confirm)) },
+        title = { Text(text = stringResource(R.string.delete_transaction),fontFamily = fontFamily,
+            fontSize = 30.sp)},
+        text = { Text(text = stringResource(R.string.ask_delete_confirm),fontFamily = fontFamily,
+            fontSize = 20.sp) },
         dismissButton = {
             TextButton(onClick = { onCancelButtonClicked() }) {
-                Text(text = stringResource(R.string.cancel))
+                Text(text = stringResource(R.string.cancel),color = Color.White,fontFamily = fontFamily,
+                    fontSize = 20.sp)
             }
         },
         confirmButton = {
             TextButton(onClick = { onConfirmButtonClicked() }) {
-                Text(text = stringResource(R.string.delete))
+                Text(text = stringResource(R.string.delete),color = Color.White,fontFamily = fontFamily,
+                    fontSize = 20.sp)
             }
         }
     )

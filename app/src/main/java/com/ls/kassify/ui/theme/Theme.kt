@@ -18,14 +18,15 @@ internal val DarkColorScheme = darkColorScheme(
 )
 
 internal val LightColorScheme = lightColorScheme(
-    primary = Blue,//blue
-    background = White,//lightyellow
-    tertiary = LightBlue,//yellow
-    surface = Green,//green
-    error= Red,//0xFFADBAC6
+    primary = Blue,
+    background = White,
+    tertiary = LightBlue,
+    surface = Green,
+    error= Red,
     secondary = MiddleBlue,
     onBackground = Black,
     outline=Black,
+    primaryContainer = Grey,
     outlineVariant = White)
 
 @Composable

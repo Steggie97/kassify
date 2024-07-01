@@ -99,6 +99,8 @@ fun KassifyApp(
                     },
                     transactions = appUiState.transactions,
                     cashBalance = appUiState.cashBalance,
+                    categories = appUiState.categoryList,
+                    transaction = appUiState.currentTransaction,
                 )
             }
             //TransactionDetail-Screen
