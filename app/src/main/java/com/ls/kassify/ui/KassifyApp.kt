@@ -1,6 +1,6 @@
 package com.ls.kassify.ui
 
-import android.util.Log
+//import com.ls.kassify.ui.theme.TextDownloadableFontsSnippet2.fontFamily
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding
@@ -15,27 +15,22 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.amplifyframework.api.graphql.model.ModelSubscription
 import com.amplifyframework.core.Amplify
-import com.amplifyframework.datastore.generated.model.Transaction
 import com.ls.kassify.R
 import com.ls.kassify.ui.screens.TransactionDetailsScreen
 import com.ls.kassify.ui.screens.TransactionEditorScreen
 import com.ls.kassify.ui.screens.TransactionListScreen
 import com.ls.kassify.ui.theme.KassifyTheme
-import com.ls.kassify.ui.theme.TextDownloadableFontsSnippet2.fontFamily
 import java.time.ZoneId
 
 enum class KassifyScreen(@StringRes val title: Int) {
@@ -50,6 +45,7 @@ fun KassifyApp(
     viewModel: KassifyViewModel = viewModel(),
     navController: NavHostController = rememberNavController()
 ) {
+    // UI-State
     val appUiState by viewModel.uiState.collectAsState()
     val context = LocalContext.current
     val backStackEntry by navController.currentBackStackEntryAsState()
@@ -57,14 +53,17 @@ fun KassifyApp(
         backStackEntry?.destination?.route ?: KassifyScreen.TransactionList.name
     )
     val onCancelButtonClicked: () -> Unit = {
+        // Log-Out-Dialog if arrow is clicked in TransactionListScreen
         if (currentScreen == KassifyScreen.TransactionList) {
             viewModel.updateShowLogoutDialog()
         } else {
+            // safe back-navigation
             navController.navigateUp()
         }
     }
     Scaffold(topBar = {
         KassifyAppBar(
+            // dynamic Appbar-Title
             title = currentScreen.title,
             onCancelButtonClicked = onCancelButtonClicked,
         )
@@ -72,15 +71,21 @@ fun KassifyApp(
         if (viewModel.showLogoutDialog) {
             LogoutDialog(
                 onConfirmButtonClicked = {
+                    // AWS -Amplify log-out command -> Authenticator UI will show the sign-in-component
                     Amplify.Auth.signOut { }
+                    // updates the showLogOutDialog to false (initial state)
                     viewModel.updateShowLogoutDialog()
                 },
-                onCancelButtonClicked = { viewModel.updateShowLogoutDialog() }
+                onCancelButtonClicked = {
+                    // updates the showLogOutDialog to false (initial state)
+                    viewModel.updateShowLogoutDialog()
+                }
             )
         }
-
+        //Navigation-Composable
         NavHost(
             navController = navController,
+            // first screen main-screen is the TransactionListScreen
             startDestination = KassifyScreen.TransactionList.name,
             modifier = Modifier.padding(innerPadding)
         ) {
@@ -89,12 +94,16 @@ fun KassifyApp(
             composable(route = KassifyScreen.TransactionList.name) {
                 TransactionListScreen(
                     onTransactionCardClicked = {
+                        // updates the appUiState.currentTransaction with the selected transaction
                         viewModel.getTransaction(it)
+                        // navigates to the transactionDetailsScreen
                         navController.navigate(KassifyScreen.TransactionDetails.name)
                     },
                     onAddButtonClicked = {
+                        // updates the _uiState-variables
                         viewModel.createNewTransaction()
                         viewModel.updateNextCashBalance(transaction = appUiState.currentTransaction)
+                        // navigates to transactionEditorScreen
                         navController.navigate(KassifyScreen.NewTransaction.name)
                     },
                     transactions = appUiState.transactions,
@@ -107,17 +116,22 @@ fun KassifyApp(
             composable(route = KassifyScreen.TransactionDetails.name) {
                 TransactionDetailsScreen(
                     onEditButtonClicked = {
+                        // updates the currentTransaction with the selection
                         viewModel.getTransaction(it)
                         viewModel.updateNextCashBalance(
                             transaction = appUiState.currentTransaction,
                             isNewTransaction = false
                         )
+                        // navigates to the TransactionEditorScreen
                         navController.navigate(KassifyScreen.TransactionEditor.name)
                     },
                     onDeleteButtonClicked = { viewModel.updateShowDeleteDialog() },
                     onDeleteConfirmedClicked = {
+                        // deletes the current transaction in backend
                         viewModel.deleteTransaction(appUiState.currentTransaction)
+                        // navigation to transactionListScreen
                         navController.navigateUp()
+                        // toast message to notify the user of deletion
                         Toast.makeText(
                             context,
                             context.getString(R.string.toast_transaction_deleted),
@@ -125,6 +139,7 @@ fun KassifyApp(
                         ).show()
                     },
                     onCancelButtonClicked = {
+                        // Navigates to the transactionListScreen
                         navController.navigateUp()
                     },
                     onCancelDeleteDialogClicked = { viewModel.updateShowDeleteDialog() },
@@ -140,7 +155,9 @@ fun KassifyApp(
                 TransactionEditorScreen(
                     onSaveButtonClicked = {
                         viewModel.updateTransaction(it)
+                        // navigation to transactionListScreen
                         navController.navigateUp()
+                        // toast message to notify the user
                         Toast.makeText(
                             context,
                             context.getString(R.string.toast_transaction_saved),
@@ -151,6 +168,7 @@ fun KassifyApp(
                         navController.navigateUp()
                     },
                     transaction = appUiState.currentTransaction,
+                    // retrieval of LocalDates for date-validator of the date picker dialog
                     dateOfLastTransaction = viewModel.getLastTransactionDate(appUiState.currentTransaction),
                     dateOfNextTransaction = viewModel.getNextTransactionDate(appUiState.currentTransaction),
                     categories = appUiState.categoryList,
@@ -174,13 +192,15 @@ fun KassifyApp(
                     isError = viewModel.isError
                 )
             }
-            //NewTransaction-Screen
+            //NewTransaction-Screen for creating a new transaction
             composable(route = KassifyScreen.NewTransaction.name) {
                 TransactionEditorScreen(
                     onSaveButtonClicked = {
-                        //Adding new transaction to transactionList
+                        //Adding new transaction to transactionList and backend
                         viewModel.addTransaction(it)
+                        // navigation to the transactionListScreen
                         navController.navigateUp()
+                        // toast message to notify the user
                         Toast.makeText(
                             context,
                             context.getString(R.string.toast_transaction_saved),
@@ -188,6 +208,7 @@ fun KassifyApp(
                         ).show()
                     },
                     onCancelButtonClicked = {
+                        // navigation to the transactionListScreen
                         navController.navigateUp()
                     },
                     transaction = appUiState.currentTransaction,
@@ -197,8 +218,11 @@ fun KassifyApp(
                     amountErrorMessage = viewModel.validAmount.errorMessage,
                     dateOfLastTransaction =
                     if (appUiState.transactions.size > 0)
-                        appUiState.transactions[appUiState.transactions.lastIndex].date.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+                        // Date of the last transaction, converted in LocalDate, will be used for the date-validator of the date picker dialog
+                        appUiState.transactions[appUiState.transactions.lastIndex].date.toDate()
+                            .toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
                     else
+                        // the transaction list is empty -> no date required
                         null,
                     cashBalance = appUiState.nextCashBalance,
                     onDateChange = { fieldName, value, date ->
@@ -229,28 +253,40 @@ fun LogoutDialog(
     AlertDialog(
         modifier = Modifier
             .clip(RoundedCornerShape(8.dp)),
-        containerColor = MaterialTheme.colorScheme.tertiary,
+        containerColor = MaterialTheme.colorScheme.background,
         onDismissRequest = { onCancelButtonClicked() },
-        title = { Text(text = stringResource(R.string.logout),
-            fontFamily = fontFamily,
-            fontSize = 30.sp)},
-        text = { Text(text = stringResource(R.string.logout_question),
-            modifier = Modifier
-                .padding(top=9.dp),
-            color = Color.Black,
-            fontFamily = fontFamily,
-            fontSize = 20.sp) },
+        title = {
+            Text(
+                text = stringResource(R.string.logout),
+                style = MaterialTheme.typography.headlineMedium,
+                color = MaterialTheme.colorScheme.primary
+            )
+        },
+        text = {
+            Text(
+                text = stringResource(R.string.logout_question),
+                modifier = Modifier
+                    .padding(top = 8.dp),
+                color = MaterialTheme.colorScheme.onBackground,
+                style = MaterialTheme.typography.bodyLarge,
+            )
+        },
         dismissButton = {
             TextButton(onClick = { onCancelButtonClicked() }) {
-                Text(text = stringResource(R.string.cancel),
-                    color = Color.Black,fontFamily = fontFamily,
-                    fontSize = 20.sp)
+                Text(
+                    text = stringResource(R.string.cancel),
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         },
         confirmButton = {
             TextButton(onClick = { onConfirmButtonClicked() }) {
-                Text(text = stringResource(R.string.logout),color = Color.Black,fontFamily = fontFamily,
-                    fontSize = 20.sp)
+                Text(
+                    text = stringResource(R.string.logout),
+                    color = MaterialTheme.colorScheme.primary,
+                    style = MaterialTheme.typography.bodyMedium
+                )
             }
         }
     )

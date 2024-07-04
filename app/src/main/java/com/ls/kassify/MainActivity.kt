@@ -7,43 +7,31 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Surface
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFontFamilyResolver
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.createFontFamilyResolver
 import androidx.compose.ui.unit.dp
-import com.amplifyframework.ui.authenticator.PasswordResetConfirmState
-import com.amplifyframework.ui.authenticator.SignUpConfirmState
 import com.amplifyframework.ui.authenticator.ui.Authenticator
 import com.amplifyframework.ui.authenticator.ui.PasswordReset
 import com.amplifyframework.ui.authenticator.ui.PasswordResetConfirm
 import com.amplifyframework.ui.authenticator.ui.SignIn
 import com.amplifyframework.ui.authenticator.ui.SignUp
 import com.amplifyframework.ui.authenticator.ui.SignUpConfirm
-import com.amplifyframework.ui.authenticator.ui.SignUpConfirmFooter
 import com.ls.kassify.ui.AuthHeaderContent
 import com.ls.kassify.ui.DetailsNoticeContent
 import com.ls.kassify.ui.KassifyApp
 import com.ls.kassify.ui.theme.KassifyTheme
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
 
@@ -70,7 +58,7 @@ class MainActivity : ComponentActivity() {
                     ){
 
                         // Authenticator bitte nicht löschen, nur bei Bedarf auskommentieren (Enthält LogIn-Screen, etc.)
-
+                        //AWS Amplify-Authenticator UI with custom headers
                         Authenticator(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -145,10 +133,10 @@ class MainActivity : ComponentActivity() {
                                 )
 
                             }
-                        ) { //Vorstehende Klammer kann Auskommentiert werden
-                            // Anzeige des TransactionList-Screens, nach erfolgreicher Anmeldung
+                        ) {
+                            //kassify app content: first screen after sign-in is the TransactionListScreen
                             KassifyApp()
-                        } // Vorstehende Klammer kann auskommentiert werden.*/
+                        }
                     }
                 }
             }

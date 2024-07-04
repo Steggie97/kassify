@@ -4,7 +4,6 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.ViewModel
 import com.amplifyframework.api.graphql.model.ModelMutation
 import com.amplifyframework.api.graphql.model.ModelQuery
@@ -16,7 +15,6 @@ import com.amplifyframework.datastore.generated.model.Transaction
 import com.amplifyframework.datastore.generated.model.VatType
 import com.ls.kassify.Validation.ValidateAmount
 import com.ls.kassify.Validation.ValidationResult
-import com.ls.kassify.data.TransactionModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,13 +22,13 @@ import kotlinx.coroutines.flow.update
 import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 
 class KassifyViewModel : ViewModel() {
-    // UI-State
+    // UI-State-instance
     private val _uiState = MutableStateFlow(KassifyUiState())
     val uiState: StateFlow<KassifyUiState> = _uiState.asStateFlow()
 
+    //Viewmodel variables
     var showDeleteDialog by mutableStateOf(false)
         private set
 
@@ -61,11 +59,11 @@ class KassifyViewModel : ViewModel() {
         updateErrorState()
     }
 
+    // updates the isError
     private fun updateErrorState() {
         isError = !validAmount.successful
     }
     //ViewModel-Functions
-
     fun updateShowDeleteDialog() {
         showDeleteDialog = !showDeleteDialog
     }
@@ -74,6 +72,7 @@ class KassifyViewModel : ViewModel() {
         showLogoutDialog = !showLogoutDialog
     }
 
+    //loads categories from backend end into the _uistate.values.categoryList
     private fun updateCategoryList() {
         var newCategoryList: List<Category>
         try {
@@ -95,6 +94,7 @@ class KassifyViewModel : ViewModel() {
         }
     }
 
+    // //loads vatTypes from backend end into the _uistate.values.vatList
     private fun updateVatList() {
         var newVatList: List<VatType>
         try {
@@ -116,6 +116,7 @@ class KassifyViewModel : ViewModel() {
         }
     }
 
+    // function to subscribe to the Amplify-Events create, delete and update
     private fun subscribeToAmplifyEvents() {
         //Subscription for Create Events:
         Amplify.API.subscribe(
@@ -175,6 +176,7 @@ class KassifyViewModel : ViewModel() {
         )
     }
 
+    // loads the saved transactions from backend and updates the _uistate.values.transactions
     private fun updateTransactionList() {
         var newTransactionList: MutableList<Transaction>
         try {
@@ -201,7 +203,7 @@ class KassifyViewModel : ViewModel() {
 
     }
 
-
+    // function to create a new transaction-record in backend
     fun addTransaction(transaction: Transaction) {
         Log.i("AddTransaction", "Transaction to add: $transaction")
         Amplify.API.mutate(
@@ -211,6 +213,7 @@ class KassifyViewModel : ViewModel() {
         )
     }
 
+    // updates a transaction-record in backend
     fun updateTransaction(transaction: Transaction) {
         Amplify.API.mutate(
             ModelMutation.update(transaction),
@@ -219,6 +222,7 @@ class KassifyViewModel : ViewModel() {
         )
     }
 
+    // deletes a transaction-record in backend
     fun deleteTransaction(transaction: Transaction) {
         Amplify.API.mutate(
             ModelMutation.delete(transaction),
@@ -227,12 +231,15 @@ class KassifyViewModel : ViewModel() {
         )
         updateShowDeleteDialog()
     }
+
+    //currentTransaction is a variable of _uiState and holds the selectedTransaction.
     fun updateCurrentTransaction(
         fieldName: String,
         value: String = "",
         date: LocalDate? = null,
     ) {
         val updatedTransaction: Transaction =
+            // saves the altered value in a temporary variable in dependency of the fieldname
             when (fieldName) {
                 "date" ->
                     if (date != null) {
@@ -246,6 +253,7 @@ class KassifyViewModel : ViewModel() {
                 "prefix" -> _uiState.value.currentTransaction.copyOfBuilder().amountPrefix(value.toBoolean()).categoryNo(9999).vatNo(null).build()
                 "amount" -> {
                     _uiState.value.currentTransaction.copyOfBuilder().amount(
+                        // value is a string and needs to be converted in double
                         try {
                             (NumberFormat.getInstance().parse(value)?.toDouble() ?: 0.0)
                         } catch (e: Exception) {
@@ -257,9 +265,11 @@ class KassifyViewModel : ViewModel() {
                 "vat" -> _uiState.value.currentTransaction.copyOfBuilder().vatNo(getVatNo(value)).build()
                 "receiptNo" -> _uiState.value.currentTransaction.copyOfBuilder().receiptNo(value).build()
                 "text" -> _uiState.value.currentTransaction.copyOfBuilder().transactionText(value).build()
+                // in case of no changes:
                 else -> _uiState.value.currentTransaction.copyOfBuilder().build()
             }
 
+        // Updating the currentTransaction variable with the temporary transaction-variable
         _uiState.update { currentState ->
             currentState.copy(
                 currentTransaction = updatedTransaction,
@@ -270,9 +280,11 @@ class KassifyViewModel : ViewModel() {
                     _uiState.value.amountInput
             )
         }
+        // checking the new amount and  new cashBalance with validator
         updateValidationResult()
     }
 
+    // update of _uiState.value.cashBalance
     private fun updateCashBalance() {
         var newCashBalance: Double = 0.00
         _uiState.value.transactions.forEach {
@@ -289,14 +301,17 @@ class KassifyViewModel : ViewModel() {
         }
     }
 
+    // updates of _uiState.value.nextCashBalance.
     fun updateNextCashBalance(transaction: Transaction, isNewTransaction: Boolean = true) {
         var cashBalance = _uiState.value.nextCashBalance
+        //
         if (!isNewTransaction && transaction.amountPrefix) {
             cashBalance -= transaction.amount
         }
         if (!isNewTransaction && !transaction.amountPrefix) {
             cashBalance += transaction.amount
         }
+        // update
         _uiState.update { currentState ->
             currentState.copy(
                 nextCashBalance = cashBalance
@@ -304,6 +319,7 @@ class KassifyViewModel : ViewModel() {
         }
     }
 
+    // creating a new transaction-object and save it into the _uiState.value.currentTransaction
     fun createNewTransaction() {
         val newTransaction = Transaction.builder()
             .date(Temporal.Date(LocalDate.now().toString()))
@@ -327,9 +343,11 @@ class KassifyViewModel : ViewModel() {
     }
 
     //TransactionList Screen
+
     fun getTransaction(id: String) {
         for (transaction in _uiState.value.transactions) {
             if (transaction.id == id) {
+                // found transaction with id. This transaction is the new currentTransaction. Update of the currentTransaction-value of the _UiState-variable
                 _uiState.update { currentState ->
                     currentState.copy(
                         currentTransaction = transaction,
@@ -347,6 +365,7 @@ class KassifyViewModel : ViewModel() {
                 index = i
             }
         }
+        // returns the list-index of the transaction with an specific id. The function returns -1 if the transaction was not found in the transactionlist
         return index
     }
 
@@ -355,8 +374,10 @@ class KassifyViewModel : ViewModel() {
 
         //Check if current transaction is the first transaction in transaction-list
         if (currentTransactionIndex == 0) {
+            // not
             return null
         }
+        // returns a LocalDate which is retrieved from the transaction before the current transaction
         return convertTemporalDateToLocalDate(_uiState.value.transactions[currentTransactionIndex - 1].date)
     }
 
@@ -365,11 +386,14 @@ class KassifyViewModel : ViewModel() {
 
         //Check if current transaction is the last transaction in transaction-list
         if (currentTransactionIndex == _uiState.value.transactions.lastIndex) {
+            // returns the current date
             return LocalDate.now()
         }
+        // returns a LocalDate for the transaction after the currentTransaction
         return convertTemporalDateToLocalDate(_uiState.value.transactions[currentTransactionIndex + 1].date)
     }
 
+    // checks if the transaction is the last transaction in list
     fun lastTransactionInList(transaction: Transaction): Boolean {
         if (_uiState.value.transactions.size == 0) {
             return false
@@ -377,10 +401,12 @@ class KassifyViewModel : ViewModel() {
         return _uiState.value.transactions[_uiState.value.transactions.size - 1] == transaction
     }
 
+    // converts TemporalDate into a LocalDate instance
     private fun convertTemporalDateToLocalDate(date: Temporal.Date): LocalDate {
         return date.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
     }
 
+    // returns the categoryNo for a given categoryName
     private fun getCategoryNo(name: String): Int {
         for (i: Int in 0..<_uiState.value.categoryList.size) {
             if (name == _uiState.value.categoryList[i].categoryName)
@@ -390,6 +416,7 @@ class KassifyViewModel : ViewModel() {
         return 9999
     }
 
+    // returns the vatNo for a given vatName/ vatType
     private fun getVatNo(name: String): Int? {
         for (i: Int in 0..<_uiState.value.vatList.size){
             if(name == _uiState.value.vatList[i].vatType) {

@@ -1,8 +1,8 @@
 package com.ls.kassify.Validation
 
 import java.text.NumberFormat
-
 class ValidateAmount {
+    // modular validation for the amount and cashBalance.
     fun execute(amount: Double, isPositive: Boolean, cashBalance: Double): ValidationResult {
         if (!isPositive && (cashBalance - amount < 0.00)) {
             return ValidationResult(

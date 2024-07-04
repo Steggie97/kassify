@@ -21,7 +21,7 @@
     <string name="signup">Registrieren</string>
     <string name="cash_register">Kasse</string>
     <string name="transaction_edit">Buchung bearbeiten</string>
-    <string name="transaction_new">Neue Buchung anlegen</string>
+    <string name="transaction_new">Buchung anlegen</string>
     <string name="transaction_details">Buchungs-Details</string>
     <string name="delete_transaction">Buchung löschen</string>
     <string name="logout">Logout</string>
@@ -33,7 +33,7 @@
     <string name="vat">Vorsteuer</string>
     <string name="signin_success">Anmeldung erfolgreich</string>
 
-    <string name="amplify_ui_authenticator_title_signin">Anmelden</string>
+    <string name="amplify_ui_authenticator_title_signin">Login</string>
     <string name="amplify_ui_authenticator_title_signup">Registrieren</string>
     <string name="amplify_ui_authenticator_title_password_reset">Passwort zurücksetzen</string>
     <string name="amplify_ui_authenticator_title_signup_confirm">Code eingeben</string>

@@ -1,6 +1,8 @@
 package com.ls.kassify.ui.screens
 
+//import com.ls.kassify.ui.theme.TextDownloadableFontsSnippet2.fontFamily
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,20 +15,16 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.ListItemDefaults.contentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.amplifyframework.core.model.temporal.Temporal
 import com.amplifyframework.datastore.generated.model.Category
 import com.amplifyframework.datastore.generated.model.Transaction
@@ -38,7 +36,14 @@ import com.ls.kassify.ui.DateField
 import com.ls.kassify.ui.FormField
 import com.ls.kassify.ui.FormSwitch
 import com.ls.kassify.ui.VatFormField
-import com.ls.kassify.ui.theme.TextDownloadableFontsSnippet2.fontFamily
+import com.ls.kassify.ui.theme.customErrorContainerDark
+import com.ls.kassify.ui.theme.customErrorContainerLight
+import com.ls.kassify.ui.theme.customErrorDark
+import com.ls.kassify.ui.theme.customErrorLight
+import com.ls.kassify.ui.theme.successContainerDark
+import com.ls.kassify.ui.theme.successContainerLight
+import com.ls.kassify.ui.theme.successDark
+import com.ls.kassify.ui.theme.successLight
 import java.time.LocalDate
 import java.time.ZoneId
 
@@ -77,12 +82,14 @@ fun TransactionEditorScreen(
             DateField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 8.dp),
+                    .padding(vertical = 16.dp),
                 //
                 label = R.string.date,
                 icon = R.drawable.calendar_icon,
                 onDateChange = { onDateChange("date", "", it) },
+                // selected/ saved date converted in LocalDate
                 selectedDate = transaction.date.toDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate(),
+                // given dates for the date-validator of date picker dialog
                 dateOfLastTransaction = dateOfLastTransaction,
                 dateOfNextTransaction = dateOfNextTransaction
             )
@@ -99,10 +106,27 @@ fun TransactionEditorScreen(
                 tintIconChecked = MaterialTheme.colorScheme.background,
                 iconUnchecked = R.drawable.remove_icon,
                 tintIconUnchecked = MaterialTheme.colorScheme.background,
-                checkedThumbColor = colorResource(R.color.green),
-                checkedTrackColor = MaterialTheme.colorScheme.primaryContainer,
-                uncheckedThumbColor = colorResource(R.color.red),
-                uncheckedTrackColor = MaterialTheme.colorScheme.secondaryContainer
+                // checked-switch is green, unchecked switch is red
+                checkedThumbColor =
+                if(isSystemInDarkTheme())
+                    successDark
+                else
+                    successLight,
+                checkedTrackColor =
+                if(isSystemInDarkTheme())
+                    successContainerDark
+                else
+                    successContainerLight,
+                uncheckedThumbColor =
+                if (isSystemInDarkTheme())
+                    customErrorDark
+                else
+                    customErrorLight,
+                uncheckedTrackColor =
+                if(isSystemInDarkTheme())
+                    customErrorContainerDark
+                else
+                    customErrorContainerLight,
             )
 
             FormField(
@@ -126,9 +150,13 @@ fun TransactionEditorScreen(
                     R.string.no_category
                 ),
                 categories =
+                // gets the categories for acquisitions/ non-acquisitions
                     when(transaction.amountPrefix) {
+                        // category-Types "Normalkonto" and "Ertragskonto" are shown
                         true -> categories.filter { it.isAcquisition == true }
+                        // category-Types "Normalkonto" and "Aufwandskonto" are shown
                         false -> categories.filter { it.isAcquisition == false }
+                        // fallback: all categories will be shown
                         else -> categories
                     },
                 onCategoryChange = { onChange("category", it) },
@@ -136,13 +164,14 @@ fun TransactionEditorScreen(
                     .padding(bottom = 8.dp)
                     .fillMaxWidth()
             )
-
+            // vat-Dropdown is only shown if the amountPrefix is false and categoryType is "Aufwandskonto"
             if (!transaction.amountPrefix
                 && categories.find { it.categoryNo == transaction.categoryNo }!!.categoryType.name == "Aufwandskonto"
                 ){
                 VatFormField(
                     label = R.string.vat,
                     defaultLabel =
+                    // gets the vatType of the given vatNo of the currentTransaction
                     vatList.find { it.vatNo == transaction.vatNo }?.vatType ?: stringResource(
                         R.string.no_tax
                     ),
@@ -181,35 +210,24 @@ fun TransactionEditorScreen(
             )
 
             Button(
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary
-                ),
                 onClick = { onSaveButtonClicked(transaction) },
                 enabled = !isError,
                 modifier = Modifier
                     .fillMaxWidth()
                     //.padding(vertical = 40.dp)
                     .padding(top = 30.dp)
-                    //background(MaterialTheme.colorScheme.secondary)
             ) {
                 Text(
-                    //color = MaterialTheme.colorScheme.secondary,
                     text = stringResource(R.string.save),
-                    fontFamily = fontFamily,
-                    fontSize = 30.sp)
+                    )
             }
 
-            /*Button(
-                colors = ButtonDefaults.buttonColors(
-                    containerColor =  MaterialTheme.colorScheme.error,
-                ),
+            Button(
                 onClick = { onCancelButtonClicked() },
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(text =stringResource(R.string.cancel),
-                    fontFamily = fontFamily,
-                    fontSize = 20.sp,)
-            }*/
+                Text(text =stringResource(R.string.cancel))
+            }
         }
         CashBalanceBox(cashBalance = cashBalance)
     }
