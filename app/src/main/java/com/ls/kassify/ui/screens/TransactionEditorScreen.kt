@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -44,6 +45,7 @@ import com.ls.kassify.ui.theme.successContainerDark
 import com.ls.kassify.ui.theme.successContainerLight
 import com.ls.kassify.ui.theme.successDark
 import com.ls.kassify.ui.theme.successLight
+import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.ZoneId
 
@@ -62,7 +64,8 @@ fun TransactionEditorScreen(
     dateOfNextTransaction: LocalDate = LocalDate.now(),
     categories: List<Category>,
     vatList: List<VatType>,
-    isError: Boolean = false
+    isError: Boolean = false,
+    formatInput: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -141,6 +144,11 @@ fun TransactionEditorScreen(
                 modifier = Modifier
                     .padding(vertical = 8.dp)
                     .fillMaxWidth()
+                    .onFocusChanged { focusState ->
+                        if(!focusState.isFocused) {
+                            formatInput()
+                        }
+                    }
             )
 
             CategoryFormField(
@@ -255,6 +263,7 @@ fun TransactionEditorScreenPreview() {
         cashBalance = 0.00,
         amountInput = "",
         categories = emptyList(),
-        vatList = emptyList()
+        vatList = emptyList(),
+        formatInput = {}
     )
 }

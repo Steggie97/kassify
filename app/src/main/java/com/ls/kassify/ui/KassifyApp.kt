@@ -189,7 +189,10 @@ fun KassifyApp(
                             value
                         )
                     },
-                    isError = viewModel.isError
+                    isError = viewModel.isError,
+                    formatInput = {
+                        viewModel.formatAmountInput()
+                    }
                 )
             }
             //NewTransaction-Screen for creating a new transaction
@@ -238,7 +241,10 @@ fun KassifyApp(
                             value
                         )
                     },
-                    isError = viewModel.isError
+                    isError = viewModel.isError,
+                    formatInput = {
+                        viewModel.formatAmountInput()
+                    }
                 )
             }
         }

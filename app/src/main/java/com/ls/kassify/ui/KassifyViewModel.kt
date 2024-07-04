@@ -284,6 +284,18 @@ class KassifyViewModel : ViewModel() {
         updateValidationResult()
     }
 
+    fun formatAmountInput() {
+        val formatter = NumberFormat.getNumberInstance().apply {
+            minimumFractionDigits = 2
+            maximumFractionDigits = 2
+        }
+        _uiState.update { currentState ->
+            currentState.copy(
+                amountInput = formatter.format(_uiState.value.currentTransaction.amount).toString()
+            )
+        }
+    }
+
     // update of _uiState.value.cashBalance
     private fun updateCashBalance() {
         var newCashBalance: Double = 0.00
