@@ -46,7 +46,6 @@ import com.ls.kassify.ui.theme.successContainerDark
 import com.ls.kassify.ui.theme.successContainerLight
 import com.ls.kassify.ui.theme.successDark
 import com.ls.kassify.ui.theme.successLight
-import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.ZoneId
 
@@ -243,6 +242,7 @@ fun TransactionEditorScreen(
     }
 }
 
+//Preview
 @Preview(
     showBackground = true,
     showSystemUi = true

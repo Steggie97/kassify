@@ -665,10 +665,10 @@ fun CashBalanceBox(cashBalance: Double) {
         {
             Text(
                 text =
-                "Kassenbestand am ${
-                    DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault())
-                        .format(LocalDate.now())
-                }",
+                stringResource(
+                    R.string.cashbalance_title_text,
+                    DateTimeFormatter.ofPattern("dd.MM.yyyy", Locale.getDefault()).format(LocalDate.now())
+                ),
                 style = MaterialTheme.typography.titleMedium
             )
             Text(
@@ -694,7 +694,7 @@ fun CashBalanceBox(cashBalance: Double) {
 @Composable
 fun PieChartView(dataEntries: List<PieEntry>, modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    val typeface: android.graphics.Typeface? =ResourcesCompat.getFont(context, R.font.custom_font)
+    val typeface: android.graphics.Typeface? = ResourcesCompat.getFont(context, R.font.custom_font)
     AndroidView(
         modifier = modifier,
         factory = { context ->
@@ -714,15 +714,15 @@ fun PieChartView(dataEntries: List<PieEntry>, modifier: Modifier = Modifier) {
             val dataSet = PieDataSet(dataEntries, "Your Label Here")
             dataSet.colors = getCustomColorfulColors().toMutableList()
             typeface?.let { dataSet.valueTypeface = it }
-            dataSet.valueTextSize = 18f
-            dataSet.valueTextColor = androidx.compose.ui.graphics.Color.White.toArgb() // Set your desired color here
+            dataSet.valueTextSize = 16f
+            dataSet.valueTextColor = Color.White.toArgb() // Set your desired color here
             pieChart.data = PieData(dataSet)
             pieChart.invalidate()
         }
     )
 }
 
-fun ChartCategory(categories: List<Category>, transactions: List<Transaction>): HashMap<String, Double> {
+fun chartCategory(categories: List<Category>, transactions: List<Transaction>): HashMap<String, Double> {
     val categoryAmountMap = HashMap<String, Double>()
 
     transactions.forEach { transaction ->
@@ -730,7 +730,7 @@ fun ChartCategory(categories: List<Category>, transactions: List<Transaction>): 
                 categories.find { it.categoryNo == transaction.categoryNo }?.categoryName
                     ?: "No Category"
 
-            val amount = if (transaction.amountPrefix) transaction.amount else -transaction.amount
+            val amount = transaction.amount
 
             categoryAmountMap[categoryName] =
                 categoryAmountMap.getOrDefault(categoryName, 0.0) + amount

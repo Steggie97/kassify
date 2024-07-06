@@ -92,5 +92,9 @@
     <string name="pre_tax">Vorsteuer</string>
     <string name="no_category">Keine Zuordnung</string>
     <string name="no_tax">Keine</string>
+    <string name="pie_chart_hide_text">Statistik ausblenden</string>
+    <string name="pie_chart_show_text">Statistik einblenden</string>
+    <string name="cashbalance_title_text">Kassenbestand am %s</string>
+    <string name="piechart_title_text">Gesamtbetrag der Buchungen nach Kategorien in €:</string>
 
 </resources>
