@@ -1,8 +1,8 @@
 package com.ls.kassify.ui
 
+//mport com.ls.kassify.ui.theme.CustomColorfulColors
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -29,8 +29,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -53,20 +51,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Color.Companion.Black
-import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.res.ResourcesCompat
 import com.amplifyframework.auth.AuthCodeDeliveryDetails
 import com.amplifyframework.datastore.generated.model.Category
+import com.amplifyframework.datastore.generated.model.Transaction
 import com.amplifyframework.datastore.generated.model.VatType
+import com.github.mikephil.charting.charts.PieChart
+import com.github.mikephil.charting.data.PieData
+import com.github.mikephil.charting.data.PieDataSet
+import com.github.mikephil.charting.data.PieEntry
 import com.ls.kassify.R
 import com.ls.kassify.ui.theme.customErrorDark
 import com.ls.kassify.ui.theme.customErrorLight
+import com.ls.kassify.ui.theme.getCustomColorfulColors
 import com.ls.kassify.ui.theme.successDark
 import com.ls.kassify.ui.theme.successLight
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -87,6 +93,11 @@ import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
  */
+
+
+
+data class Category(val categoryNo: Int, val categoryName: String)
+data class Transaction(val categoryNo: Int, val amount: Double, val amountPrefix: Boolean)
 
 
 //App-UI
@@ -193,9 +204,10 @@ fun TransactionCard(
             shape = RoundedCornerShape(20.dp),
             colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
         ) {
-            Box(modifier = Modifier.fillMaxHeight(),
+            Box(
+                modifier = Modifier.fillMaxHeight(),
 
-            ) {
+                ) {
 
                 Row(
                     modifier = Modifier
@@ -679,16 +691,19 @@ fun CashBalanceBox(cashBalance: Double) {
     }
 }
 
-/*
 @Composable
-fun ReusablePieChart(dataEntries: List<PieEntry>, modifier: Modifier = Modifier) {
+fun PieChartView(dataEntries: List<PieEntry>, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val typeface: android.graphics.Typeface? =ResourcesCompat.getFont(context, R.font.custom_font)
     AndroidView(
         modifier = modifier,
         factory = { context ->
             PieChart(context).apply {
                 val dataSet = PieDataSet(dataEntries, "Your Label Here")
-                dataSet.colors = ColorTemplate.COLORFUL_COLORS.toList()
+                dataSet.colors = getCustomColorfulColors().toMutableList()
+                dataSet.valueTextSize = 18f
                 data = PieData(dataSet)
+                typeface?.let { dataSet.valueTypeface = it }
                 description.isEnabled = false
                 isDrawHoleEnabled = false
                 legend.isEnabled = false
@@ -696,11 +711,31 @@ fun ReusablePieChart(dataEntries: List<PieEntry>, modifier: Modifier = Modifier)
             }
         },
         update = { pieChart ->
-            pieChart.data.notifyDataChanged()
-            pieChart.notifyDataSetChanged()
+            val dataSet = PieDataSet(dataEntries, "Your Label Here")
+            dataSet.colors = getCustomColorfulColors().toMutableList()
+            typeface?.let { dataSet.valueTypeface = it }
+            dataSet.valueTextSize = 18f
+            dataSet.valueTextColor = androidx.compose.ui.graphics.Color.White.toArgb() // Set your desired color here
+            pieChart.data = PieData(dataSet)
             pieChart.invalidate()
         }
     )
 }
 
- */
+fun ChartCategory(categories: List<Category>, transactions: List<Transaction>): HashMap<String, Double> {
+    val categoryAmountMap = HashMap<String, Double>()
+
+    transactions.forEach { transaction ->
+            val categoryName =
+                categories.find { it.categoryNo == transaction.categoryNo }?.categoryName
+                    ?: "No Category"
+
+            val amount = if (transaction.amountPrefix) transaction.amount else -transaction.amount
+
+            categoryAmountMap[categoryName] =
+                categoryAmountMap.getOrDefault(categoryName, 0.0) + amount
+
+    }
+
+    return categoryAmountMap
+}

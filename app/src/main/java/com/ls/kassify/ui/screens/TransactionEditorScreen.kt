@@ -1,6 +1,7 @@
 package com.ls.kassify.ui.screens
 
 //import com.ls.kassify.ui.theme.TextDownloadableFontsSnippet2.fontFamily
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -49,6 +50,7 @@ import java.text.NumberFormat
 import java.time.LocalDate
 import java.time.ZoneId
 
+@SuppressLint("StateFlowValueCalledInComposition")
 @Composable
 fun TransactionEditorScreen(
     modifier: Modifier = Modifier,

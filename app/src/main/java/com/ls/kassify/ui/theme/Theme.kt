@@ -9,6 +9,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 
 @Immutable
@@ -92,6 +93,14 @@ private val darkScheme = darkColorScheme(
     surfaceContainerHigh = surfaceContainerHighDark,
     surfaceContainerHighest = surfaceContainerHighestDark,
 )
+
+fun getCustomColorfulColors(): List<Int> {
+    return listOf(
+        primaryLight.toArgb(), secondaryLight.toArgb(), secondaryDark.toArgb(),
+        primaryContainerLight.toArgb(),secondaryLight.toArgb(),secondaryContainerLight.toArgb(),
+        onSecondaryContainerLight.toArgb()
+    )
+}
 
 private val mediumContrastLightColorScheme = lightColorScheme(
     primary = primaryLightMediumContrast,
