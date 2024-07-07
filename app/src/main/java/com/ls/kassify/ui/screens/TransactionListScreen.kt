@@ -89,7 +89,9 @@ fun TransactionListScreen(
                         modifier = Modifier.padding(bottom = 32.dp)
                     )
                 }
-                item { Column(
+                item {
+                    // PieChart is the last Element in LazyColumn
+                    Column(
                     modifier = Modifier
                         .padding(
                             top = 64.dp,

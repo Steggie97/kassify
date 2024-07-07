@@ -4,6 +4,7 @@ import java.text.NumberFormat
 class ValidateAmount {
     // modular validation for the amount and cashBalance.
     fun execute(amount: Double, isPositive: Boolean, cashBalance: Double): ValidationResult {
+        // case negative cashBalance
         if (!isPositive && (cashBalance - amount < 0.00)) {
             return ValidationResult(
                 successful = false,
@@ -13,6 +14,7 @@ class ValidateAmount {
             )
         }
 
+        // case transaction-amount == 0.00
         if (amount == 0.00) {
             return ValidationResult(
                 successful = false,
@@ -22,6 +24,7 @@ class ValidateAmount {
             )
         }
 
+        // validation is successful
         return ValidationResult(
             successful = true
         )

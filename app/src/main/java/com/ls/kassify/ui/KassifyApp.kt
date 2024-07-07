@@ -1,6 +1,5 @@
 package com.ls.kassify.ui
 
-//import com.ls.kassify.ui.theme.TextDownloadableFontsSnippet2.fontFamily
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.padding

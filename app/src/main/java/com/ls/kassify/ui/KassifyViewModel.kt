@@ -42,7 +42,7 @@ class KassifyViewModel : ViewModel() {
     var isError: Boolean = false
         private set
 
-    // Initial loading and subscribing to Amplify Events
+    //Initial load and subscribing to Amplify Events
     init {
         updateCategoryList()
         updateVatList()
@@ -94,7 +94,7 @@ class KassifyViewModel : ViewModel() {
         }
     }
 
-    // //loads vatTypes from backend end into the _uistate.values.vatList
+    //loads vatTypes from backend end into the _uistate.values.vatList
     private fun updateVatList() {
         var newVatList: List<VatType>
         try {

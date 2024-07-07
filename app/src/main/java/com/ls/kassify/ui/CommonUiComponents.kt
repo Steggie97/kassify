@@ -1,6 +1,5 @@
 package com.ls.kassify.ui
 
-//mport com.ls.kassify.ui.theme.CustomColorfulColors
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
@@ -84,21 +83,8 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
-/*
-import androidx.compose.ui.viewinterop.AndroidView
-import com.ls.kassify.ui.theme.TextDownloadableFontsSnippet2.fontFamily
-import com.github.mikephil.charting.charts.PieChart
-import com.github.mikephil.charting.data.PieData
-import com.github.mikephil.charting.data.PieDataSet
-import com.github.mikephil.charting.data.PieEntry
-import com.github.mikephil.charting.utils.ColorTemplate
- */
-
-
-
 data class Category(val categoryNo: Int, val categoryName: String)
 data class Transaction(val categoryNo: Int, val amount: Double, val amountPrefix: Boolean)
-
 
 //App-UI
 
@@ -691,6 +677,7 @@ fun CashBalanceBox(cashBalance: Double) {
     }
 }
 
+// functions for pie chart
 @Composable
 fun PieChartView(dataEntries: List<PieEntry>, modifier: Modifier = Modifier) {
     val context = LocalContext.current

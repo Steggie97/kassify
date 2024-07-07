@@ -56,8 +56,6 @@ class MainActivity : ComponentActivity() {
                             handler
                         )
                     ){
-
-                        // Authenticator bitte nicht löschen, nur bei Bedarf auskommentieren (Enthält LogIn-Screen, etc.)
                         //AWS Amplify-Authenticator UI with custom headers
                         Authenticator(
                             modifier = Modifier
