@@ -297,7 +297,7 @@ class KassifyViewModel : ViewModel() {
     }
 
     // update of _uiState.value.cashBalance
-    private fun updateCashBalance() {
+     fun updateCashBalance() {
         var newCashBalance: Double = 0.00
         _uiState.value.transactions.forEach {
             if (it.amountPrefix)

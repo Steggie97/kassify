@@ -165,6 +165,7 @@ fun KassifyApp(
                     },
                     onCancelButtonClicked = {
                         navController.navigateUp()
+                        viewModel.updateCashBalance()
                     },
                     transaction = appUiState.currentTransaction,
                     // retrieval of LocalDates for date-validator of the date picker dialog
