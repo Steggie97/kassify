@@ -70,6 +70,7 @@ fun TransactionListScreen(
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 // the lastTransaction is shown on the top of the list
                 reverseLayout = true,
+                modifier = Modifier.padding(horizontal = 16.dp)
             ) {
                 items(transactions) {
                     TransactionCard(

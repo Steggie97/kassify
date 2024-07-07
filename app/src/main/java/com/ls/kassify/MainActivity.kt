@@ -62,7 +62,7 @@ class MainActivity : ComponentActivity() {
                         Authenticator(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .padding(horizontal = 8.dp, vertical = 32.dp),
+                                .padding(vertical = 32.dp),
 
                             headerContent = {
                                 Box(
